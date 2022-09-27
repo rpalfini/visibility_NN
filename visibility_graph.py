@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from dijkstra import *
+from bidict import bidict
 
 def init_points(point_list):
     point_obj = []
@@ -23,9 +24,15 @@ def init_obs(obs_list,radius):
     return obs_obj
 
 class point:
+    key_precision = 3
+
     def __init__(self,point_coord):
         self.x = point_coord[0]
         self.y = point_coord[1]
+
+    def coord_key(self):
+        # outputs the points as a tuple to be used as a key in node dictionary
+        return round(self.x,self.key_precision), round(self.y,self.key_precision)
 
     def view(self):
         print("(" + str(self.x) + "," + str(self.y) + ")")
@@ -46,9 +53,14 @@ class obstacle:
     def clear_nodes(self):
         self.node_list = []
 
+
+
+
+
 class visibility_graph_generator:
     # variables for buidling vis graph
-    node_dict = {} # stores the points associated with each key for a start/end pair
+    #TODO replace node-dict and vis_graph with a graph class object
+    node_dict = bidict({}) # stores the nodes as associated with each point, bidict allows lookup in both directions
     vis_graph = {} # this is a graph that stores the nodes and their edge distances
     graphs_gen_memory = {} # this dictionary stores the start/end, graph created, and a node_point_dictionary, used for plotting
 
@@ -87,40 +99,44 @@ class visibility_graph_generator:
                 # create labels from djikstra algo
                 direction_label = 0
                 self.record_result(start,end,direction_label)
-                # reset obstacles
-                self.clear_node_dict()
-                self.clear_obst_nodes()
+                # store and reset obstacles
+                # self.clear_node_dict()
+                # self.clear_obst_nodes()
 
     def build_vis_graph(self,start,end):
         # builds tangent visibility graph of obstacles for a start/end pair
         # add start and end to node dictionary
         self.add_node2dict(start,"start")
         self.add_node2dict(end,"end")
-        # check if start/end is visible
-        if self.is_node_vis
+        # check if start/end is visible and add to graph if it is
+        self.process_cand_node(start,end,obstacle=None)
 
+        # creates surfing edges for point to obstacle connections
         for obstacle in self.obstacles:
             self.vis_point_obst(start,obstacle)
-            self.vis_point_obst(end,obstacle)
+            self.vis_point_obst(end,obstacle,is_end_node = True)
+
+        # creates surfing edges for obstacle to obstacle connections
+        for obstacle in self.obstacles:
+            d = 0
+
+        # creates hugging edges on obstacles
+        for obstacle in self.obstacles:
+            d = 0
         return
 
-    def vis_point_obst(self,start_node,obstacle):
+    def vis_point_obst(self,start_node,obstacle,is_end_node = False):
         # calculates visibility graph node to obstacle
         center_dist = self.euclid_dist(start_node,obstacle.center_loc) # distance from obstacle center to point
         theta = np.arccos(obstacle.radius/center_dist)
         phi = self.rotation_to_horiz(obstacle.center_loc,start_node)
+        #TODO reverse order of points when storing end point connected edges
+        cand_node1 = point(self.direction_step(obstacle.center_loc,obstacle.radius,phi + theta)) #candidate node1
+        cand_node2 = point(self.direction_step(obstacle.center_loc,obstacle.radius,phi - theta)) #candidate node2
         
-        can_node1 = point(self.direction_step(obstacle.center_loc,obstacle.radius,phi + theta)) #candidate node1
-        if self.is_node_vis(start_node,can_node1):
-            self.add_node2dict(can_node1)
-            self.add_edge2graph()
+        self.process_cand_node(start_node,cand_node1,obstacle,is_end_node)
+        self.process_cand_node(start_node,cand_node2,obstacle,is_end_node)
         
-        can_node2 = point(self.direction_step(obstacle.center_loc,obstacle.radius,phi - theta)) #candidate node2
-        if self.is_node_vis(start_node,can_node2):
-            self.add_node2dict(can_node2)
-            self.add_edge2graph()
-        
-        return
     
     def direction_step(self,start,dist,angle):
         # calculates tangent node location on an obstacle
@@ -145,35 +161,85 @@ class visibility_graph_generator:
         
         return
 
-    def process_cand_node(self,start_node,cand_node):
-        # this method adds edge to node dictionary and vis_graph, if the node is visible
-        if self.is_node_vis(start_node,cand_node):
-            self.add_node2dict(cand_node)
-            edge_length = self.euclid_dist(start_node,cand_node)
-            self.add_edge2graph()
-
     def is_node_vis(self,start_node,end_node):
         # checks if visibility line intersects other obstacles
-        for obstacle in self.obstacles:
-            d = 0
-
         is_valid = True
+        a,b,c = self.planar_line_form(start_node,end_node)
+        #TODO make sure that obstacle we are touching doesnt result in non-visibility
+        for obstacle in self.obstacles:
+            if self.check_collision(a,b,c,obstacle.center_x,obstacle.center_y,obstacle.radius):
+                is_valid = False
+                break
         return is_valid
 
-    ## graph dict methods
-    def add_graph(self):
+    def make_hugging_edges(self):
+        # this function goes through obstacles to create hugging edge node connections
         return
+
+    def check_collision(self,a,b,c,x,y,radius):
+        dist = round((abs(a * x + b * y + c)) / np.sqrt(a * a + b * b),4) # rounding for numerical errors
+        if radius > dist:
+            collision = True
+        else:
+            collision = False
+        return collision
+
+    def planar_line_form(self,start_node,end_node):
+        # returns line connecting nodes in planar line form for check_collision
+        slope = (end_node.y-start_node.y)/(end_node.x-start_node.x)
+        y_int = end_node.y-slope*end_node.x
+        a = -slope
+        b = 1
+        c = -y_int
+        return a,b,c
+
+    def process_cand_node(self,start_node,cand_node,obstacle,is_end_node = False):
+        # this method adds edge to node dictionary and vis_graph, if the node is visible
+        if self.is_node_vis(start_node,cand_node):
+            edge_length = self.euclid_dist(start_node,cand_node)
+            if self.is_node_new(cand_node):
+                self.add_node2dict(cand_node)
+                if is_end_node is False: # if start_node is an end_node, then add to graph vertically
+                    self.add_edge2graph(start_node,cand_node,edge_length)
+                else:
+                    self.add_edge2graph(cand_node,start_node,edge_length)
+            self.add_node2obstacle(obstacle,cand_node)
+    
+    def add_node2obstacle(self,obstacle,cand_node):
+        # this method adds candidate node to
+        if obstacle != None: # if start/end connection visible
+            obstacle.add_node(cand_node)
 
     ## node dict methods
     def add_node2dict(self,point,label=None):
         if label == None:
             num_keys = len(self.node_dict)
-            self.node_dict[num_keys] = point
+            self.node_dict[num_keys] = point.coord_key() # add node to dictionary
+            self.vis_graph[num_keys] = {} # initialize node in graph
         else:
-            self.node_dict[label] = point
+            self.node_dict[label] = point.coord_key()
+            self.vis_graph[label] = {}
+
+    def add_edge2graph(self,start_node,end_node,distance):
+        start_id = self.get_node_id(start_node)
+        end_id = self.get_node_id(end_node)
+        self.vis_graph[start_id][end_id] = distance
+
+    def is_node_new(self,point):
+        # checks that node hasn't been added to the dictionary
+        return not point.coord_key() in self.node_dict.inverse
+
+    def get_node_id(self,point):
+        # returns node id for a node point
+        node_id = self.node_dict.inverse[point.coord_key()]
+        return node_id
+
+    def get_node_point(self,node_id):
+        return self.node_dict[node_id]
 
     def clear_node_dict(self):
-        self.node_dict = {}
+        self.node_dict = bidict({})
+        self.vis_graph = {}
 
     def clear_obst_nodes(self):
         for obstacle in self.obstacles:
@@ -196,6 +262,7 @@ class visibility_graph_generator:
         self.plot_start_end(test_num)
         self.plot_obstacles()
         self.plot_shortest_path(test_num)
+        self.plot_vis_graph()
         self.vis_axs.set_title(title)
         self.vis_axs.legend()
 
@@ -218,6 +285,17 @@ class visibility_graph_generator:
         bound_x = radius*np.cos(thetas) + obstacle.center_x
         bound_y = radius*np.sin(thetas) + obstacle.center_y
         return bound_x, bound_y
+
+    def plot_vis_graph(self):
+        # this method plots the visibility graph generated
+        node_points = []
+        for node_id in self.vis_graph:
+            node_points.append(self.get_node_point(node_id))
+            for adj_node in self.vis_graph[node_id]:
+                node_points.append(self.get_node_point(adj_node))
+                self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
+                node_points.pop()
+            node_points.pop()
 
     def plot_shortest_path(self,test_num):
         #TODO once I have visibility graph data I will make the plot

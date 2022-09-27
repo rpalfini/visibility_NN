@@ -15,9 +15,9 @@ end_list = init_points(end_vals)
 obst_list = init_points(obst_locations)
 
 # create obstacle list
-obstacle_list = init_obs(obst_locations,radius1)
+obstacle_list = init_obs(obst_list,radius1)
 
-vis_graph_eight_obst = visibility_graph(obstacle_list)
+vis_graph_eight_obst = visibility_graph_generator(obstacle_list)
 vis_graph_eight_obst.run_test(start_list,end_list)
 vis_graph_eight_obst.plot_solution(0,"env 8_0")
 

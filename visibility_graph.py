@@ -7,42 +7,6 @@ import matplotlib.pyplot as plt
 from dijkstra import *
 from bidict import bidict
 
-def init_points(point_list):
-    point_obj = []
-    for p in point_list:
-        point_val = point(p)
-        point_obj.append(point_val)
-    return point_obj
-
-def init_obs(obs_list,radius):
-    #TODO This only allows for one obstacle radius size
-    # obs_list should be a list of point objects
-    obs_obj = []
-    for obs in obs_list:
-        obs_val = obstacle(radius,obs)
-        obs_obj.append(obs_val)
-    return obs_obj
-
-def check_collision(a,b,c,x,y,radius):
-        dist = round((abs(a * x + b * y + c)) / np.sqrt(a * a + b * b),4) # rounding for numerical errors
-        if radius > dist:
-            collision = True
-        else:
-            collision = False
-        return collision
-
-def planar_line_form(start_node,end_node):
-        # returns line connecting nodes in planar line form for check_collision
-        slope = (end_node.y-start_node.y)/(end_node.x-start_node.x)
-        y_int = end_node.y-slope*end_node.x
-        a = -slope
-        b = 1
-        c = -y_int
-        return a,b,c
-
-def append_dict(dict_in,item):
-    num_keys = len(dict_in)
-    dict_in[num_keys] = item
 
 class point:
     key_precision = 3
@@ -74,10 +38,11 @@ class obstacle:
     def clear_nodes(self):
         self.node_list = []
 
-
 class vis_graph:
     node_dict = bidict({}) # stores the nodes as associated with each point, bidict allows lookup in both directions
     vis_graph = {} # this is a graph that stores the nodes and their edge distances
+    edge_type_dict = {} # matches the format of vis_graph but only records if edge is surfing or hugging for plotting purposes
+    node_obst_dict = {} # keeps track of which obstacle each node is on, adding this to make plotting arcs
 
     def __init__(self,start,end,obstacles):
         self.obstacles = obstacles
@@ -97,12 +62,14 @@ class vis_graph:
             self.vis_point_obst(self.end,obstacle,is_end_node = True)
 
         # creates surfing edges for obstacle to obstacle connections
+        #TODO change so we only calculate obstacle vis_graph once for each environment
         for obstacle in self.obstacles:
             d = 0
+            # self.vis_obst_obst(obstacle)
 
-        # creates hugging edges on obstacles
+        # creates hugging edges on obstacles, this must be done after start/end nodes added
         for obstacle in self.obstacles:
-            d = 0
+            self.make_hugging_edges(obstacle)
         return
 
     def process_cand_node(self,start_node,cand_node,obstacle,is_end_node = False):
@@ -120,13 +87,13 @@ class vis_graph:
 
     def vis_point_obst(self,start_node,obstacle,is_end_node = False):
         # calculates visibility graph node to obstacle
+        # is_end_node sets the order of edge storage
         center_dist = self.euclid_dist(start_node,obstacle.center_loc) # distance from obstacle center to point
         theta = np.arccos(obstacle.radius/center_dist)
         phi = self.rotation_to_horiz(obstacle.center_loc,start_node)
-        #TODO reverse order of points when storing end point connected edges
+        
         cand_node1 = point(self.direction_step(obstacle.center_loc,obstacle.radius,phi + theta)) #candidate node1
         cand_node2 = point(self.direction_step(obstacle.center_loc,obstacle.radius,phi - theta)) #candidate node2
-        
         self.process_cand_node(start_node,cand_node1,obstacle,is_end_node)
         self.process_cand_node(start_node,cand_node2,obstacle,is_end_node)
     
@@ -144,11 +111,11 @@ class vis_graph:
         return rotation_1_2
 
     def euclid_dist(self,point1,point2):
-        # calculates euclidean distance b/T two poitns
+        # calculates euclidean distance b/T two points
         dist = np.sqrt((point1.x - point2.x)**2 + (point1.y - point2.y)**2)
         return dist
 
-    def vis_obst_obst(self):
+    def vis_obst_obst(self,obstacle):
         # calculates visibility graph tangent lines between obstacles
         
         return
@@ -164,31 +131,70 @@ class vis_graph:
                 break
         return is_valid
 
-    def make_hugging_edges(self):
+    def make_hugging_edges(self,obstacle):
         # this function goes through obstacles to create hugging edge node connections
-        return
+        angs = []
+        # calculate angles of points to horizontal
+        for node in obstacle.node_list:
+            angs.append(self.find_point_angle(node,obstacle))
+        # sort in ascending order
+        # sorted_nodes = [x for _, x in sorted(zip(angs,obstacle.node_list),key=lambda pair: pair[0])]
+        sorted_angles,sorted_nodes = zip(*sorted(zip(angs,obstacle.node_list),key=lambda pair: pair[0]))
+        # calculate hugging edge lengths 
+        for idx,node in enumerate(sorted_nodes):
+            # calculate connection to 2 adjacent node neighbors(above and below in sorted list)
+            # connect above
+            if idx+1 == len(sorted_nodes): # if end of list, loop back to beginning
+                next_idx = 0
+            else:
+                next_idx = idx+1
+            ang_diff = np.abs(sorted_angles[next_idx]-sorted_angles[idx])
+            if ang_diff > np.pi: # use shorter distance between points
+                ang_diff = np.pi*2 - ang_diff
+            
+            print('start node ' + str(node.coord_key())+ ' next node ' + str(sorted_nodes[next_idx].coord_key()))
+            print('above ang dif ' + str(ang_diff) + ' aka ' + str(ang_diff*180/np.pi))
+            arc_length = ang_diff*obstacle.radius
+            self.add_edge2graph(node,sorted_nodes[next_idx],arc_length,edge_type = 'hug')
+            
+            # connect below
+            ang_diff = np.abs(sorted_angles[idx-1]-sorted_angles[idx])
+            if ang_diff > np.pi:
+                ang_diff = np.pi*2 - ang_diff
+            arc_length = ang_diff*obstacle.radius
+            print('start node ' + str(node.coord_key())+' next node ' +str(sorted_nodes[idx-1].coord_key()))
+            print('below ang dif ' + str(ang_diff) + ' aka ' + str(ang_diff*180/np.pi))
+            self.add_edge2graph(node,sorted_nodes[idx-1],arc_length,edge_type = 'hug')
 
-    
-    
     def add_node2obstacle(self,obstacle,cand_node):
-        # this method adds candidate node to
+        # this method adds candidate node to obstacle object and adds obstacle to obs_node_dict
         if obstacle != None: # if start/end connection visible
             obstacle.add_node(cand_node)
+            self.tag_obstacle2node(self,obstacle,cand_node)
+    
+    def tag_obstacle2node(self,obstacle,cand_node):
+        cand_node_id = self.get_node_id(cand_node)
+        self.node_obst_dict[cand_node_id]['obstacle'] = obstacle
 
     ## node dict methods
     def add_node2dict(self,point,label=None):
         if label == None:
             num_keys = len(self.node_dict)
-            self.node_dict[num_keys] = point.coord_key() # add node to dictionary
-            self.vis_graph[num_keys] = {} # initialize node in graph
+            self.init_graph_dict(point,num_keys)
         else:
-            self.node_dict[label] = point.coord_key()
-            self.vis_graph[label] = {}
+            self.init_graph_dict(point,label)
 
-    def add_edge2graph(self,start_node,end_node,distance):
+    def init_graph_dict(self,point,node_id):
+        self.node_dict[node_id] = point.coord_key() # add node to dictionary
+        self.vis_graph[node_id] = {} # initialize node in graph
+        self.edge_type_dict[node_id] = {} # type of edges for plotting, not included in vis_graph so that I wouldn't have to mess with dijkstra or path finding interface
+        self.node_obst_dict[node_id] = {}
+
+    def add_edge2graph(self,start_node,end_node,distance,edge_type = 'surf'):
         start_id = self.get_node_id(start_node)
         end_id = self.get_node_id(end_node)
         self.vis_graph[start_id][end_id] = distance
+        self.edge_type_dict[start_id][end_id] = edge_type
 
     def is_node_new(self,point):
         # checks that node hasn't been added to the dictionary
@@ -255,7 +261,7 @@ class visibility_graph_generator:
         # main function that creates training data for start/end points
         for start in start_list:
             for end in end_list:
-                graph = vis_graph(start,end,self.obstacles)
+                graph = vis_graph(start,end,self.obstacles) #TODO calculate obstacle nodes before hand
                 graph.build_vis_graph()
                 # method that calculates shortest distance, djikstra algo
                 # create labels from djikstra algo
@@ -308,11 +314,24 @@ class visibility_graph_generator:
             self.vis_axs.plot(obst_x, obst_y,color='blue',linewidth=self.line_width)
 
     def make_circle_points(self,obstacle):
+        #TODO could remove this function and use make_arc_points instead
         thetas = np.linspace(0,2*np.pi,100)
         radius = obstacle.radius
         bound_x = radius*np.cos(thetas) + obstacle.center_x
         bound_y = radius*np.sin(thetas) + obstacle.center_y
         return bound_x, bound_y
+
+    def make_arc_points(self,start):
+        #TODO finish method
+        # find make linspace from start angle to end angle 
+        # create points based on make_circle_points
+        # in make hugging edges, have it store the angles associated with the points
+        
+
+        # or when plotting i will check if its visible and if it is isn't, check which obstacle it intersects and use the obstacle it intersects, radius and center to calculate arc lengt
+        return
+
+        
 
     def plot_vis_graph(self):
         # this method plots the visibility graph generated
@@ -321,6 +340,7 @@ class visibility_graph_generator:
         for node_id in graph.vis_graph:
             node_points.append(graph.get_node_point(node_id))
             for adj_node in graph.vis_graph[node_id]:
+
                 node_points.append(graph.get_node_point(adj_node))
                 self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
                 node_points.pop()
@@ -336,3 +356,72 @@ class visibility_graph_generator:
     def save_plot_image(self,fig_name):
         self.fig.savefig(fig_name + '.png')
         # creates .png of visibility graph
+
+# global methods
+def init_points(point_list):
+    point_obj = []
+    for p in point_list:
+        point_val = point(p)
+        point_obj.append(point_val)
+    return point_obj
+
+def init_obs(obs_list,radius):
+    #TODO This only allows for one obstacle radius size
+    obs_loc = init_points(obs_list)
+    obs_obj = []
+    for obs in obs_loc:
+        obs_val = obstacle(radius,obs)
+        obs_obj.append(obs_val)
+    return obs_obj
+
+def append_dict(dict_in,item):
+    num_keys = len(dict_in)
+    dict_in[num_keys] = item
+
+def remove_list_item(item,list_in):
+    # removes obstacle from obstacle list without modifying original obstacle_list
+    new_obs_list = list_in[:]
+    new_obs_list.remove(item)
+    return new_obs_list
+
+def check_collision(a,b,c,x,y,radius):
+    dist = round((abs(a * x + b * y + c)) / np.sqrt(a * a + b * b),4) # rounding for numerical errors
+    if radius > dist:
+        collision = True
+    else:
+        collision = False
+    return collision
+
+def find_point_angle(self,node,obstacle):
+        # finds the angle of a point w.r.t the x axis of the obstacle
+        node_bar = vec_sub(node,obstacle.center_loc)
+        ang_val = np.arctan2(node_bar.y,node_bar.x)
+        if ang_val < 0:
+            ang_val = ang_val + 2*np.pi
+        return ang_val
+
+def planar_line_form(start_node,end_node):
+    # returns line connecting nodes in planar line form for check_collision
+    slope = (end_node.y-start_node.y)/(end_node.x-start_node.x)
+    y_int = end_node.y-slope*end_node.x
+    a = -slope
+    b = 1
+    c = -y_int
+    return a,b,c
+
+def vec_acc(p1,p2):
+    p3x = p1.x + p2.x
+    p3y = p1.y + p2.y
+    p3 = point((p3x,p3y))
+    return p3
+
+def vec_sub(p1,p2):
+    '''returns p1-p2'''
+    p3x = p1.x - p2.x
+    p3y = p1.y - p2.y
+    p3 = point((p3x,p3y))
+    return p3
+
+def vec_dot(p1,p2):
+    p3 = p1.x*p2.x + p1.y*p2.y
+    return p3

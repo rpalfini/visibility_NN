@@ -1,3 +1,4 @@
+from tkinter import E
 from tracemalloc import start
 from turtle import st
 from unicodedata import is_normalized
@@ -39,6 +40,7 @@ class obstacle:
         self.node_list = []
 
 class vis_graph:
+    debug = True
     node_dict = bidict({}) # stores the nodes as associated with each point, bidict allows lookup in both directions
     vis_graph = {} # this is a graph that stores the nodes and their edge distances
     edge_type_dict = {} # matches the format of vis_graph but only records if edge is surfing or hugging for plotting purposes
@@ -136,7 +138,7 @@ class vis_graph:
         angs = []
         # calculate angles of points to horizontal
         for node in obstacle.node_list:
-            angs.append(self.find_point_angle(node,obstacle))
+            angs.append(find_point_angle(node,obstacle))
         # sort in ascending order
         # sorted_nodes = [x for _, x in sorted(zip(angs,obstacle.node_list),key=lambda pair: pair[0])]
         sorted_angles,sorted_nodes = zip(*sorted(zip(angs,obstacle.node_list),key=lambda pair: pair[0]))
@@ -148,29 +150,31 @@ class vis_graph:
                 next_idx = 0
             else:
                 next_idx = idx+1
-            ang_diff = np.abs(sorted_angles[next_idx]-sorted_angles[idx])
-            if ang_diff > np.pi: # use shorter distance between points
-                ang_diff = np.pi*2 - ang_diff
-            
-            print('start node ' + str(node.coord_key())+ ' next node ' + str(sorted_nodes[next_idx].coord_key()))
-            print('above ang dif ' + str(ang_diff) + ' aka ' + str(ang_diff*180/np.pi))
+            ang_diff = find_ang_diff(sorted_angles[next_idx],sorted_angles[idx])
+            if next_idx == 0: # connection from last to first node needs to be 2pi - ang 
+                ang_diff = 2*np.pi-ang_diff
+            if self.debug == True:
+                print('start node ' + str(node.coord_key())+ ' next node ' + str(sorted_nodes[next_idx].coord_key()))
+                print('above ang dif ' + str(ang_diff) + ' aka ' + str(ang_diff*180/np.pi))
             arc_length = ang_diff*obstacle.radius
-            self.add_edge2graph(node,sorted_nodes[next_idx],arc_length,edge_type = 'hug')
+            self.add_edge2graph(node,sorted_nodes[next_idx],arc_length,is_hugging=True,is_edge_CW=False,ang_rot=ang_diff)
             
             # connect below
-            ang_diff = np.abs(sorted_angles[idx-1]-sorted_angles[idx])
-            if ang_diff > np.pi:
-                ang_diff = np.pi*2 - ang_diff
+            ang_diff = find_ang_diff(sorted_angles[idx-1],sorted_angles[idx])
+            if (idx-1) == -1: # connecting start to end node needs to be 2*pi - ang
+                ang_diff = 2*np.pi-ang_diff
             arc_length = ang_diff*obstacle.radius
-            print('start node ' + str(node.coord_key())+' next node ' +str(sorted_nodes[idx-1].coord_key()))
-            print('below ang dif ' + str(ang_diff) + ' aka ' + str(ang_diff*180/np.pi))
-            self.add_edge2graph(node,sorted_nodes[idx-1],arc_length,edge_type = 'hug')
+            if self.debug == True:
+                print('start node ' + str(node.coord_key())+' next node ' +str(sorted_nodes[idx-1].coord_key()))
+                print('below ang dif ' + str(ang_diff) + ' aka ' + str(ang_diff*180/np.pi))
+                print()
+            self.add_edge2graph(node,sorted_nodes[idx-1],arc_length,is_hugging=True,is_edge_CW=True,ang_rot=ang_diff)
 
     def add_node2obstacle(self,obstacle,cand_node):
         # this method adds candidate node to obstacle object and adds obstacle to obs_node_dict
         if obstacle != None: # if start/end connection visible
             obstacle.add_node(cand_node)
-            self.tag_obstacle2node(self,obstacle,cand_node)
+            self.tag_obstacle2node(obstacle,cand_node)
     
     def tag_obstacle2node(self,obstacle,cand_node):
         cand_node_id = self.get_node_id(cand_node)
@@ -188,13 +192,18 @@ class vis_graph:
         self.node_dict[node_id] = point.coord_key() # add node to dictionary
         self.vis_graph[node_id] = {} # initialize node in graph
         self.edge_type_dict[node_id] = {} # type of edges for plotting, not included in vis_graph so that I wouldn't have to mess with dijkstra or path finding interface
-        self.node_obst_dict[node_id] = {}
+        self.node_obst_dict[node_id] = {} # needed for creating hugging edges when plotting solution
+        self.node_obst_dict[node_id]['point'] = point # use this to store the node point objects for use with plotting, may not need this object
 
-    def add_edge2graph(self,start_node,end_node,distance,edge_type = 'surf'):
+    def add_edge2graph(self,start_node,end_node,distance,is_hugging=False,is_edge_CW=False,ang_rot=0):
+        '''creates entry in edge graph as well as records properties needed for plotting hugging edges'''
         start_id = self.get_node_id(start_node)
         end_id = self.get_node_id(end_node)
         self.vis_graph[start_id][end_id] = distance
-        self.edge_type_dict[start_id][end_id] = edge_type
+        self.edge_type_dict[start_id][end_id] = {'is_hugging' : is_hugging}
+        if is_hugging == True:
+            self.edge_type_dict[start_id][end_id]['is_CW'] = is_edge_CW # this is used to determine plotting direction
+            self.edge_type_dict[start_id][end_id]['ang'] = ang_rot
 
     def is_node_new(self,point):
         # checks that node hasn't been added to the dictionary
@@ -208,11 +217,27 @@ class vis_graph:
     def get_node_point(self,node_id):
         return self.node_dict[node_id]
 
+    def get_node_obj(self,node_id):
+        return self.node_obst_dict[node_id]['point']
+
+    def get_node_obs(self,node_id):
+        return self.node_obst_dict[node_id]['obstacle']
+
+    def get_edge_ang(self,start_id,end_id):
+        return self.edge_type_dict[start_id][end_id]['ang']
+
+    def is_edge_hugging(self,start_id,end_id):
+        return self.edge_type_dict[start_id][end_id]['is_hugging']
+
+    def is_edge_CW(self,start_id,end_id): 
+        return self.edge_type_dict[start_id][end_id]['is_CW']
+
     def clear_node_dict(self): #TODO delte this method, no need as graph objects are reinitialized
         self.node_dict = bidict({})
         self.vis_graph = {}
 
 class visibility_graph_generator:
+    debug = True # guess i could have super class to inherit this as well as any debug routines
     # variables for buidling vis graph
     graphs_memory = {} # this dictionary stores the graph created start/end, graph created, and a node_point_dictionary, used for plotting
 
@@ -239,22 +264,6 @@ class visibility_graph_generator:
         self.vis_axs.set_aspect('equal')
 
     #TODO add method for updating obastcles list when needed
-
-    #vis graph methods
-    # old method
-    # def run_test(self,start_list,end_list):
-    #     # main function that creates training data for start/end points
-    #     for start in start_list:
-    #         for end in end_list:
-    #             self.build_vis_graph(start,end) # method that calculates visibility graph
-                
-    #             # method that calculates shortest distance, djikstra algo
-    #             # create labels from djikstra algo
-    #             direction_label = 0
-    #             self.record_result(start,end,direction_label)
-    #             # store and reset obstacles
-    #             # self.clear_node_dict()
-    #             # self.clear_obst_nodes()
 
     #vis graph methods
     def run_test(self,start_list,end_list):
@@ -317,21 +326,29 @@ class visibility_graph_generator:
         #TODO could remove this function and use make_arc_points instead
         thetas = np.linspace(0,2*np.pi,100)
         radius = obstacle.radius
+        #TODO replace this with direction_step()
         bound_x = radius*np.cos(thetas) + obstacle.center_x
         bound_y = radius*np.sin(thetas) + obstacle.center_y
         return bound_x, bound_y
 
-    def make_arc_points(self,start):
-        #TODO finish method
-        # find make linspace from start angle to end angle 
-        # create points based on make_circle_points
-        # in make hugging edges, have it store the angles associated with the points
-        
-
-        # or when plotting i will check if its visible and if it is isn't, check which obstacle it intersects and use the obstacle it intersects, radius and center to calculate arc lengt
-        return
-
-        
+    def make_arc_points(self,start_id,end_id,graph):
+        start_point = graph.get_node_obj(start_id) #TODO this could also be point(graph.get_node_point(start_id) so we dont have to store the points in the node data dict)
+        # end_point = graph.get_node_obj(end_id)
+        obstacle = graph.get_node_obs(start_id) # TODO decide if I need to add a check that both the start_id and end_id are tagged to the same obstacle (would need to add an obstacle bi,dictionary)
+        ang_start = find_point_angle(start_point,obstacle)
+        # ang_end = find_point_angle(end_point,obstacle)
+        # ang_diff = find_ang_diff(ang_start,ang_end)
+        ang_diff = graph.get_edge_ang(start_id,end_id)
+        if graph.is_edge_CW(start_id,end_id) == True:
+            ang_diff = -ang_diff
+        if self.debug == True:
+            print('start id ' + str(start_id) + ' end id ' + str(end_id))
+            # print('ang start ' + str(ang_start*180/np.pi) + ' ang end ' + str(ang_end*180/np.pi))
+            print('ang_diff ' + str(ang_diff*180/np.pi) + ' is_CW ' + str(graph.is_edge_CW(start_id,end_id)))
+        thetas = np.linspace(ang_start,ang_start+ang_diff,100)
+        bound_x = obstacle.radius*np.cos(thetas) + obstacle.center_x
+        bound_y = obstacle.radius*np.sin(thetas) + obstacle.center_y
+        return list(zip(bound_x, bound_y))
 
     def plot_vis_graph(self):
         # this method plots the visibility graph generated
@@ -339,12 +356,22 @@ class visibility_graph_generator:
         graph = self.graphs_memory[0]
         for node_id in graph.vis_graph:
             node_points.append(graph.get_node_point(node_id))
-            for adj_node in graph.vis_graph[node_id]:
+            for adj_node_id in graph.vis_graph[node_id]:
+                if graph.is_edge_hugging(node_id,adj_node_id) == False: # 
+                    node_points.append(graph.get_node_point(adj_node_id))
+                    self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
+                    node_points.pop()
+                else:
+                    arc_points = self.make_arc_points(node_id,adj_node_id,graph)
+                    for point in arc_points: node_points.append(point)
+                    self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width) # plot formatted points
+                    # node_points.remove(arc_points) #TODO verify this code removes all points except for the root node id
+                    print()
+                    del node_points[1:]
+            if len(node_points) > 1:
+                raise Exception("sorry, node_points was not reset properly during plotting")
+            node_points.pop() #reset node_points
 
-                node_points.append(graph.get_node_point(adj_node))
-                self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
-                node_points.pop()
-            node_points.pop()
 
     def plot_shortest_path(self,test_num):
         #TODO once I have visibility graph data I will make the plot
@@ -392,14 +419,6 @@ def check_collision(a,b,c,x,y,radius):
         collision = False
     return collision
 
-def find_point_angle(self,node,obstacle):
-        # finds the angle of a point w.r.t the x axis of the obstacle
-        node_bar = vec_sub(node,obstacle.center_loc)
-        ang_val = np.arctan2(node_bar.y,node_bar.x)
-        if ang_val < 0:
-            ang_val = ang_val + 2*np.pi
-        return ang_val
-
 def planar_line_form(start_node,end_node):
     # returns line connecting nodes in planar line form for check_collision
     slope = (end_node.y-start_node.y)/(end_node.x-start_node.x)
@@ -409,6 +428,19 @@ def planar_line_form(start_node,end_node):
     c = -y_int
     return a,b,c
 
+def find_point_angle(node,obstacle):
+    # finds the angle of a point w.r.t the x axis of the obstacle, postiive angle returned
+    node_bar = vec_sub(node,obstacle.center_loc)
+    ang_val = np.arctan2(node_bar.y,node_bar.x)
+    if ang_val < 0:
+        ang_val = ang_val + 2*np.pi
+    return ang_val
+
+def find_ang_diff(ang1,ang2):
+    '''calculates absolute angle difference between two angles'''
+    ang_diff = np.abs(ang1-ang2)
+    return ang_diff
+    
 def vec_acc(p1,p2):
     p3x = p1.x + p2.x
     p3y = p1.y + p2.y

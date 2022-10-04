@@ -22,7 +22,7 @@ vis_graph_eight_obst.run_test(start_list,end_list)
 vis_graph_eight_obst.plot_solution(0,"env 8_0")
 
 # vis_graph_eight_obst.output_csv('test_out')
-vis_graph_eight_obst.save_plot_image('eight_obs_fig')
+vis_graph_eight_obst.save_plot_image('eight_obs_fig2')
 
 plt.show()
 

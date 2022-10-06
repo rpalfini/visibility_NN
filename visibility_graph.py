@@ -5,7 +5,7 @@ from unicodedata import is_normalized
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from dijkstra import *
+import dijkstra as dijk
 from bidict import bidict
 
 
@@ -45,6 +45,7 @@ class vis_graph:
     vis_graph = {} # this is a graph that stores the nodes and their edge distances
     edge_type_dict = {} # matches the format of vis_graph but only records if edge is surfing or hugging for plotting purposes
     node_obst_dict = {} # keeps track of which obstacle each node is on, adding this to make plotting arcs
+    pw_opt_path_dict = {} # record parameters of piecewise function for label evaulation
 
     def __init__(self,start,end,obstacles):
         self.obstacles = obstacles
@@ -180,6 +181,33 @@ class vis_graph:
         cand_node_id = self.get_node_id(cand_node)
         self.node_obst_dict[cand_node_id]['obstacle'] = obstacle
 
+    def find_shortest_path(self):
+        start_id = self.get_node_id(self.start)
+        end_id = self.get_node_id(self.end)
+        self.opt_path = dijk.shortestPath(self.vis_graph,start_id,end_id)
+        if self.debug == True:
+            print(self.opt_path)
+    
+    def create_pw_opt_path_func(self):
+        '''Creates a piecewise function of the optimal path to use for creating object labels'''
+        for idx,node_id in enumerate(self.opt_path):
+            # if the function is surfing, make line equation
+            # if the function is hugging, use circle equation
+            # equation is indexed by range of x values 
+            # create dictionary where keys are max x value and it returns parameters to use for piecewise function
+            # determine the parameters based on whether surfing or hugging
+            # surfing is y = mx + b
+            # hugging is (x+xc)^2 + (y+yc)^2 = r
+            d=0
+
+    def eval_opt_path_func(self): # compares obstacle to 
+        # this needs to be called after a shortest_path is found
+        for obstacle in self.obstacles:
+            # find pw function to compare for obstacle
+            # if 
+            d=0
+
+
     ## node dict methods
     def add_node2dict(self,point,label=None):
         if label == None:
@@ -273,6 +301,7 @@ class visibility_graph_generator:
                 graph = vis_graph(start,end,self.obstacles) #TODO calculate obstacle nodes before hand
                 graph.build_vis_graph()
                 # method that calculates shortest distance, djikstra algo
+                graph.find_shortest_path()
                 # create labels from djikstra algo
                 direction_label = 0
                 self.record_result(start,end,direction_label)
@@ -300,14 +329,24 @@ class visibility_graph_generator:
         np.savetxt(file_name+'.csv', self.vis_data, delimiter=",")
 
     ## plot viewer methods
+    def plot_env(self,test_num,title=None):
+        self.plot_start_end(test_num)
+        self.plot_obstacles()
+        self.finish_plot(title)
+
     def plot_solution(self,test_num,title=None):
         # plots obstacles and solution
         self.plot_start_end(test_num)
         self.plot_obstacles()
         self.plot_shortest_path(test_num) 
-        self.plot_vis_graph() #TODO add test_num to be plotted
-        self.vis_axs.set_title(title)
-        self.vis_axs.legend()
+        # self.plot_vis_graph(test_num) #TODO add test_num to be plotted
+        self.finish_plot(title)
+
+    def plot_full_vis_graph(self,test_num,title=None):
+        self.plot_start_end(test_num)
+        self.plot_obstacles()
+        self.plot_vis_graph(test_num) #TODO add test_num to be plotted
+        self.finish_plot(title)
 
     # def plot_shortest_path(self):
     def plot_start_end(self,test_num):
@@ -350,13 +389,14 @@ class visibility_graph_generator:
         bound_y = obstacle.radius*np.sin(thetas) + obstacle.center_y
         return list(zip(bound_x, bound_y))
 
-    def plot_vis_graph(self):
+    def plot_vis_graph(self,test_num):
         # this method plots the visibility graph generated
         node_points = []
-        graph = self.graphs_memory[0]
+        graph = self.graphs_memory[test_num]
         for node_id in graph.vis_graph:
             node_points.append(graph.get_node_point(node_id))
             for adj_node_id in graph.vis_graph[node_id]:
+                #TODO replace bleow with method plot_graph_edge()
                 if graph.is_edge_hugging(node_id,adj_node_id) == False: # 
                     node_points.append(graph.get_node_point(adj_node_id))
                     self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
@@ -366,16 +406,37 @@ class visibility_graph_generator:
                     for point in arc_points: node_points.append(point)
                     self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width) # plot formatted points
                     # node_points.remove(arc_points) #TODO verify this code removes all points except for the root node id
-                    print()
                     del node_points[1:]
             if len(node_points) > 1:
                 raise Exception("sorry, node_points was not reset properly during plotting")
             node_points.pop() #reset node_points
 
+    def finish_plot(self,title=None):
+        self.vis_axs.set_title(title)
+        self.vis_axs.legend()
 
     def plot_shortest_path(self,test_num):
         #TODO once I have visibility graph data I will make the plot
-        return
+        node_points = []
+        graph = self.graphs_memory[test_num]
+        for idx,node_id in enumerate(graph.opt_path):
+            if node_id == 'end': # reached end of path
+                break
+            else:
+                next_node_id = graph.opt_path[idx+1]
+                self.plot_graph_edge(graph,node_id,next_node_id)
+
+    def plot_graph_edge(self,graph,start_id,end_id):
+        node_points = []
+        node_points.append(graph.get_node_point(start_id))
+        if graph.is_edge_hugging(start_id,end_id) == False: # 
+            node_points.append(graph.get_node_point(end_id))
+            self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
+        else:
+            arc_points = self.make_arc_points(start_id,end_id,graph)
+            for point in arc_points: node_points.append(point)
+            self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width) # plot formatted points
+            # node_points.remove(arc_points) #TODO verify this code removes all points except for the root node id
 
     def clear_plot(self):
         self.vis_axs.cla()

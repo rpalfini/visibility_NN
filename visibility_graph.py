@@ -7,6 +7,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import dijkstra as dijk
 from bidict import bidict
+from vis_graph_enum import *
+import param_func as pf
 
 
 class point:
@@ -36,6 +38,9 @@ class obstacle:
     def add_node(self,point):
         self.node_list.append(point)
 
+    def output_prop(self):
+        return self.center_x, self.center_y, self.radius
+
     def clear_nodes(self):
         self.node_list = []
 
@@ -45,7 +50,7 @@ class vis_graph:
     vis_graph = {} # this is a graph that stores the nodes and their edge distances
     edge_type_dict = {} # matches the format of vis_graph but only records if edge is surfing or hugging for plotting purposes
     node_obst_dict = {} # keeps track of which obstacle each node is on, adding this to make plotting arcs
-    pw_opt_path_dict = {} # record parameters of piecewise function for label evaulation
+    pw_opt_func = {} # record parameters of piecewise function for label evaulation
 
     def __init__(self,start,end,obstacles):
         self.obstacles = obstacles
@@ -191,22 +196,40 @@ class vis_graph:
     def create_pw_opt_path_func(self):
         '''Creates a piecewise function of the optimal path to use for creating object labels'''
         for idx,node_id in enumerate(self.opt_path):
-            # if the function is surfing, make line equation
-            # if the function is hugging, use circle equation
-            # equation is indexed by range of x values 
-            # create dictionary where keys are max x value and it returns parameters to use for piecewise function
-            # determine the parameters based on whether surfing or hugging
-            # surfing is y = mx + b
-            # hugging is (x+xc)^2 + (y+yc)^2 = r
-            d=0
+            if node_id == 'start': # equation is up to a node, and there are no points before the start
+                continue
+            x_key,_ = self.get_node_xy(node_id)
+            node_before = self.opt_path[idx-1] #node before node_id
+            # we can store
+            edge_key = self.get_edge_type(self.is_edge_hugging(node_before,node_id)) # finding edge type between this and previous node
+            if edge_key == edge_type.line:
+                slope,y_int = slope_int_form(self.get_node_obj(node_before),self.get_node_obj(node_id))
+                self.pw_opt_func[x_key] = pf.line(slope,y_int)
+            elif edge_key == edge_type.circle:
+                is_slope_pos = self.pw_opt_func[self.get_x_key_smaller(x_key)].is_slope_pos() # determine if previous segment has pos or neg slope
+                obstacle = self.get_node_obs(node_id)
+                self.pw_opt_func[x_key] = pf.circle(*obstacle.output_prop(),is_slope_pos)
 
+    # functions for working with pw_opt_func
+    def get_x_key_smaller(self,x):
+        ''' finds largest x_key in pw_opt_func that is less than the input x'''
+        # x_keys = [*self.pw_opt_func]
+        x_keys = [key for key in self.pw_opt_func.keys() if key<x]
+        return max(x_keys)
+
+    # used when evaluating pw_opt_func
+    def get_x_key_larger(self,x):
+        ''' finds smallest x_key in pw_opt_func that is greater than the input x'''
+        x_keys = [key for key in self.pw_opt_func.keys() if key>x]
+        return min(x_keys)
+
+    # TODO rename this function to be generate obstacle labels when i define it properly
     def eval_opt_path_func(self): # compares obstacle to 
         # this needs to be called after a shortest_path is found
         for obstacle in self.obstacles:
             # find pw function to compare for obstacle
             # if 
             d=0
-
 
     ## node dict methods
     def add_node2dict(self,point,label=None):
@@ -242,7 +265,7 @@ class vis_graph:
         node_id = self.node_dict.inverse[point.coord_key()]
         return node_id
 
-    def get_node_point(self,node_id):
+    def get_node_xy(self,node_id):
         return self.node_dict[node_id]
 
     def get_node_obj(self,node_id):
@@ -256,6 +279,15 @@ class vis_graph:
 
     def is_edge_hugging(self,start_id,end_id):
         return self.edge_type_dict[start_id][end_id]['is_hugging']
+
+    def get_edge_type(self,is_hugging):
+        # temporary method to bridge gap between allowing multiple types of edges besides hugging and surfing
+        if is_hugging:
+            return edge_type.circle
+        elif not is_hugging:
+            return edge_type.line
+        else:
+            raise('invalid edge type')
 
     def is_edge_CW(self,start_id,end_id): 
         return self.edge_type_dict[start_id][end_id]['is_CW']
@@ -302,6 +334,7 @@ class visibility_graph_generator:
                 graph.build_vis_graph()
                 # method that calculates shortest distance, djikstra algo
                 graph.find_shortest_path()
+                graph.create_pw_opt_path_func()
                 # create labels from djikstra algo
                 direction_label = 0
                 self.record_result(start,end,direction_label)
@@ -371,7 +404,7 @@ class visibility_graph_generator:
         return bound_x, bound_y
 
     def make_arc_points(self,start_id,end_id,graph):
-        start_point = graph.get_node_obj(start_id) #TODO this could also be point(graph.get_node_point(start_id) so we dont have to store the points in the node data dict)
+        start_point = graph.get_node_obj(start_id) #TODO this could also be point(graph.get_node_xy(start_id) so we dont have to store the points in the node data dict)
         # end_point = graph.get_node_obj(end_id)
         obstacle = graph.get_node_obs(start_id) # TODO decide if I need to add a check that both the start_id and end_id are tagged to the same obstacle (would need to add an obstacle bi,dictionary)
         ang_start = find_point_angle(start_point,obstacle)
@@ -394,11 +427,11 @@ class visibility_graph_generator:
         node_points = []
         graph = self.graphs_memory[test_num]
         for node_id in graph.vis_graph:
-            node_points.append(graph.get_node_point(node_id))
+            node_points.append(graph.get_node_xy(node_id))
             for adj_node_id in graph.vis_graph[node_id]:
                 #TODO replace bleow with method plot_graph_edge()
                 if graph.is_edge_hugging(node_id,adj_node_id) == False: # 
-                    node_points.append(graph.get_node_point(adj_node_id))
+                    node_points.append(graph.get_node_xy(adj_node_id))
                     self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
                     node_points.pop()
                 else:
@@ -428,9 +461,9 @@ class visibility_graph_generator:
 
     def plot_graph_edge(self,graph,start_id,end_id):
         node_points = []
-        node_points.append(graph.get_node_point(start_id))
+        node_points.append(graph.get_node_xy(start_id))
         if graph.is_edge_hugging(start_id,end_id) == False: # 
-            node_points.append(graph.get_node_point(end_id))
+            node_points.append(graph.get_node_xy(end_id))
             self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
         else:
             arc_points = self.make_arc_points(start_id,end_id,graph)
@@ -480,10 +513,16 @@ def check_collision(a,b,c,x,y,radius):
         collision = False
     return collision
 
-def planar_line_form(start_node,end_node):
-    # returns line connecting nodes in planar line form for check_collision
+def slope_int_form(start_node,end_node):
     slope = (end_node.y-start_node.y)/(end_node.x-start_node.x)
     y_int = end_node.y-slope*end_node.x
+    return slope, y_int
+
+def planar_line_form(start_node,end_node):
+    # returns line connecting nodes in planar line form for check_collision
+    slope,y_int = slope_int_form(start_node,end_node) # TODO replace with decorator?
+    # slope = (end_node.y-start_node.y)/(end_node.x-start_node.x)
+    # y_int = end_node.y-slope*end_node.x
     a = -slope
     b = 1
     c = -y_int

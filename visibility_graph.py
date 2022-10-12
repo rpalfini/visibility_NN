@@ -44,6 +44,9 @@ class obstacle:
     def clear_nodes(self):
         self.node_list = []
 
+    def view(self):
+        print(f'(x,y): ({self.center_x},{self.center_y})\nradius: {self.radius}')
+
 class vis_graph:
     debug = True
     node_dict = bidict({}) # stores the nodes as associated with each point, bidict allows lookup in both directions
@@ -211,6 +214,13 @@ class vis_graph:
                 self.pw_opt_func[x_key] = pf.circle(*obstacle.output_prop(),is_slope_pos)
 
     # functions for working with pw_opt_func
+    def gen_obs_labels(self):
+        # this needs to be called after a shortest_path is found
+        self.obstacle_labels = [] # records the labels for the obstacles
+        for obstacle in self.obstacles:
+            self.obstacle_labels.append(self.create_label(obstacle))
+        return self.obstacle_labels
+
     def get_x_key_smaller(self,x):
         ''' finds largest x_key in pw_opt_func that is less than the input x'''
         # x_keys = [*self.pw_opt_func]
@@ -222,14 +232,11 @@ class vis_graph:
         ''' finds smallest x_key in pw_opt_func that is greater than the input x'''
         x_keys = [key for key in self.pw_opt_func.keys() if key>x]
         return min(x_keys)
-
-    # TODO rename this function to be generate obstacle labels when i define it properly
-    def eval_opt_path_func(self): # compares obstacle to 
-        # this needs to be called after a shortest_path is found
-        for obstacle in self.obstacles:
-            # find pw function to compare for obstacle
-            # if 
-            d=0
+    
+    def create_label(self,obstacle):
+        x_key = self.get_x_key_larger(obstacle.center_x)
+        y_path = self.pw_opt_func[x_key].evaluate(obstacle.center_x)
+        return dir_label.up if y_path > obstacle.center_y else dir_label.down
 
     ## node dict methods
     def add_node2dict(self,point,label=None):
@@ -297,6 +304,7 @@ class vis_graph:
         self.vis_graph = {}
 
 class visibility_graph_generator:
+    #TODO look into pickle for saving vis_graph_gen objects
     debug = True # guess i could have super class to inherit this as well as any debug routines
     # variables for buidling vis graph
     graphs_memory = {} # this dictionary stores the graph created start/end, graph created, and a node_point_dictionary, used for plotting
@@ -335,9 +343,8 @@ class visibility_graph_generator:
                 # method that calculates shortest distance, djikstra algo
                 graph.find_shortest_path()
                 graph.create_pw_opt_path_func()
-                # create labels from djikstra algo
-                direction_label = 0
-                self.record_result(start,end,direction_label)
+                labels = graph.gen_obs_labels()
+                self.record_result(start,end,labels)
                 self.store_vis_graph(graph)
                 # store and reset obstacles
                 # self.clear_node_dict()
@@ -351,10 +358,11 @@ class visibility_graph_generator:
             obstacle.clear_nodes()
    
     ## output methods
-    def record_result(self,start,end,direction_label):
+    def record_result(self,start,end,direction_labels):
         # result_df = pd.DataFrame()
         # self.vis_df = pd.concat([self.vis_df, result_df])
-        results_array = np.array([start.x, start.y, end.x, end.y, direction_label]).reshape(1,self.num_col) # direction label of 1 is up and 0 is down
+        label_values = [label.value for label in direction_labels];
+        results_array = np.array([start.x, start.y, end.x, end.y, *label_values]).reshape(1,self.num_col) # direction label of 1 is up and 0 is down
         self.vis_data = np.concatenate([self.vis_data, results_array])
 
     def output_csv(self,file_name):

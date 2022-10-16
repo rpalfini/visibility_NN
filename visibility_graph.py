@@ -28,8 +28,6 @@ class point:
 class obstacle:
     def __init__(self,radius,center_loc):
         self.radius = radius
-        # self.center_x = center_loc[0]
-        # self.center_y = center_loc[1]
         self.center_x = center_loc.x
         self.center_y = center_loc.y
         self.center_loc = center_loc # this should be a point object
@@ -39,6 +37,7 @@ class obstacle:
         self.node_list.append(point)
 
     def output_prop(self):
+        '''Outputs the obstacle properties (x,y,radius)'''
         return self.center_x, self.center_y, self.radius
 
     def clear_nodes(self):
@@ -48,14 +47,14 @@ class obstacle:
         print(f'(x,y): ({self.center_x},{self.center_y})\nradius: {self.radius}')
 
 class vis_graph:
-    debug = True
-    node_dict = bidict({}) # stores the nodes as associated with each point, bidict allows lookup in both directions
-    vis_graph = {} # this is a graph that stores the nodes and their edge distances
-    edge_type_dict = {} # matches the format of vis_graph but only records if edge is surfing or hugging for plotting purposes
-    node_obst_dict = {} # keeps track of which obstacle each node is on, adding this to make plotting arcs
-    pw_opt_func = {} # record parameters of piecewise function for label evaulation
+    debug = False
 
     def __init__(self,start,end,obstacles):
+        self.node_dict = bidict({}) # stores the nodes as associated with each point, bidict allows lookup in both directions
+        self.vis_graph = {} # this is a graph that stores the nodes and their edge distances
+        self.edge_type_dict = {} # matches the format of vis_graph but only records if edge is surfing or hugging for plotting purposes
+        self.node_obst_dict = {} # keeps track of which obstacle each node is on, adding this to make plotting arcs
+        self.pw_opt_func = {} # record parameters of piecewise function for label evaulation
         self.obstacles = obstacles
         self.start = start
         self.end = end
@@ -221,6 +220,17 @@ class vis_graph:
             self.obstacle_labels.append(self.create_label(obstacle))
         return self.obstacle_labels
 
+    def get_obs_prop(self):
+        '''Outputs list of obs centers in order of labels, with each tuple (center_x, center_y, radius)'''
+        # used for recording results
+        prop_list = [x.output_prop() for x in self.obstacles]
+        output_list = []
+        # unpacking tuples to make property list for outputting in record results
+        for prop in prop_list:
+            for att in prop:
+                output_list.append(att)
+        return output_list
+
     def get_x_key_smaller(self,x):
         ''' finds largest x_key in pw_opt_func that is less than the input x'''
         # x_keys = [*self.pw_opt_func]
@@ -264,7 +274,7 @@ class vis_graph:
             self.edge_type_dict[start_id][end_id]['ang'] = ang_rot
 
     def is_node_new(self,point):
-        # checks that node hasn't been added to the dictionary
+        '''checks that node hasn't been added to the dictionary'''
         return not point.coord_key() in self.node_dict.inverse
 
     # returns node id for a node point    
@@ -299,6 +309,10 @@ class vis_graph:
     def is_edge_CW(self,start_id,end_id): 
         return self.edge_type_dict[start_id][end_id]['is_CW']
 
+    def clear_obs_nodes(self): #TODO delete this method and move to vis_graph class
+        for obstacle in self.obstacles:
+            obstacle.clear_nodes()
+
     def clear_node_dict(self): #TODO delte this method, no need as graph objects are reinitialized
         self.node_dict = bidict({})
         self.vis_graph = {}
@@ -306,24 +320,29 @@ class vis_graph:
 class visibility_graph_generator:
     #TODO look into pickle for saving vis_graph_gen objects
     debug = True # guess i could have super class to inherit this as well as any debug routines
-    # variables for buidling vis graph
-    graphs_memory = {} # this dictionary stores the graph created start/end, graph created, and a node_point_dictionary, used for plotting
 
-    # variables for outputting training data
-    df_columns = ['start','end','obst1_dir']
-    num_col = 5;
-    vis_data = np.array([],dtype = np.double).reshape(0,num_col) # formatted start_x, start_y, end_x, end_y, direction label
-    vis_df = pd.DataFrame(columns = df_columns) #unsure whether to use dataframe or array
+    def __init__(self,obstacles=None):
+        # variables for buidling vis graph
+        self.graphs_memory = {} # this dictionary stores the graph created start/end, graph created, and a node_point_dictionary, used for plotting
 
-    # variables for plotting
-    axis_xlim = [0, 30] # fixed graph axis limits, will set to be size for floor
-    axis_ylim = [0, 20]
-    line_width = 3
+        # variables for outputting training data
+        self.df_columns = ['start','end','obst1_dir']
+        self.num_col = 8 #TODO this should be equal to 4*num_obs + 4 (start_x start_y end_x end_Y (radius center_x center_y label))
+        #TODO determine if using np array is the best way to ouptut the data
+        #TODO num_col should be determined based on the graph and how many obstacles it has or it should be based on the maximum size we want for our neural net
+        self.vis_data = np.array([],dtype = np.double).reshape(0,self.num_col) # formatted start_x, start_y, end_x, end_y, direction label
+        self.vis_df = pd.DataFrame(columns = self.df_columns) #unsure whether to use dataframe or array
 
-    def __init__(self,obstacles=[]):
+        # variables for plotting
+        self.axis_xlim = [0, 30] # fixed graph axis limits, will set to be size for floor
+        self.axis_ylim = [0, 20]
+        self.line_width = 3
         # self.start = start # formatted (x,y)
         # self.end = end
-        self.obstacles = obstacles
+        if obstacles is None:
+            self.obstacles = []
+        else:
+            self.obstacles = obstacles #TODO determine if i want to store obstacle list in this object
         # visibility viewer initialization
         self.fig, self.vis_axs = plt.subplots(1,1)
         self.vis_axs.set_xlim(self.axis_xlim)
@@ -334,17 +353,19 @@ class visibility_graph_generator:
     #TODO add method for updating obastcles list when needed
 
     #vis graph methods
-    def run_test(self,start_list,end_list):
+    def run_test(self,start_list,end_list,obstacle_list):
         # main function that creates training data for start/end points
         for start in start_list:
             for end in end_list:
-                graph = vis_graph(start,end,self.obstacles) #TODO calculate obstacle nodes before hand
+                graph = vis_graph(start,end,obstacle_list) #TODO calculate obstacle nodes before hand
+                graph.clear_obs_nodes()
                 graph.build_vis_graph()
                 # method that calculates shortest distance, djikstra algo
                 graph.find_shortest_path()
                 graph.create_pw_opt_path_func()
                 labels = graph.gen_obs_labels()
-                self.record_result(start,end,labels)
+                obs_att = graph.get_obs_prop()
+                self.record_result(start,end,obs_att,labels)
                 self.store_vis_graph(graph)
                 # store and reset obstacles
                 # self.clear_node_dict()
@@ -352,17 +373,13 @@ class visibility_graph_generator:
 
     def store_vis_graph(self,graph):
         append_dict(self.graphs_memory,graph)
-
-    def clear_obst_nodes(self): #TODO delete this method and move to vis_graph class
-        for obstacle in self.obstacles:
-            obstacle.clear_nodes()
    
     ## output methods
-    def record_result(self,start,end,direction_labels):
+    def record_result(self,start,end,obstacle_att,direction_labels):
         # result_df = pd.DataFrame()
         # self.vis_df = pd.concat([self.vis_df, result_df])
-        label_values = [label.value for label in direction_labels];
-        results_array = np.array([start.x, start.y, end.x, end.y, *label_values]).reshape(1,self.num_col) # direction label of 1 is up and 0 is down
+        label_values = [label.value for label in direction_labels] #use value as labels are enums
+        results_array = np.array([start.x, start.y, end.x, end.y,*obstacle_att, *label_values]).reshape(1,self.num_col) # direction label of 1 is up and 0 is down
         self.vis_data = np.concatenate([self.vis_data, results_array])
 
     def output_csv(self,file_name):
@@ -372,20 +389,20 @@ class visibility_graph_generator:
     ## plot viewer methods
     def plot_env(self,test_num,title=None):
         self.plot_start_end(test_num)
-        self.plot_obstacles()
+        self.plot_obstacles(test_num)
         self.finish_plot(title)
 
     def plot_solution(self,test_num,title=None):
         # plots obstacles and solution
         self.plot_start_end(test_num)
-        self.plot_obstacles()
+        self.plot_obstacles(test_num)
         self.plot_shortest_path(test_num) 
         # self.plot_vis_graph(test_num) #TODO add test_num to be plotted
         self.finish_plot(title)
 
     def plot_full_vis_graph(self,test_num,title=None):
         self.plot_start_end(test_num)
-        self.plot_obstacles()
+        self.plot_obstacles(test_num)
         self.plot_vis_graph(test_num) #TODO add test_num to be plotted
         self.finish_plot(title)
 
@@ -395,9 +412,10 @@ class visibility_graph_generator:
         self.vis_axs.scatter(data[0],data[1],color='red',marker="^",linewidth=self.line_width,label="start")
         self.vis_axs.scatter(data[2],data[3],color='green',marker="o",linewidth=self.line_width,label="end")
 
-    def plot_obstacles(self):
+    def plot_obstacles(self,test_num):
         # plots obstacles
-        for obstacle in self.obstacles:
+        graph = self.graphs_memory[test_num]
+        for obstacle in graph.obstacles:
             obst_x, obst_y = self.make_circle_points(obstacle)
             # self.vis_axs.plot(obst_x, obst_y,color='blue',linewidth=self.line_width,label="obstacle")
             self.vis_axs.plot(obst_x, obst_y,color='blue',linewidth=self.line_width)
@@ -416,8 +434,6 @@ class visibility_graph_generator:
         # end_point = graph.get_node_obj(end_id)
         obstacle = graph.get_node_obs(start_id) # TODO decide if I need to add a check that both the start_id and end_id are tagged to the same obstacle (would need to add an obstacle bi,dictionary)
         ang_start = find_point_angle(start_point,obstacle)
-        # ang_end = find_point_angle(end_point,obstacle)
-        # ang_diff = find_ang_diff(ang_start,ang_end)
         ang_diff = graph.get_edge_ang(start_id,end_id)
         if graph.is_edge_CW(start_id,end_id) == True:
             ang_diff = -ang_diff
@@ -457,8 +473,6 @@ class visibility_graph_generator:
         self.vis_axs.legend()
 
     def plot_shortest_path(self,test_num):
-        #TODO once I have visibility graph data I will make the plot
-        node_points = []
         graph = self.graphs_memory[test_num]
         for idx,node_id in enumerate(graph.opt_path):
             if node_id == 'end': # reached end of path
@@ -508,6 +522,7 @@ def append_dict(dict_in,item):
     dict_in[num_keys] = item
 
 def remove_list_item(item,list_in):
+    #TODO this function might not work
     # removes obstacle from obstacle list without modifying original obstacle_list
     new_obs_list = list_in[:]
     new_obs_list.remove(item)

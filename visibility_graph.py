@@ -327,8 +327,8 @@ class visibility_graph_generator:
         self.num_col = 8 #TODO this should be equal to 4*num_obs + 4 (start_x start_y end_x end_Y (radius center_x center_y label))
         #TODO determine if using np array is the best way to ouptut the data
         #TODO num_col should be determined based on the graph and how many obstacles it has or it should be based on the maximum size we want for our neural net
-        self.vis_data = np.array([],dtype = np.double).reshape(0,self.num_col) # formatted start_x, start_y, end_x, end_y, direction label
-        self.vis_df = pd.DataFrame(columns = self.df_columns) #unsure whether to use dataframe or array
+        # self.vis_data = np.array([],dtype = np.double).reshape(0,self.num_col) #TODO delete if new data storage method is faster
+        # self.vis_df = pd.DataFrame(columns = self.df_columns) #unsure whether to use dataframe or array
 
         # variables for plotting
         self.axis_xlim = [0, 30] # fixed graph axis limits, will set to be size for floor
@@ -347,11 +347,10 @@ class visibility_graph_generator:
         self.vis_axs.grid(visible=True)
         self.vis_axs.set_aspect('equal')
 
-    #TODO add method for updating obastcles list when needed
-
     #vis graph methods
     def run_test(self,start_list,end_list,obstacle_list):
         # main function that creates training data for start/end points
+        self.init_data_memory(start_list,end_list)
         ii = 0
         for start in start_list:
             for end in end_list:
@@ -363,23 +362,32 @@ class visibility_graph_generator:
                 graph.create_pw_opt_path_func()
                 labels = graph.gen_obs_labels()
                 obs_att = graph.get_obs_prop()
-                self.record_result(start,end,obs_att,labels)
+                self.record_result(start,end,obs_att,labels,ii)
                 # self.store_vis_graph(graph)
                 if self.debug:
                     if ii % 1000 == 0: print(f'completed {ii} our of {len(start_list)*len(end_list)}')
                     ii += 1
-                    
 
     def store_vis_graph(self,graph):
+        # when debugging different graph configurations
         append_dict(self.graphs_memory,graph)
    
     ## output methods
-    def record_result(self,start,end,obstacle_att,direction_labels):
+    def init_data_memory(self,start_list,end_list):
+        nstart = len(start_list)
+        nend = len(end_list)
+        ndata = nstart*nend
+        # self.vis_data = np.array([],dtype = np.double).reshape(ndata,self.num_col)
+        self.vis_data = np.empty((ndata,self.num_col),dtype = np.double)
+
+    def record_result(self,start,end,obstacle_att,direction_labels,idx):
         # result_df = pd.DataFrame()
         # self.vis_df = pd.concat([self.vis_df, result_df])
         label_values = [label.value for label in direction_labels] #use value as labels are enums
-        results_array = np.array([start.x, start.y, end.x, end.y,*obstacle_att, *label_values]).reshape(1,self.num_col) # direction label of 1 is up and 0 is down
-        self.vis_data = np.concatenate([self.vis_data, results_array])
+        # results_array = np.array([start.x, start.y, end.x, end.y,*obstacle_att, *label_values]).reshape(1,self.num_col) # direction label of 1 is up and 0 is down
+        # self.vis_data = np.concatenate([results_array,self.vis_data])
+        results_array = [start.x, start.y, end.x, end.y,*obstacle_att, *label_values]# direction label of 1 is up and 0 is down
+        self.vis_data[idx,:] = results_array
 
     def output_csv(self,file_name):
         # output training data to file

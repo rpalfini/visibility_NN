@@ -54,7 +54,7 @@ print(f"created the data in {toc - tic:0.4f} seconds")
 # vis_graph_one_obst.plot_full_vis_graph(0,"env 1_0")
 # vis_graph_one_obst.show_graph()
 
-vis_graph_one_obst.output_csv('2022_10_16one_obst data_large')
+vis_graph_one_obst.output_csv('2022_10_17one_obst data_large')
 # vis_graph_one_obst.save_plot_image('sol_r=1')
 
 

@@ -368,7 +368,7 @@ class visibility_graph_generator:
                 labels = graph.gen_obs_labels()
                 obs_att = graph.get_obs_prop()
                 self.record_result(start,end,obs_att,labels)
-                self.store_vis_graph(graph)
+                # self.store_vis_graph(graph)
                 if self.debug:
                     if ii % 1000 == 0: print(f'completed {ii} our of {len(start_list)*len(end_list)}')
                     ii += 1

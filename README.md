@@ -7,3 +7,8 @@ It creates data files outputted in the form [start_x, start_y,end_x,end_y, obsta
 where we have 1:n obstacles.
 
 Label meaning is defined in vis_graph_enum.py
+
+Dependencies:
+1. pip install bidict
+2. numpy
+3. pandas (not used currently)

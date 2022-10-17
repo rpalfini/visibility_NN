@@ -1,7 +1,3 @@
-from tkinter import E
-from tracemalloc import start
-from turtle import st
-from unicodedata import is_normalized
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -52,7 +48,7 @@ class vis_graph:
 
     def __init__(self,start,end,obstacles):
         self.node_dict = bidict({}) # stores the nodes as associated with each point, bidict allows lookup in both directions
-        self.vis_graph = {} # this is a graph that stores the nodes and their edge distances
+        self.vis_graph = {} #TODO this shouldn't have the class name # this is a graph that stores the nodes and their edge distances
         self.edge_type_dict = {} # matches the format of vis_graph but only records if edge is surfing or hugging for plotting purposes
         self.node_obst_dict = {} # keeps track of which obstacle each node is on, adding this to make plotting arcs
         self.pw_opt_func = {} # record parameters of piecewise function for label evaulation

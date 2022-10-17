@@ -35,10 +35,4 @@ class circle(param_func):
             return y + self.params['y']
         else:
             return -y + self.params['y']
-
-class fart(param_func):
-    
-    def __init__(self, ftype):
-        super().__init__(ftype)
-
         

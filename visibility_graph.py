@@ -9,10 +9,11 @@ import dijkstra as dijk
 from bidict import bidict
 from vis_graph_enum import *
 import param_func as pf
+import os
 
 
 class point:
-    key_precision = 3
+    key_precision = 6
 
     def __init__(self,point_coord):
         self.x = point_coord[0]
@@ -221,7 +222,7 @@ class vis_graph:
         return self.obstacle_labels
 
     def get_obs_prop(self):
-        '''Outputs list of obs centers in order of labels, with each tuple (center_x, center_y, radius)'''
+        '''Outputs list of obs centers in order of labels, in order x,y,r for each object'''
         # used for recording results
         prop_list = [x.output_prop() for x in self.obstacles]
         output_list = []
@@ -355,6 +356,7 @@ class visibility_graph_generator:
     #vis graph methods
     def run_test(self,start_list,end_list,obstacle_list):
         # main function that creates training data for start/end points
+        ii = 0
         for start in start_list:
             for end in end_list:
                 graph = vis_graph(start,end,obstacle_list) #TODO calculate obstacle nodes before hand
@@ -367,9 +369,10 @@ class visibility_graph_generator:
                 obs_att = graph.get_obs_prop()
                 self.record_result(start,end,obs_att,labels)
                 self.store_vis_graph(graph)
-                # store and reset obstacles
-                # self.clear_node_dict()
-                # self.clear_obst_nodes()
+                if self.debug:
+                    if ii % 1000 == 0: print(f'completed {ii} our of {len(start_list)*len(end_list)}')
+                    ii += 1
+                    
 
     def store_vis_graph(self,graph):
         append_dict(self.graphs_memory,graph)
@@ -384,7 +387,28 @@ class visibility_graph_generator:
 
     def output_csv(self,file_name):
         # output training data to file
-        np.savetxt(file_name+'.csv', self.vis_data, delimiter=",")
+        response_needed = True
+        fname = file_name+'.csv'
+        # attempt to prevent accidental file overwrites
+        if os.path.exists(fname):
+            while response_needed:
+                ans = input('file name already exists, overwrite? (y/n)')
+                if ans == 'y':
+                    np.savetxt(fname, self.vis_data, delimiter=",")
+                    response_needed = False
+                elif ans == 'n':
+                    new_name = input('new file name?')
+                    new_fname = new_name+'.csv'
+                    if os.path.exists(new_fname):
+                        print('that name exists already too...')
+                    else:
+                        np.savetxt(new_name+'.csv',self.vis_data, delimiter=",")
+                        response_needed = False
+                else:
+                    print('invalid response try again')
+
+        else:
+            np.savetxt(fname, self.vis_data, delimiter=",")
 
     ## plot viewer methods
     def plot_env(self,test_num,title=None):
@@ -501,22 +525,6 @@ class visibility_graph_generator:
         # creates .png of visibility graph
 
 # global methods
-def init_points(point_list):
-    point_obj = []
-    for p in point_list:
-        point_val = point(p)
-        point_obj.append(point_val)
-    return point_obj
-
-def init_obs(obs_list,radius):
-    #TODO This only allows for one obstacle radius size
-    obs_loc = init_points(obs_list)
-    obs_obj = []
-    for obs in obs_loc:
-        obs_val = obstacle(radius,obs)
-        obs_obj.append(obs_val)
-    return obs_obj
-
 def append_dict(dict_in,item):
     num_keys = len(dict_in)
     dict_in[num_keys] = item
@@ -580,3 +588,33 @@ def vec_sub(p1,p2):
 def vec_dot(p1,p2):
     p3 = p1.x*p2.x + p1.y*p2.y
     return p3
+
+# initialization functions
+def init_points(point_list):
+    point_obj = []
+    for p in point_list:
+        point_val = point(p)
+        point_obj.append(point_val)
+    return point_obj
+
+def init_obs(obs_list,radius):
+    #TODO This only allows for one obstacle radius size
+    obs_loc = init_points(obs_list)
+    obs_obj = []
+    for obs in obs_loc:
+        obs_val = obstacle(radius,obs)
+        obs_obj.append(obs_val)
+    return obs_obj
+
+def find_test_range(obstacle_list):
+    prop_list = [obs.output_prop() for obs in obstacle_list]
+    obs_min_x = [prop[0]-prop[2] for prop in prop_list]
+    obs_max_x = [prop[0]+prop[2] for prop in prop_list]
+    return min(obs_min_x),max(obs_max_x)
+
+def get_list_points(x,y):
+    grid_x,grid_y = np.meshgrid(x,y)
+    grid = np.vstack([grid_x.ravel(),grid_y.ravel()])
+    grid = grid.tolist()
+    grid = list(zip(*grid))
+    return grid

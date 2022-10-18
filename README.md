@@ -24,4 +24,5 @@ Label meaning is defined in vis_graph_enum.py
 9. Create obstacle superclass to generalize obstacle types, enabling us to use other shapes besides circles _stretch goal_
 10. Adding functionality to enable overlapping obstacles
 11. Any other helpful features mentioned in [circular obstacle pathfinding guide](https://redblobgames.github.io/circular-obstacle-pathfinding/)
-12. Adding profiler to speed up data generation
+12. Adding profiler to speed up data generation.
+13. Testing if removing plot object from generator improves performance.

@@ -603,9 +603,8 @@ def init_points(point_list):
 
 def init_obs(obs_list,radius):
     #TODO This only allows for one obstacle radius size
-    obs_loc = init_points(obs_list)
     obs_obj = []
-    for obs in obs_loc:
+    for obs in obs_list:
         obs_val = obstacle(radius,obs)
         obs_obj.append(obs_val)
     return obs_obj

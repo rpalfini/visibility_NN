@@ -11,6 +11,12 @@ if os.name == 'nt':
 
 batch = False
 
+# create obstacle list
+# radius1 = 5
+radius1 = 6
+obst_locations = [(13,10)]
+obstacle_list = init_obs(obst_locations,radius1)
+obst_locations = [(18,24)]
 if not batch:
     start_vals = [(3,9)]
     # start_vals = [(3,9),(7,17)]
@@ -18,11 +24,7 @@ if not batch:
     # radius1 = 1 #obstacle radius
     end_vals = [(23,9)]
     # end_vals = [(23,9),(19,5)]
-    # radius1 = 5
-    radius1 = 6
-
-    # obst_locations = [(13,10)]
-    obst_locations = [(18,24)]
+    
 
     #TODO what does specifying the dtype=object when creating the ndarray
     # trying out large data file
@@ -33,8 +35,7 @@ if not batch:
     end_list = init_points(end_vals)
     # obst_list = init_points(obst_locations)
 
-    # create obstacle list
-    obstacle_list = init_obs(obst_locations,radius1)
+    
 else:
     # Trying batch start/end vals
     tol = 0.01

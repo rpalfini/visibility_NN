@@ -18,11 +18,14 @@ Label meaning is defined in vis_graph_enum.py
 3. Update dijkstra and priodict to pop keys based on cost + euclidean distance heuristic (i.e. A*)
 4. Delayed edge generation based on A* _stretch goal_
 5. Many #TODOS
-6. Implement NN for navigation prediction (Robby)
+6. Implement NN for navigation prediction for one obstacle (Robby)
 7. Update vis_graph.build_vis_graph() to generate obstacle to obstacle surfing edges once before surfing edges between start and end point are evaluated.  Ideally when a new vis_graph is initialized, it should have obstacle objects that already have the surfing edge nodes and associated graph attributes initialized correctly.
 8. Create test file with test_cases needed to verify the shortest_path calculation is working correctly. (I have been manually testing during implementation but do not have a file that can test if full algorithm is working with test cases)
 9. Create obstacle superclass to generalize obstacle types, enabling us to use other shapes besides circles _stretch goal_
 10. Adding functionality to enable overlapping obstacles
 11. Any other helpful features mentioned in [circular obstacle pathfinding guide](https://redblobgames.github.io/circular-obstacle-pathfinding/)
 12. Adding profiler to speed up data generation.
-13. Testing if removing plot object from generator improves performance.
+13. Testing if removing plot object from generator improves performance. Would move plot functionality to child class.
+14. ~~Add code to prevent computer from sleeping until data generated.~~
+15. Code to combine created csv data files.
+16. Implement NN for navigation prediction for multiple obstacles.

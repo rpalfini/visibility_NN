@@ -10,8 +10,8 @@ class param_func:
     def view(self):
         return self.params
 
-    def evaluate(self,x):
-        return
+    def evaluate(self):
+        pass
 
 class line(param_func):
     def __init__(self,m,b):

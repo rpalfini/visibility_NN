@@ -368,7 +368,7 @@ class visibility_graph_generator:
                     if ii % 1000 == 0: print(f'completed {ii} our of {len(start_list)*len(end_list)}')
                     ii += 1
 
-    def store_vis_graph(self,graph):
+    def store_vis_graph(self,graph): #TODO move this to child class that is generator + plotter
         # when debugging different graph configurations
         append_dict(self.graphs_memory,graph)
    

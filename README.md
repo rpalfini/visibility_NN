@@ -26,6 +26,7 @@ Label meaning is defined in vis_graph_enum.py
 11. Any other helpful features mentioned in [circular obstacle pathfinding guide](https://redblobgames.github.io/circular-obstacle-pathfinding/)
 12. Adding profiler to speed up data generation.
 13. Testing if removing plot object from generator improves performance. Would move plot functionality to child class.
-14. ~~Add code to prevent computer from sleeping until data generated.~~
-15. Code to combine created csv data files.
-16. Implement NN for navigation prediction for multiple obstacles.
+14. Update path finding to deal with edges with infinite slope.
+15. ~~Add code to prevent computer from sleeping until data generated.~~
+16. Code to combine created csv data files.
+17. Implement NN for navigation prediction for multiple obstacles.

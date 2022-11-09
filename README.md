@@ -30,3 +30,4 @@ Label meaning is defined in vis_graph_enum.py
 15. ~~Add code to prevent computer from sleeping until data generated.~~
 16. Code to combine created csv data files.
 17. Implement NN for navigation prediction for multiple obstacles.
+18. Add ability to save data as .npy files

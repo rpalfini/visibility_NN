@@ -7,7 +7,6 @@ from vis_graph_enum import *
 import param_func as pf
 import os
 
-
 class point:
     key_precision = 6
 
@@ -601,11 +600,14 @@ def init_points(point_list):
         point_obj.append(point_val)
     return point_obj
 
-def init_obs(obs_list,radius):
+def init_obs(obs_list,radius_list):
     #TODO This only allows for one obstacle radius size
+    if len(obs_list) != len(radius_list):
+        raise('obstacle list and radius list different lengths')
     obs_loc = init_points(obs_list)
+    obs_data = zip(obs_loc,radius_list)
     obs_obj = []
-    for obs in obs_loc:
+    for obs,radius in obs_data:
         obs_val = obstacle(radius,obs)
         obs_obj.append(obs_val)
     return obs_obj

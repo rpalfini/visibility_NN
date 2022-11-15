@@ -58,7 +58,7 @@ else:
 
 
 tic = time.perf_counter()
-vis_graph_one_obst = visibility_graph_generator(obstacle_list)
+vis_graph_one_obst = visibility_graph_generator()
 
 vis_graph_one_obst.run_test(start_list,end_list,obstacle_list)
 toc = time.perf_counter()

@@ -92,8 +92,8 @@ class vis_graph:
             self.add_node2obstacle(obstacle,cand_node)
 
     def vis_point_obst(self,start_node,obstacle,is_end_node = False):
-        # calculates visibility graph node to obstacle
-        # is_end_node sets the order of edge storage
+        '''calculates visibility graph node to obstacle,
+        is_end_node sets the order of edge storage'''
         center_dist = self.euclid_dist(start_node,obstacle.center_loc) # distance from obstacle center to point
         theta = np.arccos(obstacle.radius/center_dist)
         phi = self.rotation_to_horiz(obstacle.center_loc,start_node)

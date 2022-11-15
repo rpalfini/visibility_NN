@@ -1,5 +1,17 @@
 from visibility_graph import *
-import pandas as pd
+import time
+import WindowsInhibitor as wi #prevents computer from sleeping while generating data
+from datetime import date
+
+
+osSleep = None
+
+if os.name == 'nt':
+    osSleep = wi.WindowsInhibitor()
+    osSleep.inhibit()
+
+batch = False
+
 
 start_vals = [(1,9)]
 end_vals = [(29,9)]
@@ -17,14 +29,23 @@ end_list = init_points(end_vals)
 # create obstacle list
 obstacle_list = init_obs(obst_locations,radius1)
 
-vis_graph_eight_obst = visibility_graph_generator(obstacle_list)
+tic = time.perf_counter()
+
+vis_graph_eight_obst = visibility_graph_generator()
 vis_graph_eight_obst.run_test(start_list,end_list,obstacle_list)
 vis_graph_eight_obst.plot_solution(0,"env 8_0")
+
+toc = time.perf_counter()
+print(f"created the data in {toc - tic:0.4f} seconds")
 
 # vis_graph_eight_obst.output_csv('test_out')
 # vis_graph_eight_obst.save_plot_image('eight_obs_fig2')
 
-plt.show()
+today = date.today()
+vis_graph_eight_obst.output_csv(today.strftime("%Y_%m_%d")+'one_obst data_large_1')
 
+# plt.show()
 
+if osSleep:
+    osSleep.uninhibit()
 

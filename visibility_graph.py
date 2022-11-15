@@ -123,7 +123,8 @@ class vis_graph:
 
     def vis_obst_obst(self,obstacle):
         # calculates visibility graph tangent lines between obstacles
-        
+  
+        center_dist = self.euclid_dist(start_node,obstacle.center_loc)
         return
 
     def is_node_vis(self,start_node,end_node):

@@ -18,7 +18,6 @@ batch = False
 radius1 = [6]
 obst_locations = [(13,10)]
 obstacle_list = init_obs(obst_locations,radius1)
-obst_locations = [(18,24)]
 if not batch:
     start_vals = [(3,9)]
     # start_vals = [(3,9),(7,17)]

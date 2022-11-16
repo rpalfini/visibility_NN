@@ -7,6 +7,7 @@ from bidict import bidict
 from vis_graph_enum import *
 import param_func as pf
 import os
+import copy
 
 class point:
     key_precision = 6
@@ -40,40 +41,47 @@ class obstacle:
     def clear_nodes(self):
         self.node_list = []
 
+    def view_nodes(self):
+        print(f'Nodes in {id(self)}:')
+        for node in self.node_list:
+            print(f'({node.x},{node.y})')
+
     def view(self):
         print(f'(x,y): ({self.center_x},{self.center_y})\nradius: {self.radius}')
 
 class vis_graph:
-    debug = False
+    debug = True
 
-    def __init__(self,start,end,obstacles):
+    def __init__(self,obstacles):
         self.node_dict = bidict({}) # stores the nodes as associated with each point, bidict allows lookup in both directions
         self.vis_graph = {} #TODO this shouldn't have the class name # this is a graph that stores the nodes and their edge distances
         self.h_graph = {} # Distance from Key Node to Final Node, normally. May also be used for any other heuristic cost
         self.edge_type_dict = {} # matches the format of vis_graph but only records if edge is surfing or hugging for plotting purposes
         self.node_obst_dict = {} # keeps track of which obstacle each node is on, adding this to make plotting arcs
         self.pw_opt_func = {} # record parameters of piecewise function for label evaulation
-        self.obstacles = obstacles
+        self.obstacles = obstacles        
+
+    def init_start_end(self,start,end):
         self.start = start
         self.end = end
         # add start and end to node dictionary
         self.add_node2dict(start,"start")
         self.add_node2dict(end,"end")
 
-    def build_vis_graph(self):
-        # builds tangent visibility graph of obstacles for a start/end pair
+    def make_obs_vis_graph(self):
+        '''creates surfing edges for obstacle to obstacle connections'''
+        for obstacle in self.obstacles:
+            self.vis_obst_obst(obstacle)
+
+    def build_vis_graph(self,start,end):
+        '''builds tangent visibility graph of obstacles for a start/end pair'''
+        self.init_start_end(start,end)
         # check if start/end is visible and add to graph if it is
         self.process_cand_node(self.start,self.end,obstacle=None) #TODO if start/end is visible, no need to create the rest of graph, just go to creating labels
         # creates surfing edges for point to obstacle connections
         for obstacle in self.obstacles:
             self.vis_point_obst(self.start,obstacle)
             self.vis_point_obst(self.end,obstacle,is_end_node = True)
-
-        # creates surfing edges for obstacle to obstacle connections
-        #TODO change so we only calculate obstacle vis_graph once for each environment
-        for obstacle in self.obstacles:
-            d = 0
-            # self.vis_obst_obst(obstacle)
 
         # creates hugging edges on obstacles, this must be done after start/end nodes added
         for obstacle in self.obstacles:
@@ -127,10 +135,11 @@ class vis_graph:
         dist = np.sqrt((point1.x - point2.x)**2 + (point1.y - point2.y)**2)
         return dist
 
-    def vis_obst_obst(self,obstacle):
-        # calculates visibility graph tangent lines between obstacles
-  
-        center_dist = self.euclid_dist(start_node,obstacle.center_loc)
+    def vis_obst_obst(self,obst):
+        '''calculates visibility graph tangent lines between obstacles'''
+        for next_obst in self.obstacle:
+            #TODO need to determine if obstacle is itself, maybe give warning if multiple obstacles with same location
+            center_dist = self.euclid_dist(obst.center_loc,next_obst.center_loc)
         return
 
     def is_node_vis(self,start_node,end_node):
@@ -365,12 +374,16 @@ class visibility_graph_generator:
         # main function that creates training data for start/end points
         self.init_data_memory(start_list,end_list)
         ii = 0
+        base_graph = vis_graph(obstacle_list)
+        base_graph.make_obs_vis_graph()
         for start in start_list:
             for end in end_list:
                 graph = vis_graph(start,end,obstacle_list) #TODO calculate obstacle nodes before hand
                 graph.clear_obs_nodes()
-                graph.build_vis_graph()
                 graph.build_h_graph()
+                graph = copy.deepcopy(base_graph) #TODO test that this code works as intended for creating copies, maybe check id
+                # graph.clear_obs_nodes() #TODO verify that removing this doesn't break anything :)
+                graph.build_vis_graph(start,end)
                 # method that calculates shortest distance, djikstra algo
                 if (algorithm == "AStar"):
                     print("Utilizing A-Star...")

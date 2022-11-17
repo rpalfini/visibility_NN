@@ -7,6 +7,7 @@ from vis_graph_enum import *
 import param_func as pf
 import os
 import copy
+import warnings
 
 class point:
     key_precision = 6
@@ -28,17 +29,17 @@ class obstacle:
         self.center_x = center_loc.x
         self.center_y = center_loc.y
         self.center_loc = center_loc # this should be a point object
-        self.node_list = []
+        self.node_list = set() #using set as there shouldn't be more than one of a given node
 
     def add_node(self,point):
-        self.node_list.append(point)
+        self.node_list.add(point)
 
     def output_prop(self):
         '''Outputs the obstacle properties (x,y,radius)'''
         return self.center_x, self.center_y, self.radius
 
-    def clear_nodes(self):
-        self.node_list = []
+    def clear_nodes(self): #TODO delete this method if copy code is working as intended
+        self.node_list = set()
 
     def view_nodes(self):
         print(f'Nodes in {id(self)}:')
@@ -57,7 +58,11 @@ class vis_graph:
         self.edge_type_dict = {} # matches the format of vis_graph but only records if edge is surfing or hugging for plotting purposes
         self.node_obst_dict = {} # keeps track of which obstacle each node is on, adding this to make plotting arcs
         self.pw_opt_func = {} # record parameters of piecewise function for label evaulation
-        self.obstacles = obstacles        
+        self.obstacles = obstacles
+
+    def view_vis_graph(self):
+        for key,value in recursive_items(self.vis_graph):
+            print(key,value)
 
     def init_start_end(self,start,end):
         self.start = start
@@ -258,11 +263,11 @@ class vis_graph:
     def add_node2dict(self,point,label=None):
         if label == None:
             num_keys = len(self.node_dict)
-            self.init_graph_dict(point,num_keys)
+            self.init_graph_dict_entry(point,num_keys)
         else:
-            self.init_graph_dict(point,label)
+            self.init_graph_dict_entry(point,label)
 
-    def init_graph_dict(self,point,node_id):
+    def init_graph_dict_entry(self,point,node_id):
         self.node_dict[node_id] = point.coord_key() # add node to dictionary
         self.vis_graph[node_id] = {} # initialize node in graph
         self.edge_type_dict[node_id] = {} # type of edges for plotting, not included in vis_graph so that I wouldn't have to mess with dijkstra or path finding interface
@@ -322,6 +327,11 @@ class vis_graph:
     def clear_node_dict(self): #TODO delte this method, no need as graph objects are reinitialized
         self.node_dict = bidict({})
         self.vis_graph = {}
+    
+    def warn_close_nodes(self,point1,point2):
+        diff = vec_sub(point1,point2)
+        if abs(diff.x) < 0.001 or abs(diff.y) < 0.001:
+            warnings.warn('Nodes are very close in value')
 
 class visibility_graph_generator:
     #TODO look into pickle for saving vis_graph_gen objects
@@ -603,6 +613,14 @@ def vec_sub(p1,p2):
 def vec_dot(p1,p2):
     p3 = p1.x*p2.x + p1.y*p2.y
     return p3
+
+def recursive_items(dictionary):
+    for key, value in dictionary.items():
+        if type(value) is dict:
+            yield (key, value)
+            yield from recursive_items(value)
+        else:
+            yield (key, value)
 
 # initialization functions
 def init_points(point_list):

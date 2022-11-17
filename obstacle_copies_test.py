@@ -43,7 +43,7 @@ elif test_num == 3:
     graph2.obstacles[0].add_node(point([2,4]))
 
 else:
-    print("you are too old to party")
+    print("invalid test_num")
 
 graph1.obstacles[0].view_nodes()
 graph2.obstacles[0].view_nodes()

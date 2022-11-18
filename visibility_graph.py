@@ -97,12 +97,12 @@ class vis_graph:
             edge_length = self.euclid_dist(start_node,cand_node)
             if self.is_node_new(cand_node):
                 self.add_node2dict(cand_node)
+                self.add_node2obstacle(obstacle,cand_node)
             # if start_node is an end_node, then add to graph vertically
             if is_end_node is False: 
                 self.add_edge2graph(start_node,cand_node,edge_length)
             else:
                 self.add_edge2graph(cand_node,start_node,edge_length)
-            self.add_node2obstacle(obstacle,cand_node)
 
     def vis_point_obst(self,start_node,obstacle,is_end_node = False):
         '''calculates visibility graph node to obstacle,

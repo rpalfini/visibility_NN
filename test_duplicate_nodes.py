@@ -5,15 +5,7 @@ import copy
 # to an obstacle, is that bad and is the vis_graph ok
 
 
-# def recursive_items(dictionary):
-#     for key, value in dictionary.items():
-#         if type(value) is dict:
-#             yield (key, value)
-#             yield from recursive_items(value)
-#         else:
-#             yield (key, value)
-
-#TODO: i need to modify obstacle so that it doesnt add more nodes to obstacle than there are in the node dictionary
+#TODO: I need to modify obstacle so that it doesnt add more nodes to obstacle than there are in the node dictionary
 
 test_num = 2
 print(f'test_num is {test_num}')

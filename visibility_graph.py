@@ -73,8 +73,10 @@ class vis_graph:
 
     def make_obs_vis_graph(self):
         '''creates surfing edges for obstacle to obstacle connections'''
+        remaining_obst = self.obstacles # using this to prevent calculating nodes between obstacles twice
         for obstacle in self.obstacles:
-            self.vis_obst_obst(obstacle)
+            remaining_obst.remove(obstacle)
+            self.vis_obst_obst(obstacle,remaining_obst)
 
     def build_vis_graph(self,start,end):
         '''builds tangent visibility graph of obstacles for a start/end pair'''
@@ -116,6 +118,58 @@ class vis_graph:
         self.process_cand_node(start_node,cand_node1,obstacle,is_end_node)
         self.process_cand_node(start_node,cand_node2,obstacle,is_end_node)
     
+    def vis_obst_obst(self,obst,remaining_obst):
+        '''calculates visibility graph tangent lines between obstacles'''
+        for next_obst in remaining_obst:
+            diff = vec_sub(obst.center_loc,next_obst.center_loc)
+            if diff.x > 0:
+                obst_A = obst
+                obst_B = next_obst
+            elif diff.x < 0:
+                obst_A = next_obst
+                obst_B = obst
+            else:
+                warnings.warn('multiple obstacles have same x-coordinate, skipping vis graph')
+                continue
+            
+            if id(obst) == id(next_obst): # dont calculate visibility with itself
+                raise('Obstacle not deleted correctly from list')
+            
+            self.internal_bitangents(obst_A,obst_B)
+            self.external_bitangents(obst_A,obst_B)
+            # loops through the new nodes with process_cand_node
+        
+
+    def internal_bitangents(self,obst_A,obst_B):
+        '''Finds internal bitangents, obstacle A should be to the left of obstacle B on x axis'''
+        center_dist = self.euclid_dist(obst_A.center_loc,obst_B.center_loc)
+        theta = np.arccos((obst_A.radius+obst_B.radius)/center_dist)
+        phi = self.rotation_to_horiz(obst_A.center_loc,obst_B.center_loc)
+        cand_nodes = []
+
+        # cand_nodes
+        cand_nodes.append(point(self.direction_step(obstacle.center_loc,obstacle.radius,phi + theta))) 
+        cand_node2 = point(self.direction_step(obstacle.center_loc,obstacle.radius,phi - theta)) #candidate node2
+        self.process_cand_node(start_node,cand_node1,obstacle,is_end_node)
+        self.process_cand_node(start_node,cand_node2,obstacle,is_end_node)
+
+    def external_bitangents(self,obst_A,obst_B):
+        # need to compare obstacle radii
+        if obst_A.radius > obst_B.radius:
+            return
+        pass
+
+    def is_node_vis(self,start_node,end_node):
+        # checks if visibility line intersects other obstacles
+        is_valid = True
+        a,b,c = planar_line_form(start_node,end_node)
+        #TODO make sure that obstacle we are touching doesnt result in non-visibility
+        for obstacle in self.obstacles:
+            if check_collision(a,b,c,obstacle.center_x,obstacle.center_y,obstacle.radius):
+                is_valid = False
+                break
+        return is_valid
+
     def direction_step(self,start,dist,angle):
         # calculates tangent node location on an obstacle
         x = dist*np.cos(angle) + start.x
@@ -133,24 +187,6 @@ class vis_graph:
         # calculates euclidean distance b/T two points
         dist = np.sqrt((point1.x - point2.x)**2 + (point1.y - point2.y)**2)
         return dist
-
-    def vis_obst_obst(self,obst):
-        '''calculates visibility graph tangent lines between obstacles'''
-        for next_obst in self.obstacle:
-            #TODO need to determine if obstacle is itself, maybe give warning if multiple obstacles with same location
-            center_dist = self.euclid_dist(obst.center_loc,next_obst.center_loc)
-        return
-
-    def is_node_vis(self,start_node,end_node):
-        # checks if visibility line intersects other obstacles
-        is_valid = True
-        a,b,c = planar_line_form(start_node,end_node)
-        #TODO make sure that obstacle we are touching doesnt result in non-visibility
-        for obstacle in self.obstacles:
-            if check_collision(a,b,c,obstacle.center_x,obstacle.center_y,obstacle.radius):
-                is_valid = False
-                break
-        return is_valid
 
     def make_hugging_edges(self,obstacle):
         # this function goes through obstacles to create hugging edge node connections
@@ -375,8 +411,8 @@ class visibility_graph_generator:
         base_graph.make_obs_vis_graph()
         for start in start_list:
             for end in end_list:
-                graph = copy.deepcopy(base_graph) #TODO test that this code works as intended for creating copies, maybe check id
-                # graph.clear_obs_nodes() #TODO verify that removing this doesn't break anything :)
+                graph = copy.deepcopy(base_graph)
+                # graph.clear_obs_nodes() #TODO verify removing this doesnt break the code
                 graph.build_vis_graph(start,end)
                 # method that calculates shortest distance, djikstra algo
                 graph.find_shortest_path()

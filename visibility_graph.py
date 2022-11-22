@@ -104,13 +104,29 @@ class vis_graph:
         if self.is_node_vis(start_node,cand_node):
             edge_length = self.euclid_dist(start_node,cand_node)
             if self.is_node_new(cand_node):
+    def update_node_props(self,cand_node,obstacle):
+        if self.is_node_new(cand_node):
                 self.add_node2dict(cand_node)
                 self.add_node2obstacle(obstacle,cand_node)
+
+    def process_cand_node(self,start_node,cand_node,obstacle,is_end_node = False):
+        '''this method adds cand_node, and edge to node dictionary and vis_graph, if the node is visible.  
+        It also attaches cand_node to obstacle'''
+        if self.is_node_vis(start_node,cand_node):
+            self.update_node_props(self,cand_node,obstacle)
             # if start_node is an end_node, then add to graph vertically
+            edge_length = self.euclid_dist(start_node,cand_node)
             if is_end_node is False: 
                 self.add_edge2graph(start_node,cand_node,edge_length)
             else:
                 self.add_edge2graph(cand_node,start_node,edge_length)
+
+    def process_cand_edge(self,node_obst1,node_obst2):
+        '''tags nodes to appropriate obstacles, inputs are tuple of cand_node and its obstacle'''
+        self.process_cand_node(node_obst1[0],node_obst2[0],node_obst2[1]) #tags node 2 to obst2 and creates edge in graph
+        if self.is_node_vis(node_obst1[0],node_obst2[0]):
+            self.update_node_props(node_obst1[0],node_obst1[1]) #tags node1 to obst 1
+        
 
     def vis_point_obst(self,start_node,obstacle,is_end_node = False):
         '''calculates visibility graph node to obstacle,
@@ -151,14 +167,16 @@ class vis_graph:
         center_dist = self.euclid_dist(obst_A.center_loc,obst_B.center_loc)
         theta = np.arccos((obst_A.radius+obst_B.radius)/center_dist)
         phi = self.rotation_to_horiz(obst_A.center_loc,obst_B.center_loc)
-        cand_nodes = []
 
         # cand_nodes
-        cand_nodes.append(point(self.direction_step(obstacle.center_loc,obstacle.radius,phi + theta))) 
-        cand_node2 = point(self.direction_step(obstacle.center_loc,obstacle.radius,phi - theta)) #candidate node2
-        self.process_cand_node(start_node,cand_node1,obstacle,is_end_node)
-        self.process_cand_node(start_node,cand_node2,obstacle,is_end_node)
-
+        cand_nodeA1 = point(self.direction_step(obst_A.center_loc,obst_A.radius,phi + theta))
+        cand_nodeA2 = point(self.direction_step(obst_A.center_loc,obst_A.radius,phi - theta))
+        cand_nodeB1 = point(self.direction_step(obst_B.center_loc,obst_B.radius,phi + theta))
+        cand_nodeB2 = point(self.direction_step(obst_B.center_loc,obst_B.radius,phi - theta))
+        
+        self.process_cand_edge((cand_nodeB2,obst_B),(cand_nodeA1,obst_A))    
+        self.process_cand_edge((cand_nodeB1,obst_B),(cand_nodeA2,obst_A))
+        
     def external_bitangents(self,obst_A,obst_B):
         # need to compare obstacle radii
         if obst_A.radius > obst_B.radius:
@@ -233,7 +251,7 @@ class vis_graph:
 
     def add_node2obstacle(self,obstacle,cand_node):
         # this method adds candidate node to obstacle object and adds obstacle to obs_node_dict
-        if obstacle != None: # if start/end connection visible
+        if obstacle != None: # if start/end connection visible #TODO: test if this is needed...
             obstacle.add_node(cand_node)
             self.tag_obstacle2node(obstacle,cand_node)
     

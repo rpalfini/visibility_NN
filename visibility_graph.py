@@ -167,41 +167,52 @@ class vis_graph:
         '''Finds internal bitangents, obstacle L should be to the left of obstacle R on x axis'''
         center_dist = self.euclid_dist(obst_L.center_loc,obst_R.center_loc)
         theta = np.arccos((obst_L.radius+obst_R.radius)/center_dist)
-        phi = self.rotation_to_horiz(obst_L.center_loc,obst_R.center_loc)
+        phi_L = self.rotation_to_horiz(obst_L.center_loc,obst_R.center_loc)
+        phi_R = self.rotation_to_horiz(obst_R.center_loc,obst_L.center_loc) # this will be phi_L - pi
+              
+        cand_nodeL1 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi_L + theta))
+        cand_nodeL2 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi_L - theta))
+        cand_nodeR1 = point(self.direction_step(obst_R.center_loc,obst_R.radius,phi_R - theta))
+        cand_nodeR2 = point(self.direction_step(obst_R.center_loc,obst_R.radius,phi_R + theta))
 
-        # cand_nodes
-        cand_nodeL1 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi + theta))
-        cand_nodeL2 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi - theta))
-        cand_nodeR1 = point(self.direction_step(obst_R.center_loc,obst_R.radius,np.pi + phi - theta))
-        cand_nodeR2 = point(self.direction_step(obst_R.center_loc,obst_R.radius,np.pi + phi + theta))
-        
+
         self.process_cand_edge((cand_nodeL1,obst_L),(cand_nodeR2,obst_R))    
         self.process_cand_edge((cand_nodeL2,obst_L),(cand_nodeR1,obst_R))
         
     def external_bitangents(self,obst_L,obst_R):
         # need to compare obstacle radii to determine angle directions
-        if obst_L.radius > obst_R.radius:
-            is_left_larger = True
-        else:
-            is_left_larger = False
+        
 
         center_dist = self.euclid_dist(obst_L.center_loc,obst_R.center_loc)
         theta = np.arccos(abs(obst_L.radius-obst_R.radius)/center_dist)
-        phi = self.rotation_to_horiz(obst_L.center_loc,obst_R.center_loc)
+        # phi = self.rotation_to_horiz(obst_L.center_loc,obst_R.center_loc)
+        # phi_L = self.rotation_to_horiz(obst_L.center_loc,obst_R.center_loc)
+        # phi_R = self.rotation_to_horiz(obst_R.center_loc,obst_L.center_loc)
+
+        if obst_L.radius > obst_R.radius:
+            # is_left_larger = True
+            phi = self.rotation_to_horiz(obst_L.center_loc,obst_R.center_loc)
+        else:
+            phi = self.rotation_to_horiz(obst_R.center_loc,obst_L.center_loc)
+            # is_left_larger = False
+
+        cand_nodeL1 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi + theta))
+        cand_nodeL2 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi - theta))
+        cand_nodeR1 = point(self.direction_step(obst_R.center_loc,obst_R.radius,phi + theta))
+        cand_nodeR2 = point(self.direction_step(obst_R.center_loc,obst_R.radius,phi - theta))
 
         # cand_nodes
-        if is_left_larger:
-            ang_diff1 = np.pi + phi - theta
-            ang_diff2 = np.pi + phi + theta
-        else:
-            ang_diff1 = phi + theta
-            ang_diff2 = phi - theta
+        # if is_left_larger:
+        #     ang_diff1 = np.pi + phi - theta
+        #     ang_diff2 = np.pi + phi + theta
+        # else:
+        #     ang_diff1 = phi + theta
+        #     ang_diff2 = phi - theta
 
-        cand_nodeL1 = point(self.direction_step(obst_L.center_loc,obst_L.radius,ang_diff1))
-        cand_nodeL2 = point(self.direction_step(obst_L.center_loc,obst_L.radius,ang_diff2))
-        cand_nodeR1 = point(self.direction_step(obst_R.center_loc,obst_R.radius,ang_diff1))
-        cand_nodeR2 = point(self.direction_step(obst_R.center_loc,obst_R.radius,ang_diff2))
-        
+        # cand_nodeL1 = point(self.direction_step(obst_L.center_loc,obst_L.radius,ang_diff1))
+        # cand_nodeL2 = point(self.direction_step(obst_L.center_loc,obst_L.radius,ang_diff2))
+        # cand_nodeR1 = point(self.direction_step(obst_R.center_loc,obst_R.radius,ang_diff1))
+        # cand_nodeR2 = point(self.direction_step(obst_R.center_loc,obst_R.radius,ang_diff2))
         
         self.process_cand_edge((cand_nodeL1,obst_L),(cand_nodeR1,obst_R))    
         self.process_cand_edge((cand_nodeL2,obst_L),(cand_nodeR2,obst_R))
@@ -227,7 +238,7 @@ class vis_graph:
         if self.debug:
             print(f'vis_graph.is_obst_between_points()')
             print(f'obstacle at ({obstacle.center_x},{obstacle.center_y})')
-            print(f'start_node at ({start_node.x},{start_node.y}')
+            print(f'start_node at ({start_node.x},{start_node.y})')
             print(f'end_node at ({end_node.x},{end_node.y}')
             print(f'is_between = {is_between}\n')
         return is_between

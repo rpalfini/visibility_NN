@@ -180,39 +180,20 @@ class vis_graph:
         self.process_cand_edge((cand_nodeL2,obst_L),(cand_nodeR1,obst_R))
         
     def external_bitangents(self,obst_L,obst_R):
-        # need to compare obstacle radii to determine angle directions
         
-
         center_dist = self.euclid_dist(obst_L.center_loc,obst_R.center_loc)
         theta = np.arccos(abs(obst_L.radius-obst_R.radius)/center_dist)
-        # phi = self.rotation_to_horiz(obst_L.center_loc,obst_R.center_loc)
-        # phi_L = self.rotation_to_horiz(obst_L.center_loc,obst_R.center_loc)
-        # phi_R = self.rotation_to_horiz(obst_R.center_loc,obst_L.center_loc)
 
+        # need to compare obstacle radii to determine angle directions
         if obst_L.radius > obst_R.radius:
-            # is_left_larger = True
             phi = self.rotation_to_horiz(obst_L.center_loc,obst_R.center_loc)
         else:
             phi = self.rotation_to_horiz(obst_R.center_loc,obst_L.center_loc)
-            # is_left_larger = False
 
         cand_nodeL1 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi + theta))
         cand_nodeL2 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi - theta))
         cand_nodeR1 = point(self.direction_step(obst_R.center_loc,obst_R.radius,phi + theta))
         cand_nodeR2 = point(self.direction_step(obst_R.center_loc,obst_R.radius,phi - theta))
-
-        # cand_nodes
-        # if is_left_larger:
-        #     ang_diff1 = np.pi + phi - theta
-        #     ang_diff2 = np.pi + phi + theta
-        # else:
-        #     ang_diff1 = phi + theta
-        #     ang_diff2 = phi - theta
-
-        # cand_nodeL1 = point(self.direction_step(obst_L.center_loc,obst_L.radius,ang_diff1))
-        # cand_nodeL2 = point(self.direction_step(obst_L.center_loc,obst_L.radius,ang_diff2))
-        # cand_nodeR1 = point(self.direction_step(obst_R.center_loc,obst_R.radius,ang_diff1))
-        # cand_nodeR2 = point(self.direction_step(obst_R.center_loc,obst_R.radius,ang_diff2))
         
         self.process_cand_edge((cand_nodeL1,obst_L),(cand_nodeR1,obst_R))    
         self.process_cand_edge((cand_nodeL2,obst_L),(cand_nodeR2,obst_R))

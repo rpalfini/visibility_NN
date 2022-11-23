@@ -95,14 +95,14 @@ class vis_graph:
 
     def update_node_props(self,cand_node,obstacle):
         if self.is_node_new(cand_node):
-                self.add_node2dict(cand_node)
-                self.add_node2obstacle(obstacle,cand_node)
+            self.add_node2dict(cand_node)
+            self.add_node2obstacle(obstacle,cand_node)
 
     def process_cand_node(self,start_node,cand_node,obstacle,is_end_node = False):
         '''this method adds cand_node, and edge to node dictionary and vis_graph, if the node is visible.  
         It also attaches cand_node to obstacle'''
         if self.is_node_vis(start_node,cand_node):
-            self.update_node_props(self,cand_node,obstacle)
+            self.update_node_props(cand_node,obstacle)
             # if start_node is an end_node, then add to graph vertically
             edge_length = self.euclid_dist(start_node,cand_node)
             if is_end_node is False: 
@@ -112,9 +112,10 @@ class vis_graph:
 
     def process_cand_edge(self,node_obst1,node_obst2):
         '''tags nodes to appropriate obstacles, inputs are tuple of cand_node and its obstacle'''
-        self.process_cand_node(node_obst1[0],node_obst2[0],node_obst2[1]) #tags node 2 to obst2 and creates edge in graph
         if self.is_node_vis(node_obst1[0],node_obst2[0]):
             self.update_node_props(node_obst1[0],node_obst1[1]) #tags node1 to obst 1
+        self.process_cand_node(node_obst1[0],node_obst2[0],node_obst2[1]) #tags node 2 to obst2 and creates edge in graph
+        
         
 
     def vis_point_obst(self,start_node,obstacle,is_end_node = False):
@@ -133,10 +134,10 @@ class vis_graph:
         '''calculates visibility graph tangent lines between obstacles'''
         for next_obst in remaining_obst:
             diff = vec_sub(obst.center_loc,next_obst.center_loc)
-            if diff.x > 0:
+            if diff.x < 0:
                 obst_A = obst
                 obst_B = next_obst
-            elif diff.x < 0:
+            elif diff.x > 0:
                 obst_A = next_obst
                 obst_B = obst
             else:
@@ -151,26 +152,49 @@ class vis_graph:
             # loops through the new nodes with process_cand_node
         
 
-    def internal_bitangents(self,obst_A,obst_B):
-        '''Finds internal bitangents, obstacle A should be to the left of obstacle B on x axis'''
-        center_dist = self.euclid_dist(obst_A.center_loc,obst_B.center_loc)
-        theta = np.arccos((obst_A.radius+obst_B.radius)/center_dist)
-        phi = self.rotation_to_horiz(obst_A.center_loc,obst_B.center_loc)
+    def internal_bitangents(self,obst_L,obst_R):
+        '''Finds internal bitangents, obstacle L should be to the left of obstacle R on x axis'''
+        center_dist = self.euclid_dist(obst_L.center_loc,obst_R.center_loc)
+        theta = np.arccos((obst_L.radius+obst_R.radius)/center_dist)
+        phi = self.rotation_to_horiz(obst_L.center_loc,obst_R.center_loc)
 
         # cand_nodes
-        cand_nodeA1 = point(self.direction_step(obst_A.center_loc,obst_A.radius,phi + theta))
-        cand_nodeA2 = point(self.direction_step(obst_A.center_loc,obst_A.radius,phi - theta))
-        cand_nodeB1 = point(self.direction_step(obst_B.center_loc,obst_B.radius,phi + theta))
-        cand_nodeB2 = point(self.direction_step(obst_B.center_loc,obst_B.radius,phi - theta))
+        cand_nodeL1 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi + theta))
+        cand_nodeL2 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi - theta))
+        cand_nodeR1 = point(self.direction_step(obst_R.center_loc,obst_R.radius,np.pi + phi - theta))
+        cand_nodeR2 = point(self.direction_step(obst_R.center_loc,obst_R.radius,np.pi + phi + theta))
         
-        self.process_cand_edge((cand_nodeB2,obst_B),(cand_nodeA1,obst_A))    
-        self.process_cand_edge((cand_nodeB1,obst_B),(cand_nodeA2,obst_A))
+        self.process_cand_edge((cand_nodeL1,obst_L),(cand_nodeR2,obst_R))    
+        self.process_cand_edge((cand_nodeL2,obst_L),(cand_nodeR1,obst_R))
         
-    def external_bitangents(self,obst_A,obst_B):
-        # need to compare obstacle radii
-        if obst_A.radius > obst_B.radius:
-            return
-        pass
+    def external_bitangents(self,obst_L,obst_R):
+        # need to compare obstacle radii to determine angle directions
+        if obst_L.radius > obst_R.radius:
+            is_left_larger = True
+        else:
+            is_left_larger = False
+
+        center_dist = self.euclid_dist(obst_L.center_loc,obst_R.center_loc)
+        theta = np.arccos(abs(obst_L.radius-obst_R.radius)/center_dist)
+        phi = self.rotation_to_horiz(obst_L.center_loc,obst_R.center_loc)
+
+        # cand_nodes
+        if is_left_larger:
+            ang_diff1 = np.pi + phi - theta
+            ang_diff2 = np.pi + phi + theta
+        else:
+            ang_diff1 = phi + theta
+            ang_diff2 = phi - theta
+
+        cand_nodeL1 = point(self.direction_step(obst_L.center_loc,obst_L.radius,ang_diff1))
+        cand_nodeL2 = point(self.direction_step(obst_L.center_loc,obst_L.radius,ang_diff2))
+        cand_nodeR1 = point(self.direction_step(obst_R.center_loc,obst_R.radius,ang_diff1))
+        cand_nodeR2 = point(self.direction_step(obst_R.center_loc,obst_R.radius,ang_diff2))
+        
+        
+        self.process_cand_edge((cand_nodeL1,obst_L),(cand_nodeR1,obst_R))    
+        self.process_cand_edge((cand_nodeL2,obst_L),(cand_nodeR2,obst_R))
+
 
     def is_node_vis(self,start_node,end_node):
         # checks if visibility line intersects other obstacles
@@ -178,10 +202,24 @@ class vis_graph:
         a,b,c = planar_line_form(start_node,end_node)
         #TODO make sure that obstacle we are touching doesnt result in non-visibility
         for obstacle in self.obstacles:
-            if check_collision(a,b,c,obstacle.center_x,obstacle.center_y,obstacle.radius):
-                is_valid = False
-                break
+            if self.is_obst_between_points(start_node,end_node,obstacle):
+                if check_collision(a,b,c,obstacle.center_x,obstacle.center_y,obstacle.radius):
+                    is_valid = False
+                    break
         return is_valid
+
+    def is_obst_between_points(self,start_node,end_node,obstacle):
+        if obstacle.center_x > start_node.x and obstacle.center_x < end_node.x:
+            is_between = True
+        else:
+            is_between = False
+        if self.debug:
+            print(f'vis_graph.is_obst_between_points()')
+            print(f'obstacle at ({obstacle.center_x},{obstacle.center_y})')
+            print(f'start_node at ({start_node.x},{start_node.y}')
+            print(f'end_node at ({end_node.x},{end_node.y}')
+            print(f'is_between = {is_between}\n')
+        return is_between
 
     def direction_step(self,start,dist,angle):
         # calculates tangent node location on an obstacle

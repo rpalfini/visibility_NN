@@ -3,13 +3,6 @@ import time
 import WindowsInhibitor as wi #prevents computer from sleeping while generating data
 from datetime import date
 
-
-from visibility_graph import *
-import time
-import WindowsInhibitor as wi #prevents computer from sleeping while generating data
-from datetime import date
-
-
 osSleep = None
 
 if os.name == 'nt':
@@ -41,8 +34,6 @@ vg_gen.plot_solution(0,"env 3_0")
 
 toc = time.perf_counter()
 print(f"created the data in {toc - tic:0.4f} seconds")
-
-
 
 # vg_gen.output_csv('test_out')
 # vg_gen.save_plot_image('eight_obs_fig2')

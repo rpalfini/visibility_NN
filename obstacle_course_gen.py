@@ -56,9 +56,8 @@ def make_circle_points(obstacle):
     bound_y = r*np.sin(thetas) + y
     return bound_x, bound_y
 
-if __name__ == "__main__":
-    show_result = False
-    fname = "obstacle_locations.txt"
+def gen_obs(show_result = False,fname = "obstacle_locations.txt"):
+    
     output_result = True
     num_obstacles = 6
     obstacles = []
@@ -101,3 +100,13 @@ if __name__ == "__main__":
         plot_obstacles(obstacles,axs)
         axs.set_aspect('equal')
         plt.show()
+
+if __name__ == "__main__":
+    batch = True
+    courses = 100
+    fname = "100_obstacle_locations_uniform.txt"
+    if not batch:
+        gen_obs(show_result=True)
+    else:
+        for ii in range(courses):
+            gen_obs(fname=fname)

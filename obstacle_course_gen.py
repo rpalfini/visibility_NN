@@ -57,7 +57,7 @@ def make_circle_points(obstacle):
     return bound_x, bound_y
 
 if __name__ == "__main__":
-    show_result = True
+    show_result = False
     fname = "obstacle_locations.txt"
     output_result = True
     num_obstacles = 8
@@ -87,10 +87,14 @@ if __name__ == "__main__":
             
     if output_result:
         with open(fname,"a") as file:
-            file.write("\nNew Obstacle Set:")
-            file.write("\nradius,x,y")
+            # file.write("\nNew Obstacle Set:")
+            # file.write("\nradius,x,y")
+            # for obs in obstacles:
+            #     file.write(f"\n{obs[0]},{obs[1]},{obs[2]}")
+            file.write("New Obstacle Set:\n")
+            file.write("radius,x,y\n")
             for obs in obstacles:
-                file.write(f"\n{obs[0]},{obs[1]},{obs[2]}")
+                file.write(f"{obs[0]},{obs[1]},{obs[2]}\n")
 
     if show_result:
         fig,axs = plt.subplots()

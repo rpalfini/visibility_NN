@@ -47,7 +47,7 @@ class obstacle:
             print(f'({node.x},{node.y})')
 
     def view(self):
-        print(f'(x,y): ({self.center_x},{self.center_y})\nradius: {self.radius}')
+        print(f'(x,y): ({self.center_x},{self.center_y}), radius: {self.radius}')
 
 class vis_graph:
     debug = True
@@ -116,8 +116,6 @@ class vis_graph:
             self.update_node_props(node_obst1[0],node_obst1[1]) #tags node1 to obst 1
         self.process_cand_node(node_obst1[0],node_obst2[0],node_obst2[1]) #tags node 2 to obst2 and creates edge in graph
         
-        
-
     def vis_point_obst(self,start_node,obstacle,is_end_node = False):
         '''calculates visibility graph node to obstacle,
         is_end_node sets the order of edge storage'''
@@ -627,6 +625,38 @@ class visibility_graph_generator:
     def save_plot_image(self,fig_name):
         self.fig.savefig(fig_name + '.png')
         # creates .png of visibility graph
+
+# for reading new file list
+def read_obstacle_list(fname):
+    def read_obstacle(obs_string):
+        data = obs_string.split(",")
+        r = float(data[0])
+        center = point((float(data[1]),float(data[2])))
+        return obstacle(r,center)
+    obstacle_courses = {}
+    obstacles = []
+    obs_file = open(fname,"r")
+    action = 0
+    while obs_file:
+        line = obs_file.readline()
+        
+        if (line.strip() == "New Obstacle Set:" and len(obstacles) > 0) or line == '':
+            append_dict(obstacle_courses,obstacles)
+            action = 0
+            obstacles = []
+        elif line.strip() == "radius,x,y":
+            action = 1
+            line = obs_file.readline()
+
+        if line == "":
+            break
+        
+        if action == 1:
+            new_obs = read_obstacle(line.strip())
+            obstacles.append(new_obs)
+        
+    obs_file = obs_file.close()
+    return obstacle_courses
 
 # global methods
 def append_dict(dict_in,item):

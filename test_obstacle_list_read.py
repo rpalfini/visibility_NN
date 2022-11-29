@@ -2,7 +2,7 @@ import visibility_graph as vg
 import numpy as np
 
 
-fname = "obstacle_locations.txt"
+fname = "obstacle_locations_test.txt"
 
 obstacle_courses = vg.read_obstacle_list(fname)
 

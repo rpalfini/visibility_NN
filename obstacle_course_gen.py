@@ -60,7 +60,7 @@ if __name__ == "__main__":
     show_result = False
     fname = "obstacle_locations.txt"
     output_result = True
-    num_obstacles = 8
+    num_obstacles = 6
     obstacles = []
     bound_x = 20
     bound_y = 20

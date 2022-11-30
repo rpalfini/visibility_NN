@@ -31,3 +31,4 @@ Label meaning is defined in vis_graph_enum.py
 16. Code to combine created csv data files.
 17. Implement NN for navigation prediction for multiple obstacles.
 18. Add ability to save data as .npy files
+19. Update plotting methods to take the graph object as input, so that i can call the plotting methods during debugging by just calling with a graph object. (Robby)

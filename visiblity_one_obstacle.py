@@ -19,6 +19,7 @@ radius1 = [6]
 obst_locations = [(13,10)]
 obstacle_list = init_obs(obst_locations,radius1)
 if not batch:
+    record_on = True
     start_vals = [(3,9)]
     # start_vals = [(3,9),(7,17)]
     # end_vals = [(23,16)]
@@ -39,6 +40,7 @@ if not batch:
     
 else:
     # Trying batch start/end vals
+    record_on = False
     tol = 0.01
     num_points = 60
     min_x,max_x = find_test_range(obstacle_list)
@@ -59,7 +61,7 @@ else:
 
 
 tic = time.perf_counter()
-vis_graph_one_obst = visibility_graph_generator()
+vis_graph_one_obst = visibility_graph_generator(record_on=record_on)
 
 vis_graph_one_obst.run_test(start_list,end_list,obstacle_list, sys.argv[1] if (len(sys.argv) > 1) else "Djikstra")
 toc = time.perf_counter()

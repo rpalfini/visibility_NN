@@ -22,6 +22,7 @@ class point:
 
     def view(self):
         print("(" + str(self.x) + "," + str(self.y) + ")")
+        return(self.x,self.y)
 
 class obstacle:
     def __init__(self,radius,center_loc):
@@ -48,6 +49,7 @@ class obstacle:
 
     def view(self):
         print(f'(x,y): ({self.center_x},{self.center_y}), radius: {self.radius}')
+        return(self.radius,self.center_x,self.center_y)
 
 class vis_graph:
     debug = True
@@ -73,7 +75,7 @@ class vis_graph:
 
     def make_obs_vis_graph(self):
         '''creates surfing edges for obstacle to obstacle connections'''
-        remaining_obst = self.obstacles # using this to prevent calculating nodes between obstacles twice
+        remaining_obst = copy.copy(self.obstacles) # using this to prevent calculating nodes between obstacles twice
         for obstacle in self.obstacles:
             remaining_obst.remove(obstacle)
             self.vis_obst_obst(obstacle,remaining_obst)
@@ -186,13 +188,23 @@ class vis_graph:
         self.process_cand_edge((cand_nodeL2,obst_L),(cand_nodeR2,obst_R))
 
 
-    def is_node_vis(self,start_node,end_node):
+    def is_node_vis(self,start_node,end_node):        
         # checks if visibility line intersects other obstacles
         is_valid = True
         a,b,c = planar_line_form(start_node,end_node)
         #TODO make sure that obstacle we are touching doesnt result in non-visibility
+        
+        if start_node.x < end_node.x:
+            left_node = start_node
+            right_node = end_node
+        elif start_node.x > end_node.x:
+            left_node = end_node
+            right_node = start_node
+        else:
+            raise('start_node and end_node have same x coordinate')
+        
         for obstacle in self.obstacles:
-            if self.is_obst_between_points(start_node,end_node,obstacle):
+            if self.is_obst_between_points(left_node,right_node,obstacle):
                 if check_collision(a,b,c,obstacle.center_x,obstacle.center_y,obstacle.radius):
                     is_valid = False
                     break
@@ -414,13 +426,14 @@ class visibility_graph_generator:
     #TODO look into pickle for saving vis_graph_gen objects
     debug = True # guess i could have super class to inherit this as well as any debug routines
 
-    def __init__(self,obstacles=None):
+    def __init__(self,obstacles=None,record_on = True):
         # variables for buidling vis graph
+        self.record_graph_objects = record_on
         self.graphs_memory = {} # this dictionary stores the graph created start/end, graph created, and a node_point_dictionary, used for plotting
 
         # variables for outputting training data
         self.df_columns = ['start','end','obst1_dir']
-        self.num_col = 8 #TODO this should be equal to 4*num_obs + 4 (start_x start_y end_x end_Y (radius center_x center_y label))
+        self.num_col = 16 #TODO this should be equal to 4*num_obs + 4 (start_x start_y end_x end_Y (radius center_x center_y label))
         #TODO determine if using np array is the best way to ouptut the data
         #TODO num_col should be determined based on the graph and how many obstacles it has or it should be based on the maximum size we want for our neural net
         # self.vis_data = np.array([],dtype = np.double).reshape(0,self.num_col) #TODO delete if new data storage method is faster
@@ -461,7 +474,8 @@ class visibility_graph_generator:
                 labels = graph.gen_obs_labels()
                 obs_att = graph.get_obs_prop()
                 self.record_result(start,end,obs_att,labels,ii)
-                # self.store_vis_graph(graph)
+                if self.record_graph_objects == True:
+                    self.store_vis_graph(graph)
                 if self.debug:
                     if ii % 1000 == 0: print(f'completed {ii} our of {len(start_list)*len(end_list)}')
                     ii += 1

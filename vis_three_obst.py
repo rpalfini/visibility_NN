@@ -35,8 +35,8 @@ vg_gen.plot_solution(0,"env 3_0")
 toc = time.perf_counter()
 print(f"created the data in {toc - tic:0.4f} seconds")
 
-# vg_gen.output_csv('test_out')
-# vg_gen.save_plot_image('eight_obs_fig2')
+vg_gen.output_csv('three_obs_data')
+vg_gen.save_plot_image('three_obs_fig')
 
 # today = date.today()
 # vg_gen.output_csv(today.strftime("%Y_%m_%d")+'three_obst data_large_1')

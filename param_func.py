@@ -10,6 +10,9 @@ class param_func:
     def view(self):
         return self.params
 
+    def is_slope_pos(self):
+        pass
+
     def evaluate(self):
         pass
 
@@ -19,7 +22,7 @@ class line(param_func):
         self.params = {'m': m, 'b': b}
 
     def is_slope_pos(self):
-        return True if self.params['m'] >= 0 else False
+        return True if self.params['m'] >= 0 else False #TODO need to modify this for case where slope is 0
 
     def evaluate(self,x):
         return self.params['m']*x + self.params['b']
@@ -29,8 +32,11 @@ class circle(param_func):
         super().__init__(vge.edge_type.circle)
         self.params = {'x': x, 'y': y, 'r': r, 'is_slope_pos': is_slope_pos}
 
+    def is_slope_pos(self):
+        return self.params['is_slope_pos']
+
     def evaluate(self,x):
-        y = math.sqrt(self.params['r']**2 - (x-self.params['x'])^2)
+        y = math.sqrt(self.params['r']**2 - (x-self.params['x'])**2)
         if self.params['is_slope_pos']:
             return y + self.params['y']
         else:

@@ -22,7 +22,12 @@ class line(param_func):
         self.params = {'m': m, 'b': b}
 
     def is_slope_pos(self):
-        return True if self.params['m'] >= 0 else False #TODO need to modify this for case where slope is 0
+        if self.params['m'] > 0:
+            is_pos = True
+        elif self.params['m'] < 0:
+            is_pos = False
+        
+        return is_pos
 
     def evaluate(self,x):
         return self.params['m']*x + self.params['b']

@@ -12,9 +12,20 @@ def sample_radius(mu,sigma,r_bound):
     r = round_radius(r,r_bound)
     return r
 
-def sample_point(radius,bound_x,bound_y):
+def sample_point_uniform(radius,bound_x,bound_y):
     x = np.random.uniform(0+radius,bound_x-radius,1)
     y = np.random.uniform(0+radius,bound_y-radius,1)
+    return x[0],y[0]
+
+def sample_point_normal(radius,bound_x,bound_y,mu,sigma):
+    valid = False
+    while not valid:
+        x = np.random.normal(mu,sigma,1)
+        y = np.random.normal(mu,sigma,1)
+        if not (x[0]<0+radius or x[0]>bound_x-radius):
+            valid = True
+        if not (y[0]<0+radius or y[0]>bound_y-radius):
+            valid = True
     return x[0],y[0]
 
 def circle_intersect(circle1,circle2,gap=2):
@@ -56,15 +67,15 @@ def make_circle_points(obstacle):
     bound_y = r*np.sin(thetas) + y
     return bound_x, bound_y
 
-def gen_obs(show_result = False,fname = "obstacle_locations.txt"):
+def gen_obs(num_obstacles = 6,show_result = False,fname = "obstacle_locations.txt"):
     
     output_result = True
-    num_obstacles = 6
     obstacles = []
     bound_x = 20
     bound_y = 20
     r_bound = (0.5,6)
     mu, sigma = 4, 2
+    mu_circle, sigma_circle = 10, 5
     max_attempts = 20
 
     for i in range(num_obstacles):
@@ -72,7 +83,8 @@ def gen_obs(show_result = False,fname = "obstacle_locations.txt"):
         placed = False
         place_attempts = 0
         while not placed:
-            cand_x,cand_y = sample_point(cand_r,bound_x,bound_y)
+            # cand_x,cand_y = sample_point_uniform(cand_r,bound_x,bound_y)
+            cand_x,cand_y = sample_point_normal(cand_r,bound_x,bound_y,mu_circle,sigma_circle)
             cand_obs = format_circle(cand_r,cand_x,cand_y)
             valid = check_placement(cand_obs,obstacles)
             if valid:
@@ -86,10 +98,6 @@ def gen_obs(show_result = False,fname = "obstacle_locations.txt"):
             
     if output_result:
         with open(fname,"a") as file:
-            # file.write("\nNew Obstacle Set:")
-            # file.write("\nradius,x,y")
-            # for obs in obstacles:
-            #     file.write(f"\n{obs[0]},{obs[1]},{obs[2]}")
             file.write("New Obstacle Set:\n")
             file.write("radius,x,y\n")
             for obs in obstacles:
@@ -101,8 +109,13 @@ def gen_obs(show_result = False,fname = "obstacle_locations.txt"):
         axs.set_aspect('equal')
         plt.show()
 
+def gen_multi_courses(num_obs):
+    fname = f'{num_obs}_obstacle_locations.txt'
+    for ii in range(num_obs):
+        gen_obs(fname=fname)
+
 if __name__ == "__main__":
-    batch = True
+    batch = False
     courses = 100
     fname = "100_obstacle_locations_uniform.txt"
     if not batch:

@@ -2,8 +2,16 @@
 
 This repo creates tangent visibility graph for data generation and implements a navigation decision NN for obstacle path finding.
 
-It creates data files outputted in the form [start_x, start_y,end_x,end_y, obstacle_n_center_x, obstacle_n_center_y, obstacle_n_radius, obstacle_n_label], where we have 1:n obstacles.
-Label meaning is defined in vis_graph_enum.py
+It creates data files where each row describes a test performed and the optimal labels found for a set of obstacles given a start and end point.  Each row corresponds to one test.  One test is outputted in the form: 
+
+[start_x, start_y,end_x,end_y,
+
+obstacle_1_center_x, obstacle_1_center_y, obstacle_1_radius through obstacle_n_center_x, obstacle_n_center_y, 
+
+obstacle_n_radius, obstacle_1_label through obstacle_n_label].
+
+
+Meaning for the labels values is defined in vis_graph_enum.py but a down label corresponds to 0 and an up label corresponds to 1.
 
 **Dependencies:**
 1. pip install bidict

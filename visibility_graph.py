@@ -296,6 +296,17 @@ class vis_graph:
             print(self.opt_path)
     
     def create_pw_opt_path_func(self):
+        def decide_zero_slope_sign(node_id):
+            # this function is to deal with case where we have 0 slope line
+            obstacle = self.get_node_obs(node_id)
+            node_diff = vec_sub(obstacle.center_loc,self.get_node_obj(node_id))
+            if node_diff.y > 0:
+                # case where 0 slope at center of circle cannot be the optimal solution so do not need to account for that case
+                is_pos = False
+            else:
+                is_pos = True
+            return is_pos
+
         '''Creates a piecewise function of the optimal path to use for creating object labels'''
         for idx,node_id in enumerate(self.opt_path):
             if node_id == 'start': # equation is up to a node, and there are no points before the start
@@ -306,7 +317,13 @@ class vis_graph:
             edge_key = self.get_edge_type(self.is_edge_hugging(node_before,node_id)) # finding edge type between this and previous node
             if edge_key == edge_type.line:
                 slope,y_int = slope_int_form(self.get_node_obj(node_before),self.get_node_obj(node_id))
-                self.pw_opt_func[x_key] = pf.line(slope,y_int)
+                if slope > 0:
+                    is_pos = True
+                elif slope < 0:
+                    is_pos = False
+                elif slope == 0:
+                    is_pos = decide_zero_slope_sign(node_id)
+                self.pw_opt_func[x_key] = pf.line(slope,y_int,is_pos)
             elif edge_key == edge_type.circle:
                 is_slope_pos = self.pw_opt_func[self.get_x_key_smaller(x_key)].is_slope_pos() # determine if previous segment has pos or neg slope
                 obstacle = self.get_node_obs(node_id)

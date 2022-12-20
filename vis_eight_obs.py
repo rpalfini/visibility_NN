@@ -39,7 +39,7 @@ toc = time.perf_counter()
 print(f"created the data in {toc - tic:0.4f} seconds")
 
 # vis_graph_eight_obst.output_csv('test_out')
-# vis_graph_eight_obst.save_plot_image('eight_obs_fig2')
+vis_graph_eight_obst.save_plot_image('eight_obs_fig2')
 
 today = date.today()
 vis_graph_eight_obst.output_csv(today.strftime("%Y_%m_%d")+'eight_obst data_large_1')

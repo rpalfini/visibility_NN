@@ -566,6 +566,8 @@ class visibility_graph_generator:
     # def plot_shortest_path(self):
     def plot_start_end(self,test_num):
         data = self.vis_data[test_num,:]
+        graph = self.graphs_memory[test_num]
+
         self.vis_axs.scatter(data[0],data[1],color='red',marker="^",linewidth=self.line_width,label="start")
         self.vis_axs.scatter(data[2],data[3],color='green',marker="o",linewidth=self.line_width,label="end")
 
@@ -652,11 +654,23 @@ class visibility_graph_generator:
 
     def clear_plot(self):
         self.vis_axs.cla()
+        self.vis_axs.grid(visible=True)
 
     def save_plot_image(self,fig_name):
         self.fig.savefig(fig_name + '.png')
         # creates .png of visibility graph
 
+class graph_viewer(visibility_graph_generator):
+    # This class allows us to look at the vis graph before it is finished
+    def __init__(self, vis_graph_obj, obstacles=None, record_on=True):
+        super().__init__(obstacles, record_on)
+        self.store_vis_graph(vis_graph_obj) # this is needed so we can reuse plot methods from parent
+
+    def plot_network(self,test_num=0):
+        self.plot_obstacles(test_num)
+        self.plot_vis_graph(test_num)
+
+# global methods
 # for reading new file list
 def read_obstacle_list(fname):
     def read_obstacle(obs_string):
@@ -689,7 +703,6 @@ def read_obstacle_list(fname):
     obs_file = obs_file.close()
     return obstacle_courses
 
-# global methods
 def append_dict(dict_in,item):
     num_keys = len(dict_in)
     dict_in[num_keys] = item

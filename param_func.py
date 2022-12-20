@@ -17,17 +17,13 @@ class param_func:
         pass
 
 class line(param_func):
-    def __init__(self,m,b):
+    def __init__(self,m,b,is_pos):
         super().__init__(vge.edge_type.line)
-        self.params = {'m': m, 'b': b}
+        self.params = {'m': m, 'b': b, 'is_pos': is_pos}
 
     def is_slope_pos(self):
-        if self.params['m'] > 0:
-            is_pos = True
-        elif self.params['m'] < 0:
-            is_pos = False
-        
-        return is_pos
+        # this function is used to check if label on circle segments should be above or below the circle center
+        return self.params['is_pos']
 
     def evaluate(self,x):
         return self.params['m']*x + self.params['b']

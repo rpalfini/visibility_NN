@@ -1,7 +1,9 @@
 from visibility_graph import *
-import time
 import WindowsInhibitor as wi #prevents computer from sleeping while generating data
+
 from datetime import date
+import time
+import sys
 
 osSleep = None
 
@@ -60,7 +62,7 @@ else:
 tic = time.perf_counter()
 vis_graph_one_obst = visibility_graph_generator(obstacle_list)
 
-vis_graph_one_obst.run_test(start_list,end_list,obstacle_list)
+vis_graph_one_obst.run_test(start_list,end_list,obstacle_list, sys.argv[1] if (len(sys.argv) > 1) else "Djikstra")
 toc = time.perf_counter()
 print(f"created the data in {toc - tic:0.4f} seconds")
 # vis_graph_one_obst.plot_env(0,"env 1_0")

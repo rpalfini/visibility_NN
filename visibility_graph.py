@@ -361,7 +361,7 @@ class visibility_graph_generator:
         self.vis_axs.set_aspect('equal')
 
     #vis graph methods
-    def run_test(self,start_list,end_list,obstacle_list):
+    def run_test(self,start_list,end_list,obstacle_list,algorithm="djikstra"):
         # main function that creates training data for start/end points
         self.init_data_memory(start_list,end_list)
         ii = 0
@@ -372,7 +372,12 @@ class visibility_graph_generator:
                 graph.build_vis_graph()
                 graph.build_h_graph()
                 # method that calculates shortest distance, djikstra algo
-                graph.find_shortest_path_a_star()
+                if (algorithm == "AStar"):
+                    print("Utilizing A-Star...")
+                    graph.find_shortest_path_a_star()
+                else: # Default Djikstra
+                    print("Utilizing Djikstra...")
+                    graph.find_shortest_path()
                 graph.create_pw_opt_path_func()
                 labels = graph.gen_obs_labels()
                 obs_att = graph.get_obs_prop()

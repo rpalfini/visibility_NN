@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import dijkstra as dijk
+import a_star as ast
 from bidict import bidict
 from vis_graph_enum import *
 import param_func as pf
@@ -57,6 +58,7 @@ class vis_graph:
     def __init__(self,obstacles):
         self.node_dict = bidict({}) # stores the nodes as associated with each point, bidict allows lookup in both directions
         self.vis_graph = {} #TODO this shouldn't have the class name # this is a graph that stores the nodes and their edge distances
+        self.h_graph = {} # Distance from Key Node to Final Node, normally. May also be used for any other heuristic cost
         self.edge_type_dict = {} # matches the format of vis_graph but only records if edge is surfing or hugging for plotting purposes
         self.node_obst_dict = {} # keeps track of which obstacle each node is on, adding this to make plotting arcs
         self.pw_opt_func = {} # record parameters of piecewise function for label evaulation
@@ -94,6 +96,10 @@ class vis_graph:
         for obstacle in self.obstacles:
             self.make_hugging_edges(obstacle)
         return
+
+    def build_h_graph(self):
+        for node_id in self.node_dict:
+            self.h_graph[node_id] = self.euclid_dist(self.get_node_obj(node_id), self.end)
 
     def update_node_props(self,cand_node,obstacle):
         if self.is_node_new(cand_node):
@@ -294,6 +300,13 @@ class vis_graph:
         self.opt_path = dijk.shortestPath(self.vis_graph,start_id,end_id)
         if self.debug == True:
             print(self.opt_path)
+
+    def find_shortest_path_a_star(self):
+        start_id = self.get_node_id(self.start)
+        end_id = self.get_node_id(self.end)
+        self.opt_path = ast.shortestPath(self.vis_graph, self.h_graph, start_id, end_id)
+        if self.debug == True:
+            print(self.opt_path)
     
     def create_pw_opt_path_func(self):
         def decide_zero_slope_sign(node_id):
@@ -474,7 +487,7 @@ class visibility_graph_generator:
         self.vis_axs.set_aspect('equal')
 
     #vis graph methods
-    def run_test(self,start_list,end_list,obstacle_list):
+    def run_test(self,start_list,end_list,obstacle_list,algorithm="djikstra"):
         # main function that creates training data for start/end points
         self.init_data_memory(start_list,end_list)
         ii = 0
@@ -485,8 +498,14 @@ class visibility_graph_generator:
                 graph = copy.deepcopy(base_graph)
                 # graph.clear_obs_nodes() #TODO verify removing this doesnt break the code
                 graph.build_vis_graph(start,end)
+                graph.build_h_graph()
                 # method that calculates shortest distance, djikstra algo
-                graph.find_shortest_path()
+                if (algorithm == "AStar"):
+                    print("Utilizing A-Star...")
+                    graph.find_shortest_path_a_star()
+                else: # Default Djikstra
+                    print("Utilizing Djikstra...")
+                    graph.find_shortest_path()
                 graph.create_pw_opt_path_func()
                 labels = graph.gen_obs_labels()
                 obs_att = graph.get_obs_prop()

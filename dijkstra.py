@@ -45,6 +45,7 @@ def Dijkstra(G, start, end=None):
     discovers that a negative edge has caused it to make a mistake.
     """
 
+    # final distances is the distance between a given verticy and the destination
     D = {}  # dictionary of final distances
     P = {}  # dictionary of predecessors
     Q = priorityDictionary()  # estimated distances of non-final vertices
@@ -54,9 +55,11 @@ def Dijkstra(G, start, end=None):
         D[v] = Q[v]
         if v == end:
             break
-
+        
+        # We are checking all the verticies that connect to v that are closer to the final point (final distances)
         for w in G[v]:
-            vwLength = D[v] + G[v][w]
+            # final distance of given vertice (Distance from beginning to current latest node) + one of the connected verticies
+            vwLength = D[v] + G[v][w] 
             if w in D:
                 if vwLength < D[w]:
                     raise ValueError("Dijkstra: found better path to already-final vertex")

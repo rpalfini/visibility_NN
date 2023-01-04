@@ -3,6 +3,8 @@ import time
 import WindowsInhibitor as wi #prevents computer from sleeping while generating data
 from datetime import date
 
+import sys
+
 osSleep = None
 
 if os.name == 'nt':
@@ -29,7 +31,7 @@ obstacle_list = init_obs(obst_locations,radius1)
 tic = time.perf_counter()
 
 vg_gen = visibility_graph_generator()
-vg_gen.run_test(start_list,end_list,obstacle_list)
+vg_gen.run_test(start_list,end_list,obstacle_list, sys.argv[1] if (len(sys.argv) > 1) else "Djikstra")
 vg_gen.plot_solution(0,"env 3_0")
 
 toc = time.perf_counter()

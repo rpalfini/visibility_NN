@@ -101,15 +101,11 @@ class vis_graph:
         for node_id in self.node_dict:
             self.h_graph[node_id] = self.euclid_dist(self.get_node_obj(node_id), self.end)
 
-    def process_cand_node(self,start_node,cand_node,obstacle,is_end_node = False):
-        # this method adds edge to node dictionary and vis_graph, if the node is visible
-        if self.is_node_vis(start_node,cand_node):
-            edge_length = self.euclid_dist(start_node,cand_node)
-            if self.is_node_new(cand_node):
     def update_node_props(self,cand_node,obstacle):
         if self.is_node_new(cand_node):
             self.add_node2dict(cand_node)
             self.add_node2obstacle(obstacle,cand_node)
+
     def build_h_graph(self):
         for node_id in self.node_dict:
             self.h_graph[node_id] = self.euclid_dist(self.get_node_obj(node_id), self.end)
@@ -503,9 +499,6 @@ class visibility_graph_generator:
         base_graph.make_obs_vis_graph()
         for start in start_list:
             for end in end_list:
-                graph = vis_graph(start,end,obstacle_list) #TODO calculate obstacle nodes before hand
-                graph.clear_obs_nodes()
-                graph.build_h_graph()
                 graph = copy.deepcopy(base_graph)
                 # graph.clear_obs_nodes() #TODO verify removing this doesnt break the code
                 graph.build_vis_graph(start,end)

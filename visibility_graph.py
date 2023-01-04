@@ -106,10 +106,6 @@ class vis_graph:
             self.add_node2dict(cand_node)
             self.add_node2obstacle(obstacle,cand_node)
 
-    def build_h_graph(self):
-        for node_id in self.node_dict:
-            self.h_graph[node_id] = self.euclid_dist(self.get_node_obj(node_id), self.end)
-
     def process_cand_node(self,start_node,cand_node,obstacle,is_end_node = False):
         '''this method adds cand_node, and edge to node dictionary and vis_graph, if the node is visible.  
         It also attaches cand_node to obstacle'''

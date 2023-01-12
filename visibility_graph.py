@@ -151,7 +151,7 @@ class vis_graph:
                 continue
             
             if id(obst) == id(next_obst): # dont calculate visibility with itself
-                raise('Obstacle not deleted correctly from list')
+                raise Exception('Obstacle not deleted correctly from list')
             
             self.internal_bitangents(obst_A,obst_B)
             self.external_bitangents(obst_A,obst_B)
@@ -207,7 +207,7 @@ class vis_graph:
             left_node = end_node
             right_node = start_node
         else:
-            raise('start_node and end_node have same x coordinate')
+            raise Exception('start_node and end_node have same x coordinate')
         
         for obstacle in self.obstacles:
             if self.is_obst_between_points(left_node,right_node,obstacle):
@@ -434,7 +434,7 @@ class vis_graph:
         elif not is_hugging:
             return edge_type.line
         else:
-            raise('invalid edge type')
+            raise Exception('invalid edge type')
 
     def is_edge_CW(self,start_id,end_id): 
         return self.edge_type_dict[start_id][end_id]['is_CW']
@@ -805,7 +805,7 @@ def init_points(point_list):
 def init_obs(obs_list,radius_list):
     #TODO This only allows for one obstacle radius size
     if len(obs_list) != len(radius_list):
-        raise('obstacle list and radius list different lengths')
+        raise Exception('obstacle list and radius list different lengths')
     obs_loc = init_points(obs_list)
     obs_data = zip(obs_loc,radius_list)
     obs_obj = []

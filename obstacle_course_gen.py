@@ -1,7 +1,6 @@
 import numpy as np
-import random
 import matplotlib.pyplot as plt
-
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 def round_radius(r_vec,r_bound):
     # return [1 if x<r_bound[0] or x>r_bound[1] else x for x in r_vec]
@@ -67,7 +66,7 @@ def make_circle_points(obstacle):
     bound_y = r*np.sin(thetas) + y
     return bound_x, bound_y
 
-def gen_obs(num_obstacles = 6,show_result = False,fname = "obstacle_locations.txt"):
+def gen_obs(num_obstacles = 6,show_result = False,bound_x = 20, bound_y = 20, fname = "obstacle_locations.txt"):
     
     output_result = True
     obstacles = []
@@ -114,12 +113,25 @@ def gen_multi_courses(num_obs):
     for ii in range(num_obs):
         gen_obs(fname=fname)
 
+def parse_input():
+    parser = ArgumentParser(description="obstacle course generator",formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-b", "--batch", default = True, help="Creates unique file name and does not display courses")
+    parser.add_argument("num_obstacles", default = 10, help="Number of obstacles per course")
+    parser.add_argument("num_courses", default = 10, help="Number of courses to make")
+    args = parser.parse_args()
+    args = vars(args)
+    return args
+
 if __name__ == "__main__":
-    batch = False
-    courses = 100
-    fname = "100_obstacle_locations_uniform.txt"
+
+    args = parse_input()
+    batch = args["batch"]
+    obstacles = int(args["num_obstacles"])
+    
     if not batch:
-        gen_obs(show_result=True)
+        gen_obs(num_obstacles=args["num_obstacles"],show_result=True)
     else:
+        courses = args["num_courses"]
+        fname = f"{courses}_obstacle_locations_uniform.txt"
         for ii in range(courses):
-            gen_obs(fname=fname)
+            gen_obs(num_obstacles=args["num_obstacles"],fname=fname)

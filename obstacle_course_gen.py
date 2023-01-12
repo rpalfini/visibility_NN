@@ -129,12 +129,16 @@ def parse_input():
     return args
 
 def convert2bool(var):
+    if var == True:
+        return True
+    if var == False:
+        return False
     if var == "True" or var == "true":
         return True
     elif var == "False" or var == "false":
         return False
     else:
-        raise("invalid input")
+        raise Exception("invalid input")
 
 if __name__ == "__main__":
 

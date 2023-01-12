@@ -32,6 +32,26 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        {
+            "name": "Python: simple_obs",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "8",
+                "1",
+                "-b",
+                "False",
+                "-s",
+                "5",
+                "0",
+                "-r",
+                "25",
+                "25"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }

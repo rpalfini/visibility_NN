@@ -22,9 +22,8 @@ def sample_point_normal(radius,bound_x,bound_y,mu,sigma,x_start,y_start):
         x = np.random.normal(mu,sigma,1)
         y = np.random.normal(mu,sigma,1)
         if not (x[0]<x_start+radius or x[0]>x_start+bound_x-radius):
-            valid = True
-        if not (y[0]<y_start+radius or y[0]>y_start+bound_y-radius):
-            valid = True
+            if not (y[0]<y_start+radius or y[0]>y_start+bound_y-radius):
+                valid = True
     return x[0],y[0]
 
 def circle_intersect(circle1,circle2,gap=2):
@@ -74,7 +73,8 @@ def gen_obs(num_obstacles = 6,show_result = False, start_x=0, start_y=0, bound_x
     bound_y = bound_y
     r_bound = (0.5,6)
     mu, sigma = 4, 2
-    mu_circle, sigma_circle = 10, 5
+    mu_circle = (bound_x + 2*start_x)/2
+    sigma_circle = bound_x/4
     max_attempts = 20
 
     for i in range(num_obstacles):
@@ -89,6 +89,8 @@ def gen_obs(num_obstacles = 6,show_result = False, start_x=0, start_y=0, bound_x
             if valid:
                 obstacles.append(cand_obs)
                 placed = True
+                if False: #change to True if debugging positions of obstacles w.r.t. bounds
+                    print(f"x0={cand_obs[1]} lb={start_x+cand_obs[0]} ub={start_x+bound_x-cand_obs[0]}; y0={cand_obs[2]} lb={start_y+cand_obs[0]} ub={start_y+bound_y-cand_obs[0]}")
             else:
                 place_attempts += 1
                 if place_attempts < max_attempts:
@@ -105,6 +107,8 @@ def gen_obs(num_obstacles = 6,show_result = False, start_x=0, start_y=0, bound_x
     if show_result:
         fig,axs = plt.subplots()
         plot_obstacles(obstacles,axs)
+        axs.set_xlim(start_x,start_x+bound_x)
+        axs.set_ylim(start_y,start_y+bound_y)
         axs.set_aspect('equal')
         plt.show()
 
@@ -148,4 +152,4 @@ if __name__ == "__main__":
         courses = int(args["num_courses"])
         fname = f"{courses}_courses_{obstacles}_obstacles_normal.txt"
         for ii in range(courses):
-            gen_obs(num_obstacles=int(args["num_obstacles"]),fname=fname,)
+            gen_obs(num_obstacles=int(args["num_obstacles"]),fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)

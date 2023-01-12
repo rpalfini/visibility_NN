@@ -7,7 +7,7 @@
     
      
         {
-            "name": "Python: Current File",
+            "name": "Python: obstacle_course_gen",
             "type": "python",
             "request": "launch",
             "program": "${file}",

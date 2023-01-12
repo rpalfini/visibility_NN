@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
+# This file can be used to generate obstacle courses input info can be obtained by running with -h option
+
 def round_radius(r_vec,r_bound):
     # return [1 if x<r_bound[0] or x>r_bound[1] else x for x in r_vec]
     return 1 if r_vec<r_bound[0] or r_vec>r_bound[1] else r_vec[0]

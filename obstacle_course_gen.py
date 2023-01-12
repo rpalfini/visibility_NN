@@ -11,19 +11,19 @@ def sample_radius(mu,sigma,r_bound):
     r = round_radius(r,r_bound)
     return r
 
-def sample_point_uniform(radius,bound_x,bound_y):
-    x = np.random.uniform(0+radius,bound_x-radius,1)
-    y = np.random.uniform(0+radius,bound_y-radius,1)
+def sample_point_uniform(radius,bound_x,bound_y,x_start,y_start):
+    x = np.random.uniform(x_start+radius,x_start+bound_x-radius,1)
+    y = np.random.uniform(y_start+radius,y_start+bound_y-radius,1)
     return x[0],y[0]
 
-def sample_point_normal(radius,bound_x,bound_y,mu,sigma):
+def sample_point_normal(radius,bound_x,bound_y,mu,sigma,x_start,y_start):
     valid = False
     while not valid:
         x = np.random.normal(mu,sigma,1)
         y = np.random.normal(mu,sigma,1)
-        if not (x[0]<0+radius or x[0]>bound_x-radius):
+        if not (x[0]<x_start+radius or x[0]>x_start+bound_x-radius):
             valid = True
-        if not (y[0]<0+radius or y[0]>bound_y-radius):
+        if not (y[0]<y_start+radius or y[0]>y_start+bound_y-radius):
             valid = True
     return x[0],y[0]
 
@@ -66,12 +66,12 @@ def make_circle_points(obstacle):
     bound_y = r*np.sin(thetas) + y
     return bound_x, bound_y
 
-def gen_obs(num_obstacles = 6,show_result = False,bound_x = 20, bound_y = 20, fname = "obstacle_locations.txt"):
+def gen_obs(num_obstacles = 6,show_result = False, start_x=0, start_y=0, bound_x=20, bound_y=20, fname="obstacle_locations.txt"):
     
     output_result = True
     obstacles = []
-    bound_x = 20
-    bound_y = 20
+    bound_x = bound_x
+    bound_y = bound_y
     r_bound = (0.5,6)
     mu, sigma = 4, 2
     mu_circle, sigma_circle = 10, 5
@@ -82,8 +82,8 @@ def gen_obs(num_obstacles = 6,show_result = False,bound_x = 20, bound_y = 20, fn
         placed = False
         place_attempts = 0
         while not placed:
-            # cand_x,cand_y = sample_point_uniform(cand_r,bound_x,bound_y)
-            cand_x,cand_y = sample_point_normal(cand_r,bound_x,bound_y,mu_circle,sigma_circle)
+            # cand_x,cand_y = sample_point_uniform(cand_r,bound_x,bound_y,start_x,start_y)
+            cand_x,cand_y = sample_point_normal(cand_r,bound_x,bound_y,mu_circle,sigma_circle,start_x,start_y)
             cand_obs = format_circle(cand_r,cand_x,cand_y)
             valid = check_placement(cand_obs,obstacles)
             if valid:
@@ -116,22 +116,36 @@ def gen_multi_courses(num_obs):
 def parse_input():
     parser = ArgumentParser(description="obstacle course generator",formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument("-b", "--batch", default = True, help="Creates unique file name and does not display courses")
+    parser.add_argument("-s", "--start", default = [0,0], nargs=2, help='specify start boundaries for x and y of obstacle course')
+    parser.add_argument("-r", "--range", default = [20,20], nargs=2, help="range of obstacle course in x and y")
     parser.add_argument("num_obstacles", default = 10, help="Number of obstacles per course")
     parser.add_argument("num_courses", default = 10, help="Number of courses to make")
     args = parser.parse_args()
     args = vars(args)
     return args
 
+def convert2bool(var):
+    if var == "True" or var == "true":
+        return True
+    elif var == "False" or var == "false":
+        return False
+    else:
+        raise("invalid input")
+
 if __name__ == "__main__":
 
     args = parse_input()
-    batch = args["batch"]
+    batch = convert2bool(args["batch"])
     obstacles = int(args["num_obstacles"])
+    start_x = int(args["start"][0])
+    start_y = int(args["start"][1])
+    bound_x = int(args["range"][0])
+    bound_y = int(args["range"][1])
     
     if not batch:
-        gen_obs(num_obstacles=args["num_obstacles"],show_result=True)
+        gen_obs(num_obstacles=int(args["num_obstacles"]),show_result=True,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
     else:
-        courses = args["num_courses"]
-        fname = f"{courses}_obstacle_locations_uniform.txt"
+        courses = int(args["num_courses"])
+        fname = f"{courses}_courses_{obstacles}_obstacles_normal.txt"
         for ii in range(courses):
-            gen_obs(num_obstacles=args["num_obstacles"],fname=fname)
+            gen_obs(num_obstacles=int(args["num_obstacles"]),fname=fname,)

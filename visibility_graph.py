@@ -513,7 +513,7 @@ class visibility_graph_generator:
                 if self.record_graph_objects == True:
                     self.store_vis_graph(graph)
                 if self.debug:
-                    if ii % 1000 == 0: print(f'completed {ii} our of {len(start_list)*len(end_list)}')
+                    if ii % 1000 == 0: print(f'completed {ii} out of {len(start_list)*len(end_list)}')
                     ii += 1
 
     def store_vis_graph(self,graph): #TODO move this to child class that is generator + plotter
@@ -616,9 +616,11 @@ class visibility_graph_generator:
         if graph.is_edge_CW(start_id,end_id) == True:
             ang_diff = -ang_diff
         if self.debug == True:
-            print('start id ' + str(start_id) + ' end id ' + str(end_id))
+            print('start id         ' + str(start_id) + ' end id ' + str(end_id))
             # print('ang start ' + str(ang_start*180/np.pi) + ' ang end ' + str(ang_end*180/np.pi))
-            print('ang_diff ' + str(ang_diff*180/np.pi) + ' is_CW ' + str(graph.is_edge_CW(start_id,end_id)))
+            print('ang_diff         ' + str(ang_diff*180/np.pi) + ' is_CW ' + str(graph.is_edge_CW(start_id,end_id)))
+            print('distance to node ' + str(graph.vis_graph[start_id][end_id]))
+            print('distance to end  ' + str(graph.h_graph[end_id]))
         thetas = np.linspace(ang_start,ang_start+ang_diff,100)
         bound_x = obstacle.radius*np.cos(thetas) + obstacle.center_x
         bound_y = obstacle.radius*np.sin(thetas) + obstacle.center_y

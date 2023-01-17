@@ -25,7 +25,7 @@ def AStar(G, H, start, end=None):
                 if vwLength < D[w]:
                     raise ValueError("Dijkstra: found better path to already-final vertex")
             elif w not in Q or vwLength < Q[w]:
-                Q[w] = vwLength
+                Q[w] = vwLength - H[w]
                 P[w] = v
 
     return (D, P)

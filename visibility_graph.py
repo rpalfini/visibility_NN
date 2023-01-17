@@ -481,6 +481,9 @@ class visibility_graph_generator:
             self.obstacles = obstacles #TODO determine if i want to store obstacle list in this object
         # visibility viewer initialization
         self.fig, self.vis_axs = plt.subplots(1,1)
+        self.init_graph_props()
+
+    def init_graph_props(self):
         self.vis_axs.set_xlim(self.axis_xlim)
         self.vis_axs.set_ylim(self.axis_ylim)
         self.vis_axs.grid(visible=True)
@@ -590,26 +593,31 @@ class visibility_graph_generator:
         self.finish_plot(title)
 
     ## "private" plot methods
-    def update_axis_lim(self,test_num):
-        # TODO this only works for updating start_end axis limits
+    def get_start_end_data(self,test_num):
         data = self.vis_data[test_num,:]
         start = (data[0],data[1])
         end = (data[2],data[3])
+        return start, end
+
+    def update_axis_lim(self,test_num):
+        # TODO this only works for updating start_end axis limits
+        start,end = self.get_start_end_data(test_num)
         if self.axis_xlim[0] > start[0]-2:
             self.axis_xlim[0] = start[0]-2
         if self.axis_xlim[1] < end[0]+2:
             self.axis_xlim[1] = end[0]+2
         #TODO update y axis lim by finding which obstacle, or start end point, is highest and lowest y and compare to axis limits
-
+        if self.axis_ylim[0] > start[1]-2:
+            self.axis_ylim[0] = start[1]-2
+        if self.axis_ylim[1] < end[1]+2:
+            self.axis_ylim[1] = end[1]+2
+        self.init_graph_props()
 
     def plot_start_end(self,test_num):
-        
         self.update_axis_lim(test_num)
-        data = self.vis_data[test_num,:]
-        graph = self.graphs_memory[test_num]
-
-        self.vis_axs.scatter(data[0],data[1],color='red',marker="^",linewidth=self.line_width,label="start")
-        self.vis_axs.scatter(data[2],data[3],color='green',marker="o",linewidth=self.line_width,label="end")
+        start,end = self.get_start_end_data(test_num)
+        self.vis_axs.scatter(start[0],start[1],color='red',marker="^",linewidth=self.line_width,label="start")
+        self.vis_axs.scatter(end[0],end[1],color='green',marker="o",linewidth=self.line_width,label="end")
 
     def plot_obstacles(self,test_num):
         # plots obstacles
@@ -694,7 +702,8 @@ class visibility_graph_generator:
 
     def clear_plot(self):
         self.vis_axs.cla()
-        self.vis_axs.grid(visible=True)
+        # self.vis_axs.grid(visible=True)
+        self.init_graph_props()
 
     def save_plot_image(self,fig_name):
         self.fig.savefig(fig_name + '.png')
@@ -706,7 +715,16 @@ class graph_viewer(visibility_graph_generator):
         super().__init__(obstacles, record_on) # this is needed so we can reuse plot methods from parent
         self.store_vis_graph(vis_graph_obj) 
 
+    #TODO create method that gets obstacle data
+
+    def get_start_end_data(self, test_num=0):
+        graph = self.graphs_memory[test_num]
+        start = (graph.start.x, graph.start.y)
+        end = (graph.end.x, graph.end.y)
+        return start,end
+
     def plot_network(self,test_num=0):
+        self.plot_start_end(test_num)
         self.plot_obstacles(test_num)
         self.plot_vis_graph(test_num)
 

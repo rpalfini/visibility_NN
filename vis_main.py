@@ -4,16 +4,18 @@ import WindowsInhibitor as wi #prevents computer from sleeping while generating 
 from datetime import date
 import sys
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from obstacle_course_gen import convert2bool
 
 parser = ArgumentParser(description="obstacle testing file",formatter_class=ArgumentDefaultsHelpFormatter)
 parser.add_argument("-b", "--batch", default = False, help="Creates unique file name and does not display courses")
 parser.add_argument("-p", "--obs_path", default = ".\\obs_courses\\",help="path for finding obstacle course")
+#TODO add start and end arguments
 parser.add_argument("fname", default = 10, help="Number of obstacles per course")
 parser.add_argument("num_courses", default = 10, help="Number of courses to make")
 args = parser.parse_args()
 args = vars(args)
 
-batch = args["batch"]
+batch = convert2bool(args["batch"])
 
 if batch:
     osSleep = None
@@ -22,8 +24,10 @@ if batch:
         osSleep.inhibit()
 
 
-start_vals = [(2,3)]
-end_vals = [(24,14)]
+start_vals = [(0,3)]
+end_vals = [(30,15)]
+
+
 
 obst_locations = [(6,5),(13,9),(20,6)]
 radius1 = [2,3,2] #obstacle radius

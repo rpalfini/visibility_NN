@@ -562,11 +562,10 @@ class visibility_graph_generator:
         else:
             np.savetxt(fname, self.vis_data, delimiter=",")
 
-    ## plot viewer methods
+    ## plot viewer methods    
     def plot_env(self,test_num,title=None):
         self.plot_start_end(test_num)
-        self.plot_obstacles(test_num)
-        self.finish_plot(title)
+        
 
     def plot_solution(self,test_num,title=None):
         # plots obstacles and solution
@@ -582,7 +581,11 @@ class visibility_graph_generator:
         self.plot_vis_graph(test_num) #TODO add test_num to be plotted
         self.finish_plot(title)
 
-    # def plot_shortest_path(self):
+    def plot_just_obstacles(self,test_num,title=None):
+        self.plot_obstacles(test_num)
+        self.finish_plot(title)
+
+    ## "private" plot methods
     def plot_start_end(self,test_num):
         data = self.vis_data[test_num,:]
         graph = self.graphs_memory[test_num]
@@ -682,8 +685,8 @@ class visibility_graph_generator:
 class graph_viewer(visibility_graph_generator):
     # This class allows us to look at the vis graph before it is finished
     def __init__(self, vis_graph_obj, obstacles=None, record_on=True):
-        super().__init__(obstacles, record_on)
-        self.store_vis_graph(vis_graph_obj) # this is needed so we can reuse plot methods from parent
+        super().__init__(obstacles, record_on) # this is needed so we can reuse plot methods from parent
+        self.store_vis_graph(vis_graph_obj) 
 
     def plot_network(self,test_num=0):
         self.plot_obstacles(test_num)

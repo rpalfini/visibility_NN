@@ -463,7 +463,7 @@ class visibility_graph_generator:
 
         # variables for outputting training data
         self.df_columns = ['start','end','obst1_dir']
-        self.num_col = 16 #TODO this should be equal to 4*num_obs + 4 (start_x start_y end_x end_Y (radius center_x center_y label))
+        # self.num_col = 16 #TODO this should be equal to 4*num_obs + 4 (start_x start_y end_x end_Y (radius center_x center_y label))
         #TODO determine if using np array is the best way to ouptut the data
         #TODO num_col should be determined based on the graph and how many obstacles it has or it should be based on the maximum size we want for our neural net
         # self.vis_data = np.array([],dtype = np.double).reshape(0,self.num_col) #TODO delete if new data storage method is faster
@@ -489,7 +489,8 @@ class visibility_graph_generator:
     #vis graph methods
     def run_test(self,start_list,end_list,obstacle_list,algorithm="djikstra"):
         # main function that creates training data for start/end points
-        self.init_data_memory(start_list,end_list)
+        num_obs = len(obstacle_list)
+        self.init_data_memory(start_list,end_list,num_obs)
         ii = 0
         base_graph = vis_graph(obstacle_list)
         base_graph.make_obs_vis_graph()
@@ -521,11 +522,12 @@ class visibility_graph_generator:
         append_dict(self.graphs_memory,graph)
    
     ## output methods
-    def init_data_memory(self,start_list,end_list):
+    def init_data_memory(self,start_list,end_list,num_obs):
         nstart = len(start_list)
         nend = len(end_list)
         ndata = nstart*nend
         # self.vis_data = np.array([],dtype = np.double).reshape(ndata,self.num_col)
+        self.num_col = 4*num_obs + 4
         self.vis_data = np.empty((ndata,self.num_col),dtype = np.double)
 
     def record_result(self,start,end,obstacle_att,direction_labels,idx):
@@ -565,7 +567,8 @@ class visibility_graph_generator:
     ## plot viewer methods    
     def plot_env(self,test_num,title=None):
         self.plot_start_end(test_num)
-        
+        self.plot_obstacles(test_num)
+        self.finish_plot(title)
 
     def plot_solution(self,test_num,title=None):
         # plots obstacles and solution

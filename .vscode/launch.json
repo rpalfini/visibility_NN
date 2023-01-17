@@ -5,11 +5,27 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: My Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: vis_main",
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args": "",
+            "args": [
+                "1_courses_5_obstacles_normal.txt",
+                "-s",
+                "0",
+                "5",
+                "-e",
+                "25",
+                "22"
+            ],
             "console": "integratedTerminal",
             "justMyCode": true
         },

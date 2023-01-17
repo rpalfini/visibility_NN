@@ -715,7 +715,7 @@ class graph_viewer(visibility_graph_generator):
         super().__init__(obstacles, record_on) # this is needed so we can reuse plot methods from parent
         self.store_vis_graph(vis_graph_obj) 
 
-    #TODO create method that gets obstacle data
+    #TODO create method that gets obstacle data here and in parent class
 
     def get_start_end_data(self, test_num=0):
         graph = self.graphs_memory[test_num]

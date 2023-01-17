@@ -585,11 +585,26 @@ class visibility_graph_generator:
         self.finish_plot(title)
 
     def plot_just_obstacles(self,test_num,title=None):
+        #TODO update axis limits so that all obstacles can be seen
         self.plot_obstacles(test_num)
         self.finish_plot(title)
 
     ## "private" plot methods
+    def update_axis_lim(self,test_num):
+        # TODO this only works for updating start_end axis limits
+        data = self.vis_data[test_num,:]
+        start = (data[0],data[1])
+        end = (data[2],data[3])
+        if self.axis_xlim[0] > start[0]-2:
+            self.axis_xlim[0] = start[0]-2
+        if self.axis_xlim[1] < end[0]+2:
+            self.axis_xlim[1] = end[0]+2
+        #TODO update y axis lim by finding which obstacle, or start end point, is highest and lowest y and compare to axis limits
+
+
     def plot_start_end(self,test_num):
+        
+        self.update_axis_lim(test_num)
         data = self.vis_data[test_num,:]
         graph = self.graphs_memory[test_num]
 

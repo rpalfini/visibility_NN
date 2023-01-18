@@ -151,7 +151,7 @@ class vis_graph:
                 continue
             
             if id(obst) == id(next_obst): # dont calculate visibility with itself
-                raise('Obstacle not deleted correctly from list')
+                raise Exception('Obstacle not deleted correctly from list')
             
             self.internal_bitangents(obst_A,obst_B)
             self.external_bitangents(obst_A,obst_B)
@@ -207,7 +207,7 @@ class vis_graph:
             left_node = end_node
             right_node = start_node
         else:
-            raise('start_node and end_node have same x coordinate')
+            raise Exception('start_node and end_node have same x coordinate')
         
         for obstacle in self.obstacles:
             if self.is_obst_between_points(left_node,right_node,obstacle):
@@ -434,7 +434,7 @@ class vis_graph:
         elif not is_hugging:
             return edge_type.line
         else:
-            raise('invalid edge type')
+            raise Exception('invalid edge type')
 
     def is_edge_CW(self,start_id,end_id): 
         return self.edge_type_dict[start_id][end_id]['is_CW']
@@ -463,7 +463,7 @@ class visibility_graph_generator:
 
         # variables for outputting training data
         self.df_columns = ['start','end','obst1_dir']
-        self.num_col = 16 #TODO this should be equal to 4*num_obs + 4 (start_x start_y end_x end_Y (radius center_x center_y label))
+        # self.num_col = 16 #TODO this should be equal to 4*num_obs + 4 (start_x start_y end_x end_Y (radius center_x center_y label))
         #TODO determine if using np array is the best way to ouptut the data
         #TODO num_col should be determined based on the graph and how many obstacles it has or it should be based on the maximum size we want for our neural net
         # self.vis_data = np.array([],dtype = np.double).reshape(0,self.num_col) #TODO delete if new data storage method is faster
@@ -489,7 +489,8 @@ class visibility_graph_generator:
     #vis graph methods
     def run_test(self,start_list,end_list,obstacle_list,algorithm="djikstra"):
         # main function that creates training data for start/end points
-        self.init_data_memory(start_list,end_list)
+        num_obs = len(obstacle_list)
+        self.init_data_memory(start_list,end_list,num_obs)
         ii = 0
         base_graph = vis_graph(obstacle_list)
         base_graph.make_obs_vis_graph()
@@ -521,11 +522,12 @@ class visibility_graph_generator:
         append_dict(self.graphs_memory,graph)
    
     ## output methods
-    def init_data_memory(self,start_list,end_list):
+    def init_data_memory(self,start_list,end_list,num_obs):
         nstart = len(start_list)
         nend = len(end_list)
         ndata = nstart*nend
         # self.vis_data = np.array([],dtype = np.double).reshape(ndata,self.num_col)
+        self.num_col = 4*num_obs + 4
         self.vis_data = np.empty((ndata,self.num_col),dtype = np.double)
 
     def record_result(self,start,end,obstacle_att,direction_labels,idx):
@@ -562,7 +564,7 @@ class visibility_graph_generator:
         else:
             np.savetxt(fname, self.vis_data, delimiter=",")
 
-    ## plot viewer methods
+    ## plot viewer methods    
     def plot_env(self,test_num,title=None):
         self.plot_start_end(test_num)
         self.plot_obstacles(test_num)
@@ -582,8 +584,27 @@ class visibility_graph_generator:
         self.plot_vis_graph(test_num) #TODO add test_num to be plotted
         self.finish_plot(title)
 
-    # def plot_shortest_path(self):
+    def plot_just_obstacles(self,test_num,title=None):
+        #TODO update axis limits so that all obstacles can be seen
+        self.plot_obstacles(test_num)
+        self.finish_plot(title)
+
+    ## "private" plot methods
+    def update_axis_lim(self,test_num):
+        # TODO this only works for updating start_end axis limits
+        data = self.vis_data[test_num,:]
+        start = (data[0],data[1])
+        end = (data[2],data[3])
+        if self.axis_xlim[0] > start[0]-2:
+            self.axis_xlim[0] = start[0]-2
+        if self.axis_xlim[1] < end[0]+2:
+            self.axis_xlim[1] = end[0]+2
+        #TODO update y axis lim by finding which obstacle, or start end point, is highest and lowest y and compare to axis limits
+
+
     def plot_start_end(self,test_num):
+        
+        self.update_axis_lim(test_num)
         data = self.vis_data[test_num,:]
         graph = self.graphs_memory[test_num]
 
@@ -684,8 +705,8 @@ class visibility_graph_generator:
 class graph_viewer(visibility_graph_generator):
     # This class allows us to look at the vis graph before it is finished
     def __init__(self, vis_graph_obj, obstacles=None, record_on=True):
-        super().__init__(obstacles, record_on)
-        self.store_vis_graph(vis_graph_obj) # this is needed so we can reuse plot methods from parent
+        super().__init__(obstacles, record_on) # this is needed so we can reuse plot methods from parent
+        self.store_vis_graph(vis_graph_obj) 
 
     def plot_network(self,test_num=0):
         self.plot_obstacles(test_num)
@@ -807,7 +828,7 @@ def init_points(point_list):
 def init_obs(obs_list,radius_list):
     #TODO This only allows for one obstacle radius size
     if len(obs_list) != len(radius_list):
-        raise('obstacle list and radius list different lengths')
+        raise Exception('obstacle list and radius list different lengths')
     obs_loc = init_points(obs_list)
     obs_data = zip(obs_loc,radius_list)
     obs_obj = []

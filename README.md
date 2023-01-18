@@ -1,5 +1,6 @@
 # visibility_NN
 
+## Desciption
 This repo creates tangent visibility graph for data generation and implements a navigation decision NN for obstacle path finding.
 
 It creates data files where each row describes a test performed and the optimal labels found for a set of obstacles given a start and end point.  Each row corresponds to one test.  One test is outputted in the form: 
@@ -10,15 +11,19 @@ obstacle_1_center_x, obstacle_1_center_y, obstacle_1_radius through obstacle_n_c
 
 obstacle_n_radius, obstacle_1_label through obstacle_n_label].
 
-
-Meaning for the labels values is defined in vis_graph_enum.py but a down label corresponds to 0 and an up label corresponds to 1.
+Meaning for the labels values is defined in vis_graph_enum.py but a down label corresponds to 0 and an up label corresponds to 1. 
 
 **Dependencies:**
 1. pip install bidict
 2. numpy
 3. pandas (not used currently)
 
-**Open Items:**
+### Other capabilities
+1. vis_main.py is main script to create data files for various obstacle courses.  -h option explains how to use
+2. Random obstacle courses can be generated with obstacle_course_gen.py. -h option explains how to use
+3. obstacle_viewer.py allows preview of obstacle course generated.  -h option has not been added yet, so just open file and change var to path to obstacle
+
+### Open Items
 
 (person working on task)
 1. Update code to work with multiple obstacles by implementing vis_graph.vis_obst_obst() (Robby)

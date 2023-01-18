@@ -1,0 +1,73 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: My Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: vis_main",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "1_courses_5_obstacles_normal.txt",
+                "-s",
+                "5",
+                "0",
+                "-e",
+                "25",
+                "20"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: obstacle_course_gen",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "8",
+                "1",
+                "-b",
+                "False",
+                "-s",
+                "1",
+                "1",
+                "-r",
+                "50",
+                "50"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: simple_obs",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "8",
+                "1",
+                "-b",
+                "False",
+                "-s",
+                "5",
+                "0",
+                "-r",
+                "25",
+                "25"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}

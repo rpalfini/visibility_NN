@@ -700,6 +700,12 @@ class visibility_graph_generator:
             self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width) # plot formatted points
             # node_points.remove(arc_points) #TODO verify this code removes all points except for the root node id
 
+    def plot_node_labels(self,test_num):
+        graph = self.graphs_memory[test_num]
+        for node_id in graph.node_dict:
+            node = graph.node_dict[node_id]
+            self.vis_axs.text(node[0],node[1],str(node_id))
+    
     def clear_plot(self):
         self.vis_axs.cla()
         # self.vis_axs.grid(visible=True)

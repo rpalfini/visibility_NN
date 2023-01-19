@@ -109,6 +109,10 @@ class vis_graph:
     def process_cand_node(self,start_node,cand_node,obstacle,is_end_node = False):
         '''this method adds cand_node, and edge to node dictionary and vis_graph, if the node is visible.  
         It also attaches cand_node to obstacle'''
+        if True:
+            viewer = graph_viewer(self)
+            viewer.plot_obstacles(0)
+            viewer.plot_cand_edge(start_node,cand_node)
         if self.is_node_vis(start_node,cand_node):
             self.update_node_props(cand_node,obstacle)
             # if start_node is an end_node, then add to graph vertically
@@ -502,7 +506,7 @@ class visibility_graph_generator:
                 graph = copy.deepcopy(base_graph)
                 # graph.clear_obs_nodes() #TODO verify removing this doesnt break the code
                 graph.build_vis_graph(start,end)
-                graph.build_h_graph()
+                # graph.build_h_graph()
                 # method that calculates shortest distance, djikstra algo
                 if (algorithm == "AStar"):
                     print("Utilizing A-Star...")
@@ -578,7 +582,6 @@ class visibility_graph_generator:
         self.plot_start_end(test_num)
         self.plot_obstacles(test_num)
         self.plot_shortest_path(test_num) 
-        # self.plot_vis_graph(test_num) #TODO add test_num to be plotted
         self.finish_plot(title)
 
     def plot_full_vis_graph(self,test_num,title=None):
@@ -700,12 +703,29 @@ class visibility_graph_generator:
             self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width) # plot formatted points
             # node_points.remove(arc_points) #TODO verify this code removes all points except for the root node id
 
-    def plot_node_labels(self,test_num):
+    def plot_all_node_labels(self,test_num):
         graph = self.graphs_memory[test_num]
         for node_id in graph.node_dict:
             node = graph.node_dict[node_id]
             self.vis_axs.text(node[0],node[1],str(node_id))
     
+    def plot_opt_path_node_labels(self,test_num):
+        graph = self.graphs_memory[test_num]
+        for node_id in graph.opt_path:
+            node = graph.get_node_obj(node_id)
+            self.vis_axs.text(node.x,node.y,str(node_id))
+
+    def plot_labels(self,test_num):
+        graph = self.graphs_memory[test_num]
+        for label,obstacle in zip(graph.obstacle_labels,graph.obstacles):
+            if label == dir_label.up:
+                self.vis_axs.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=6)
+            elif label == dir_label.down:
+                self.vis_axs.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=7)
+            else:
+                raise Exception('invalid label type')
+
+
     def clear_plot(self):
         self.vis_axs.cla()
         # self.vis_axs.grid(visible=True)
@@ -733,7 +753,12 @@ class graph_viewer(visibility_graph_generator):
         self.plot_start_end(test_num)
         self.plot_obstacles(test_num)
         self.plot_vis_graph(test_num)
-
+    
+    def plot_cand_edge(self,node1,node2):
+        x_points = [node1.x,node2.x]
+        y_points = [node1.y,node2.y]
+        self.vis_axs.plot(x_points,y_points,color='red')
+        
 # global methods
 # for reading new file list
 def read_obstacle_list(fname):

@@ -37,7 +37,6 @@ class circle(param_func):
         return self.params['is_slope_pos']
 
     def evaluate(self,x):
-        # y = math.sqrt(self.params['r']**2 - (x-self.params['x'])**2)
         y = math.sqrt(abs(self.params['r']**2 - (x-self.params['x'])**2))
         if self.params['is_slope_pos']:
             return y + self.params['y']

@@ -10,18 +10,8 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from obstacle_course_gen import convert2bool
 
 # example python vis_main.py 1_courses_5_obstacles_normal.txt 
-parser = ArgumentParser(description="obstacle testing file",formatter_class=ArgumentDefaultsHelpFormatter)
-parser.add_argument("-b", "--batch", default = False, help="Creates unique file name and does not display courses")
-parser.add_argument("-p", "--obs_path", default = r"./obs_courses/",help="path for finding obstacle course")
-parser.add_argument("-c","--course", default=0, help="specify obstacle course number when multiple courses available")
-#TODO figure out better way to specify start and end points as sometimes we want to use a vector of start/end points
-parser.add_argument("-s", "--start", default = [0,3], nargs=2, help='course start point')
-parser.add_argument("-e", "--end", default = [30,15], nargs=2, help='course end point')
-parser.add_argument("-a", "--astar", dest='solve_option', action='store_const', const='AStar', default='dijkstra',help='Change shortest path solver from dijkstra to AStar')
-parser.add_argument("fname", help="Obstacle course file to test")
+args = vg.arg_parse()
 
-args = parser.parse_args()
-args = vars(args)
 
 batch = convert2bool(args["batch"])
 

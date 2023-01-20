@@ -63,7 +63,7 @@ else:
 tic = time.perf_counter()
 vis_graph_one_obst = visibility_graph_generator(record_on=record_on)
 
-vis_graph_one_obst.run_test(start_list,end_list,obstacle_list, sys.argv[1] if (len(sys.argv) > 1) else "Djikstra")
+vis_graph_one_obst.run_test(start_list,end_list,obstacle_list, sys.argv[1] if (len(sys.argv) > 1) else "Dijkstra")
 toc = time.perf_counter()
 print(f"created the data in {toc - tic:0.4f} seconds")
 # vis_graph_one_obst.plot_env(0,"env 1_0")

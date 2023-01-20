@@ -31,7 +31,7 @@ obstacle_list = init_obs(obst_locations,radius1)
 tic = time.perf_counter()
 
 vg_gen = visibility_graph_generator()
-vg_gen.run_test(start_list,end_list,obstacle_list, sys.argv[1] if (len(sys.argv) > 1) else "Djikstra")
+vg_gen.run_test(start_list,end_list,obstacle_list, sys.argv[1] if (len(sys.argv) > 1) else "Dijkstra")
 vg_gen.plot_solution(0,"env 3_0")
 
 toc = time.perf_counter()

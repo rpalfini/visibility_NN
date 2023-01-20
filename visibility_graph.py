@@ -530,7 +530,8 @@ class visibility_graph_generator:
                     if ii % 1000 == 0: print(f'completed {ii} our of {len(start_list)*len(end_list)}')
                     ii += 1
 
-    def run_ginput_test(self,obstacle_list,algorithm=dijkstra)
+    def run_ginput_test(self,obstacle_list,algorithm="dijkstra"):
+        pass
 
     def store_vis_graph(self,graph): #TODO move this to child class that is generator + plotter
         # when debugging different graph configurations

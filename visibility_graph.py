@@ -109,7 +109,8 @@ class vis_graph:
     def process_cand_node(self,start_node,cand_node,obstacle,is_end_node = False):
         '''this method adds cand_node, and edge to node dictionary and vis_graph, if the node is visible.  
         It also attaches cand_node to obstacle'''
-        if True:
+        check = True
+        if check:
             viewer = graph_viewer(self)
             viewer.plot_obstacles(0)
             viewer.plot_cand_edge(start_node,cand_node)
@@ -121,7 +122,8 @@ class vis_graph:
                 self.add_edge2graph(start_node,cand_node,edge_length)
             else:
                 self.add_edge2graph(cand_node,start_node,edge_length)
-
+        if check:
+            del viewer
     def process_cand_edge(self,node_obst1,node_obst2):
         '''tags nodes to appropriate obstacles, inputs are tuple of cand_node and its obstacle'''
         if self.is_node_vis(node_obst1[0],node_obst2[0]):
@@ -210,12 +212,17 @@ class vis_graph:
         elif start_node.x > end_node.x:
             left_node = end_node
             right_node = start_node
-        else:
+        else:#TODO add implementation for checking if nodes are between when start node and end node have same x coordinate
             raise Exception('start_node and end_node have same x coordinate')
         
         for obstacle in self.obstacles:
             if self.is_obst_between_points(left_node,right_node,obstacle):
                 if check_collision(a,b,c,obstacle.center_x,obstacle.center_y,obstacle.radius):
+                    if self.debug:
+                        print(f'non visible edge found:')
+                        print(f'start=({left_node.x},{left_node.y})')
+                        print(f'end_node=({right_node.x},{right_node.y})')
+                        print(f'obstacle(r,x,y) = ({obstacle.view()}\n')
                     is_valid = False
                     break
         return is_valid
@@ -494,7 +501,7 @@ class visibility_graph_generator:
         self.vis_axs.set_aspect('equal')
 
     #vis graph methods
-    def run_test(self,start_list,end_list,obstacle_list,algorithm="djikstra"):
+    def run_test(self,start_list,end_list,obstacle_list,algorithm="dijkstra"):
         # main function that creates training data for start/end points
         num_obs = len(obstacle_list)
         self.init_data_memory(start_list,end_list,num_obs)
@@ -504,15 +511,14 @@ class visibility_graph_generator:
         for start in start_list:
             for end in end_list:
                 graph = copy.deepcopy(base_graph)
-                # graph.clear_obs_nodes() #TODO verify removing this doesnt break the code
                 graph.build_vis_graph(start,end)
-                # graph.build_h_graph()
-                # method that calculates shortest distance, djikstra algo
+                graph.build_h_graph()
+                # method that calculates shortest distance, dijkstra algo
                 if (algorithm == "AStar"):
                     print("Utilizing A-Star...")
                     graph.find_shortest_path_a_star()
-                else: # Default Djikstra
-                    print("Utilizing Djikstra...")
+                else: # Default Dijkstra
+                    print("Utilizing Dijkstra...")
                     graph.find_shortest_path()
                 graph.create_pw_opt_path_func()
                 labels = graph.gen_obs_labels()
@@ -523,6 +529,8 @@ class visibility_graph_generator:
                 if self.debug:
                     if ii % 1000 == 0: print(f'completed {ii} our of {len(start_list)*len(end_list)}')
                     ii += 1
+
+    def run_ginput_test(self,obstacle_list,algorithm=dijkstra)
 
     def store_vis_graph(self,graph): #TODO move this to child class that is generator + plotter
         # when debugging different graph configurations
@@ -805,6 +813,7 @@ def remove_list_item(item,list_in):
 
 def check_collision(a,b,c,x,y,radius):
     dist = round((abs(a * x + b * y + c)) / np.sqrt(a * a + b * b),4) # rounding for numerical errors
+    radius = round(radius,4)
     if radius > dist:
         collision = True
     else:

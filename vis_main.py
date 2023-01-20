@@ -17,7 +17,7 @@ parser.add_argument("-c","--course", default=0, help="specify obstacle course nu
 #TODO figure out better way to specify start and end points as sometimes we want to use a vector of start/end points
 parser.add_argument("-s", "--start", default = [0,3], nargs=2, help='course start point')
 parser.add_argument("-e", "--end", default = [30,15], nargs=2, help='course end point')
-parser.add_argument("-a", "--astar", dest='solve_option', action='store_const', const='AStar', default='djikstra',help='Change shortest path solver from djikstra to AStar')
+parser.add_argument("-a", "--astar", dest='solve_option', action='store_const', const='AStar', default='dijkstra',help='Change shortest path solver from dijkstra to AStar')
 parser.add_argument("fname", help="Obstacle course file to test")
 
 args = parser.parse_args()

@@ -9,10 +9,11 @@ import sys
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from obstacle_course_gen import convert2bool
 
+
 # example python vis_main.py 1_courses_5_obstacles_normal.txt 
 args = vg.arg_parse()
 
-
+   
 batch = convert2bool(args["batch"])
 
 if batch:
@@ -32,9 +33,6 @@ end_vals = [[float(x) for x in args["end"]]]
 obs_file_path = args["obs_path"] + args["fname"]
 obs_courses_dict = vg.read_obstacle_list(obs_file_path)
 obstacle_list = obs_courses_dict[int(args["course"])]
-
-# obst_locations = [(6,5),(13,9),(20,6)]
-# radius1 = [2,3,2] #obstacle radius
 
 # columns = ['start_x','start_y']
 

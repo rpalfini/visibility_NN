@@ -787,6 +787,7 @@ def arg_parse():
     return args
 
 def read_obstacle_list(fname):
+    #TODO move this function to the obstacle_course_gen.py file
     def read_obstacle(obs_string):
         data = obs_string.split(",")
         r = float(data[0])

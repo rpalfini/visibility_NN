@@ -110,7 +110,7 @@ class vis_graph:
     def process_cand_node(self,start_node,cand_node,obstacle,is_end_node = False):
         '''this method adds cand_node, and edge to node dictionary and vis_graph, if the node is visible.  
         It also attaches cand_node to obstacle'''
-        check = True
+        check = False
         if check:
             viewer = graph_viewer(self)
             viewer.plot_obstacles(0)

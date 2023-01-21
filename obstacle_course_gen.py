@@ -102,6 +102,10 @@ def gen_obs(num_obstacles = 6,show_result = False, start_x=0, start_y=0, bound_x
     if output_result:
         with open(fname,"a") as file:
             file.write("New Obstacle Set:\n")
+            file.write(f"Radius bound, mu, sigma = ({r_bound[0]}-{r_bound[1]},{mu},{sigma})\n")
+            file.write(f"x bound, mu, sigma = ({start_x}-{bound_x},{mu_circle},{sigma_circle})\n")
+            file.write(f"y bound, mu, sigma = ({start_y}-{bound_y},{mu_circle},{sigma_circle})\n")
+            # output file requirement is that radius,x,y is written line before the obstacles
             file.write("radius,x,y\n")
             for obs in obstacles:
                 file.write(f"{obs[0]},{obs[1]},{obs[2]}\n")

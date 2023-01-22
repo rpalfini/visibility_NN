@@ -46,3 +46,4 @@ Meaning for the labels values is defined in vis_graph_enum.py but a down label c
 18. Add ability to save data as .npy files
 19. ~~Update plotting methods to take the graph object as input, so that i can call the plotting methods during debugging by just calling with a graph object. (Robby)~~
 20. Fix bugs that occur when two points have same x coordinate
+21. Move plot_network to parent class

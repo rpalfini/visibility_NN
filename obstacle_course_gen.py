@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from datetime import date
 
 # This file can be used to generate obstacle courses input info can be obtained by running with -h option
 
@@ -102,6 +103,10 @@ def gen_obs(num_obstacles = 6,show_result = False, start_x=0, start_y=0, bound_x
     if output_result:
         with open(fname,"a") as file:
             file.write("New Obstacle Set:\n")
+            file.write(f"radius bounds, mu, sigma = ({r_bound[0]}-{r_bound[1]},{mu},{sigma})\n")
+            file.write(f"x bounds, mu, sigma = ({start_x}-{bound_x},{mu_circle},{sigma_circle})\n")
+            file.write(f"y bounds, mu, sigma = ({start_y}-{bound_y},{mu_circle},{sigma_circle})\n")
+            # output file requirement is that radius,x,y is written line before the obstacles
             file.write("radius,x,y\n")
             for obs in obstacles:
                 file.write(f"{obs[0]},{obs[1]},{obs[2]}\n")
@@ -122,8 +127,8 @@ def gen_multi_courses(num_obs):
 def parse_input():
     parser = ArgumentParser(description="obstacle course generator",formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument("-b", "--batch", default = True, help="Creates unique file name and does not display courses")
-    parser.add_argument("-s", "--start", default = [0,0], nargs=2, help='specify start boundaries for x and y of obstacle course')
-    parser.add_argument("-r", "--range", default = [20,20], nargs=2, help="range of obstacle course in x and y")
+    parser.add_argument("-s", "--start", default = [5,5], nargs=2, help='specify start boundaries for x and y of obstacle course')
+    parser.add_argument("-r", "--range", default = [25,25], nargs=2, help="range of obstacle course in x and y")
     parser.add_argument("num_obstacles", default = 10, help="Number of obstacles per course")
     parser.add_argument("num_courses", default = 10, help="Number of courses to make")
     args = parser.parse_args()
@@ -156,6 +161,8 @@ if __name__ == "__main__":
         gen_obs(num_obstacles=int(args["num_obstacles"]),show_result=True,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
     else:
         courses = int(args["num_courses"])
-        fname = f"{courses}_courses_{obstacles}_obstacles_normal.txt"
+        today = date.today()
+        formatted_date = today.strftime("%y_%m_%d")
+        fname = f"{formatted_date}_{courses}_courses_{obstacles}_obstacles_normal.txt"
         for ii in range(courses):
             gen_obs(num_obstacles=int(args["num_obstacles"]),fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)

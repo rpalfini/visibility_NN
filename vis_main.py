@@ -9,19 +9,11 @@ import sys
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from obstacle_course_gen import convert2bool
 
+
 # example python vis_main.py 1_courses_5_obstacles_normal.txt 
-parser = ArgumentParser(description="obstacle testing file",formatter_class=ArgumentDefaultsHelpFormatter)
-parser.add_argument("-b", "--batch", default = False, help="Creates unique file name and does not display courses")
-parser.add_argument("-p", "--obs_path", default = r".\\obs_courses\\",help="path for finding obstacle course")
-parser.add_argument("-c","--course", default=0, help="specify obstacle course number when multiple courses available")
-#TODO figure out better way to specify start and end points as sometimes we want to use a vector of start/end points
-parser.add_argument("-s", "--start", default = [0,3], nargs=2, help='course start point')
-parser.add_argument("-e", "--end", default = [30,15], nargs=2, help='course end point')
-parser.add_argument("fname", help="Obstacle course file to test")
+args = vg.arg_parse()
 
-args = parser.parse_args()
-args = vars(args)
-
+   
 batch = convert2bool(args["batch"])
 
 if batch:
@@ -42,9 +34,6 @@ obs_file_path = args["obs_path"] + args["fname"]
 obs_courses_dict = vg.read_obstacle_list(obs_file_path)
 obstacle_list = obs_courses_dict[int(args["course"])]
 
-# obst_locations = [(6,5),(13,9),(20,6)]
-# radius1 = [2,3,2] #obstacle radius
-
 # columns = ['start_x','start_y']
 
 # create start/end points
@@ -57,8 +46,7 @@ end_list = vg.init_points(end_vals)
 tic = time.perf_counter()
 
 vg_gen = vg.visibility_graph_generator()
-# vg_gen.run_test(start_list,end_list,obstacle_list, sys.argv[1] if (len(sys.argv) > 1) else "Djikstra")
-vg_gen.run_test(start_list,end_list,obstacle_list)
+vg_gen.run_test(start_list,end_list,obstacle_list,algorithm=args["solve_option"])
 vg_gen.plot_solution(0,"env 3_0")
 
 toc = time.perf_counter()
@@ -72,6 +60,7 @@ vg_gen.save_plot_image(f'{args["fname"]}_obs_fig')
 
 plt.show()
 
-if osSleep:
-    osSleep.uninhibit()
+if batch:
+    if osSleep:
+        osSleep.uninhibit()
 

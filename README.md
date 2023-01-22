@@ -28,7 +28,7 @@ Meaning for the labels values is defined in vis_graph_enum.py but a down label c
 (person working on task)
 1. Update code to work with multiple obstacles by implementing vis_graph.vis_obst_obst() (Robby)
 2. Remove obstacles from vis_graph_generator attributes
-3. Update dijkstra and priodict to pop keys based on cost + euclidean distance heuristic (i.e. A*)
+3. Update dijkstra and priodict to pop keys based on cost + euclidean distance heuristic (i.e. A*) (Omar)
 4. Delayed edge generation based on A* _stretch goal_
 5. Many #TODOS
 6. Implement NN for navigation prediction for one obstacle (Robby)
@@ -44,4 +44,5 @@ Meaning for the labels values is defined in vis_graph_enum.py but a down label c
 16. Code to combine created csv data files.
 17. Implement NN for navigation prediction for multiple obstacles.
 18. Add ability to save data as .npy files
-19. Update plotting methods to take the graph object as input, so that i can call the plotting methods during debugging by just calling with a graph object. (Robby)
+19. ~~Update plotting methods to take the graph object as input, so that i can call the plotting methods during debugging by just calling with a graph object. (Robby)~~
+20. Fix bugs that occur when two points have same x coordinate

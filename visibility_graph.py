@@ -63,6 +63,7 @@ class vis_graph:
         self.edge_type_dict = {} # matches the format of vis_graph but only records if edge is surfing or hugging for plotting purposes
         self.node_obst_dict = {} # keeps track of which obstacle each node is on, adding this to make plotting arcs
         self.pw_opt_func = {} # record parameters of piecewise function for label evaulation
+        self.opt_path_cost = 0
         self.obstacles = obstacles
 
     def view_vis_graph(self):
@@ -307,6 +308,7 @@ class vis_graph:
         self.node_obst_dict[cand_node_id]['obstacle'] = obstacle
 
     def find_shortest_path(self):
+        self.algo = 'Dijkstra'
         start_id = self.get_node_id(self.start)
         end_id = self.get_node_id(self.end)
         self.opt_path = dijk.shortestPath(self.vis_graph,start_id,end_id)
@@ -314,6 +316,7 @@ class vis_graph:
             print(self.opt_path)
 
     def find_shortest_path_a_star(self):
+        self.algo = 'AStar'
         start_id = self.get_node_id(self.start)
         end_id = self.get_node_id(self.end)
         self.opt_path = ast.shortestPath(self.vis_graph, self.h_graph, start_id, end_id)
@@ -326,6 +329,7 @@ class vis_graph:
             if node_id == 'start':
                 continue
             cost += self.vis_graph[self.opt_path[ii-1]][self.opt_path[ii]]
+        self.opt_path_cost = cost
         return cost
     
     def create_pw_opt_path_func(self):
@@ -529,7 +533,8 @@ class visibility_graph_generator:
                 else: # Default Dijkstra
                     print("Utilizing Dijkstra...")
                     graph.find_shortest_path()
-                graph.create_pw_opt_path_func()
+                graph.eval_path_cost()
+                graph.create_pw_opt_path_funcS()
                 labels = graph.gen_obs_labels()
                 obs_att = graph.get_obs_prop()
                 self.record_result(start,end,obs_att,labels,ii)

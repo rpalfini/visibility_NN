@@ -51,6 +51,9 @@ vg_gen.run_test(start_list,end_list,obstacle_list,algorithm='Dijkstra')
 vg_gen.run_test(start_list,end_list,obstacle_list,algorithm='AStar')
 vg_gen.plot_solution(0,"dijkstra")
 
+viewer = vg.graph_viewer(vg_gen.graphs_memory[1])
+viewer.plot_solution(0,"astar")
+
 toc = time.perf_counter()
 print(f"created the data in {toc - tic:0.4f} seconds")
 

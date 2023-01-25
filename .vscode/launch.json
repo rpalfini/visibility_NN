@@ -30,6 +30,17 @@
             "justMyCode": true
         },
         {
+            "name": "Python: vis_main2",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "1_courses_10_obstacles_normal.txt"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: obstacle_course_gen",
             "type": "python",
             "request": "launch",

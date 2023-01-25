@@ -229,10 +229,11 @@ class vis_graph:
         return is_valid
 
     def is_obst_between_points(self,start_node,end_node,obstacle):
+        '''returns if obstace is between horizontally and vertically.'''
         if obstacle.center_x > start_node.x and obstacle.center_x < end_node.x:
             is_between = True
         else:
-            is_between = False
+            is_between = False #TODO add an output that says if obstacle is between points when start_node and end_node have same x coord.  Maybe we want to check y coordinate also
         if self.debug:
             print(f'vis_graph.is_obst_between_points()')
             print(f'obstacle at ({obstacle.center_x},{obstacle.center_y})')

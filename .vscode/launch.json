@@ -18,7 +18,7 @@
             "request": "launch",
             "program": "${file}",
             "args": [
-                "1_courses_5_obstacles_normal.txt",
+                "1_courses_10_obstacles_normal.txt",
                 "-s",
                 "5",
                 "0",

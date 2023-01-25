@@ -46,7 +46,9 @@ end_list = vg.init_points(end_vals)
 tic = time.perf_counter()
 
 vg_gen = vg.visibility_graph_generator()
-vg_gen.run_test(start_list,end_list,obstacle_list,algorithm=args["solve_option"])
+# vg_gen.run_test(start_list,end_list,obstacle_list,algorithm=args["solve_option"])
+vg_gen.run_test(start_list,end_list,obstacle_list,algorithm='Dijkstra')
+vg_gen.run_test(start_list,end_list,obstacle_list,algorithm='AStar')
 vg_gen.plot_solution(0,"env 3_0")
 
 toc = time.perf_counter()

@@ -534,7 +534,7 @@ class visibility_graph_generator:
                     print("Utilizing Dijkstra...")
                     graph.find_shortest_path()
                 graph.eval_path_cost()
-                graph.create_pw_opt_path_funcS()
+                graph.create_pw_opt_path_func()
                 labels = graph.gen_obs_labels()
                 obs_att = graph.get_obs_prop()
                 self.record_result(start,end,obs_att,labels,ii)

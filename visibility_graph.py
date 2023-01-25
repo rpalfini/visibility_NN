@@ -319,6 +319,14 @@ class vis_graph:
         self.opt_path = ast.shortestPath(self.vis_graph, self.h_graph, start_id, end_id)
         if self.debug == True:
             print(self.opt_path)
+
+    def eval_path_cost(self):
+        cost = 0
+        for ii,node_id in enumerate(self.opt_path):
+            if node_id == 'start':
+                continue
+            cost += self.vis_graph[self.opt_path[ii-1]][self.opt_path[ii]]
+        return cost
     
     def create_pw_opt_path_func(self):
         def decide_zero_slope_sign(node_id):

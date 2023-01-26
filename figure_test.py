@@ -8,9 +8,9 @@ class test_plot:
         plt.ion()
         self.fig = plt.figure()
         # self.open_fig_second_monitor()
-        self.place_figure()
+        # self.place_figure()
 
-    def place_figure(self):
+    def place_figure(self,location=(-100,400)):
         self.fig.canvas.manager.window.move(100,400)
 
     # def open_fig_second_monitor(self):
@@ -39,9 +39,14 @@ class test_plot:
     def act_fig(self):
         plt.figure(self.fig.number)
 
-    def plot(self,x,y):
+    def plot(self,x,y,name=''):
         self.act_fig()
-        plt.plot(x,y)
+        plt.plot(x,y,label=name)
+
+    def make_leg(self):
+        self.act_fig()
+        plt.legend()
+        plt.title('titled')
 
     def close_plot(self):
         self.act_fig()
@@ -57,7 +62,8 @@ if __name__ == "__main__":
     range1 = np.arange(1,10,0.1)
     range2 = np.arange(10,1,-0.1)
 
-    plotter1.plot(range1,range2)
+    plotter1.plot(range1,range2,'range')
+    plotter1.make_leg()
     plotter2.plot(range1,range1)
 
 

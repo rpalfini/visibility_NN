@@ -7,8 +7,6 @@ import WindowsInhibitor as wi #prevents computer from sleeping while generating 
 from datetime import date
 import sys
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-from obstacle_course_gen import convert2bool
-
 
 # example python vis_main.py 1_courses_5_obstacles_normal.txt 
 args = vg.arg_parse()
@@ -43,12 +41,9 @@ obstacle_list = obs_courses_dict[args["course"]]
 start_list = vg.init_points(start_vals)
 end_list = vg.init_points(end_vals)
 
-# create obstacle list
-# obstacle_list = vg.init_obs(obst_locations,radius1)
-
 tic = time.perf_counter()
 
-vg_gen = vg.visibility_graph_generator()
+vg_gen = vg.visibility_graph_generator(is_ion=args["is_ion"])
 if args["test_mode"]:
     vg_gen.run_test(start_list,end_list,obstacle_list,algorithm="dijkstra")
     vg_gen.run_test(start_list,end_list,obstacle_list,algorithm="AStar")

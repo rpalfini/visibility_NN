@@ -469,7 +469,7 @@ class visibility_graph_generator:
     #TODO look into pickle for saving vis_graph_gen objects
     debug = True # guess i could have super class to inherit this as well as any debug routines
 
-    def __init__(self,obstacles=None,record_on = True):
+    def __init__(self,obstacles=None,record_on=True,is_ion=False):
         # variables for buidling vis graph
         self.record_graph_objects = record_on
         self.graphs_memory = {} # this dictionary stores the graph created start/end, graph created, and a node_point_dictionary, used for plotting
@@ -493,14 +493,13 @@ class visibility_graph_generator:
         else:
             self.obstacles = obstacles #TODO determine if i want to store obstacle list in this object
         # visibility viewer initialization
-        self.fig, self.vis_axs = plt.subplots(1,1)
-        self.init_graph_props()
 
-    def init_graph_props(self):
-        self.vis_axs.set_xlim(self.axis_xlim)
-        self.vis_axs.set_ylim(self.axis_ylim)
-        self.vis_axs.grid(visible=True)
-        self.vis_axs.set_aspect('equal')
+        if is_ion:
+            plt.ion() 
+        self.fig = plt.figure()
+        if is_ion:
+            self.place_figure() #sets location of plot window to second monitor on the left
+        self._init_graph_props()        
 
     #vis graph methods
     def run_test(self,start_list,end_list,obstacle_list,algorithm="dijkstra"):
@@ -606,40 +605,74 @@ class visibility_graph_generator:
         self.plot_obstacles(test_num)
         self.finish_plot(title)
 
+    def plot_network(self,test_num):
+        #TODO decide if i want it to be called plot_network or plot_full_vis_graph
+        self.plot_start_end(test_num)
+        self.plot_obstacles(test_num)
+        self.plot_vis_graph(test_num)
+
     ## "private" plot methods
     def get_start_end_data(self,test_num):
+        #TODO this is part of method so i can still plot things even if I dont save the graphs but i probably wont end up using it..
         data = self.vis_data[test_num,:]
         start = (data[0],data[1])
         end = (data[2],data[3])
         return start, end
 
     def update_axis_lim(self,test_num):
-        # TODO this only works for updating start_end axis limits
+        
+        x_points = []
+        y_points = []
+        # get start, end, and obstacles and add to compare list
         start,end = self.get_start_end_data(test_num)
-        if self.axis_xlim[0] > start[0]-2:
-            self.axis_xlim[0] = start[0]-2
-        if self.axis_xlim[1] < end[0]+2:
-            self.axis_xlim[1] = end[0]+2
-        #TODO update y axis lim by finding which obstacle, or start end point, is highest and lowest y and compare to axis limits
-        if self.axis_ylim[0] > start[1]-2:
-            self.axis_ylim[0] = start[1]-2
-        if self.axis_ylim[1] < end[1]+2:
-            self.axis_ylim[1] = end[1]+2
-        self.init_graph_props()
+        graph = self.graphs_memory[test_num]
+
+        # add all critical x and y points
+        x_points.append(start[0])
+        x_points.append(end[0])
+        y_points.append(start[1])
+        y_points.append(end[1])
+        for obstacle in graph.obstacles:
+            x_low = obstacle.center_x - obstacle.radius
+            x_high = obstacle.center_x + obstacle.radius
+            x_points.append(x_low)
+            x_points.append(x_high)
+            y_low = obstacle.center_y - obstacle.radius
+            y_high = obstacle.center_y + obstacle.radius
+            y_points.append(y_low)
+            y_points.append(y_high)
+
+        x_min = min(x_points)
+        x_max = max(x_points)
+        y_min = min(y_points)
+        y_max = max(y_points)
+
+        # compare max/min's to axis limits and adjust if they are violated
+        if self.axis_xlim[0] > x_min-2:
+            self.axis_xlim[0] = x_min-2
+        if self.axis_xlim[1] < x_max+2:
+            self.axis_xlim[1] = x_max+2
+        if self.axis_ylim[0] > y_min-2:
+            self.axis_ylim[0] = y_min-2
+        if self.axis_ylim[1] < y_max+2:
+            self.axis_ylim[1] = y_max+2
+        self._init_graph_props()
 
     def plot_start_end(self,test_num):
+        self._act_fig()
         self.update_axis_lim(test_num)
         start,end = self.get_start_end_data(test_num)
-        self.vis_axs.scatter(start[0],start[1],color='red',marker="^",linewidth=self.line_width,label="start")
-        self.vis_axs.scatter(end[0],end[1],color='green',marker="o",linewidth=self.line_width,label="end")
+        plt.scatter(start[0],start[1],color='red',marker="^",linewidth=self.line_width,label="start")
+        plt.scatter(end[0],end[1],color='green',marker="o",linewidth=self.line_width,label="end")
 
     def plot_obstacles(self,test_num):
         # plots obstacles
+        self._act_fig()
         graph = self.graphs_memory[test_num]
         for obstacle in graph.obstacles:
             obst_x, obst_y = self.make_circle_points(obstacle)
-            # self.vis_axs.plot(obst_x, obst_y,color='blue',linewidth=self.line_width,label="obstacle")
-            self.vis_axs.plot(obst_x, obst_y,color='blue',linewidth=self.line_width)
+            # plt.plot(obst_x, obst_y,color='blue',linewidth=self.line_width,label="obstacle")
+            plt.plot(obst_x, obst_y,color='blue',linewidth=self.line_width)
 
     def make_circle_points(self,obstacle):
         #TODO could remove this function and use make_arc_points instead
@@ -671,6 +704,7 @@ class visibility_graph_generator:
 
     def plot_vis_graph(self,test_num):
         # this method plots the visibility graph generated
+        self._act_fig()
         node_points = []
         graph = self.graphs_memory[test_num]
         for node_id in graph.vis_graph:
@@ -679,12 +713,12 @@ class visibility_graph_generator:
                 #TODO replace bleow with method plot_graph_edge()
                 if graph.is_edge_hugging(node_id,adj_node_id) == False: # 
                     node_points.append(graph.get_node_xy(adj_node_id))
-                    self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
+                    plt.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
                     node_points.pop()
                 else:
                     arc_points = self.make_arc_points(node_id,adj_node_id,graph)
                     for point in arc_points: node_points.append(point)
-                    self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width) # plot formatted points
+                    plt.plot(*zip(*node_points),color='purple',linewidth=self.line_width) # plot formatted points
                     # node_points.remove(arc_points) #TODO verify this code removes all points except for the root node id
                     del node_points[1:]
             if len(node_points) > 1:
@@ -692,8 +726,9 @@ class visibility_graph_generator:
             node_points.pop() #reset node_points
 
     def finish_plot(self,title=None):
-        self.vis_axs.set_title(title)
-        self.vis_axs.legend()
+        self._act_fig()
+        plt.legend()
+        plt.title(title)
 
     def plot_shortest_path(self,test_num):
         graph = self.graphs_memory[test_num]
@@ -705,53 +740,71 @@ class visibility_graph_generator:
                 self.plot_graph_edge(graph,node_id,next_node_id)
 
     def plot_graph_edge(self,graph,start_id,end_id):
+        self._act_fig()
         node_points = []
         node_points.append(graph.get_node_xy(start_id))
         if graph.is_edge_hugging(start_id,end_id) == False: # 
             node_points.append(graph.get_node_xy(end_id))
-            self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
+            plt.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
         else:
             arc_points = self.make_arc_points(start_id,end_id,graph)
             for point in arc_points: node_points.append(point)
-            self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width) # plot formatted points
+            plt.plot(*zip(*node_points),color='purple',linewidth=self.line_width) # plot formatted points
             # node_points.remove(arc_points) #TODO verify this code removes all points except for the root node id
 
     def plot_all_node_labels(self,test_num):
+        self._act_fig()
         graph = self.graphs_memory[test_num]
         for node_id in graph.node_dict:
             node = graph.node_dict[node_id]
-            self.vis_axs.text(node[0],node[1],str(node_id))
+            plt.text(node[0],node[1],str(node_id))
     
     def plot_opt_path_node_labels(self,test_num):
+        self._act_fig()
         graph = self.graphs_memory[test_num]
         for node_id in graph.opt_path:
             node = graph.get_node_obj(node_id)
-            self.vis_axs.text(node.x,node.y,str(node_id))
+            plt.text(node.x,node.y,str(node_id))
 
     def plot_labels(self,test_num):
+        '''plots up down labels for obstacles'''
+        self._act_fig()
         graph = self.graphs_memory[test_num]
         for label,obstacle in zip(graph.obstacle_labels,graph.obstacles):
             if label == dir_label.up:
-                self.vis_axs.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=6)
+                plt.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=6)
             elif label == dir_label.down:
-                self.vis_axs.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=7)
+                plt.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=7)
             else:
                 raise Exception('invalid label type')
 
-
     def clear_plot(self):
-        self.vis_axs.cla()
-        # self.vis_axs.grid(visible=True)
-        self.init_graph_props()
+        plt.cla()
+        self._init_graph_props()
 
     def save_plot_image(self,fig_name):
+        '''creates .png of visibility graph'''
         self.fig.savefig(fig_name + '.png')
-        # creates .png of visibility graph
+
+    def place_figure(self,location=(-1500,600)):
+        self.fig.canvas.manager.window.move(*location)
+
+    def _init_graph_props(self):
+        self._act_fig()
+        plt.xlim(self.axis_xlim)
+        plt.ylim(self.axis_ylim)
+        plt.grid(visible=True)
+        ax = plt.gca()
+        ax.set_aspect('equal')
+
+    def _act_fig(self):
+        '''This method makes sure correct figure is being plotted on'''
+        plt.figure(self.fig.number)
 
 class graph_viewer(visibility_graph_generator):
     # This class allows us to look at the vis graph before it is finished
-    def __init__(self, vis_graph_obj, obstacles=None, record_on=True):
-        super().__init__(obstacles, record_on) # this is needed so we can reuse plot methods from parent
+    def __init__(self, vis_graph_obj, obstacles=None, record_on=True,is_ion=True):
+        super().__init__(obstacles, record_on, is_ion) # this is needed so we can reuse plot methods from parent
         self.store_vis_graph(vis_graph_obj) 
 
     #TODO create method that gets obstacle data here and in parent class
@@ -762,15 +815,15 @@ class graph_viewer(visibility_graph_generator):
         end = (graph.end.x, graph.end.y)
         return start,end
 
-    def plot_network(self,test_num=0):
-        self.plot_start_end(test_num)
-        self.plot_obstacles(test_num)
-        self.plot_vis_graph(test_num)
+    def plot_network(self, test_num=0):
+        return super().plot_network(test_num)
     
     def plot_cand_edge(self,node1,node2):
+        '''used for debugging new edges and plotting as they are found'''
+        self._act_fig()
         x_points = [node1.x,node2.x]
         y_points = [node1.y,node2.y]
-        self.vis_axs.plot(x_points,y_points,color='red')
+        plt.plot(x_points,y_points,color='red')
         
 # global methods
 # for reading new file list
@@ -783,12 +836,13 @@ def arg_parse():
     parser.add_argument("-s", "--start", type=float, default = [0,3], nargs=2, help='course start point')
     parser.add_argument("-e", "--end", type=float, default = [30,15], nargs=2, help='course end point')
     parser.add_argument("-a", "--astar", dest='solve_option', action='store_const', const='AStar', default='dijkstra',help='Change shortest path solver from dijkstra to AStar')
-    parser.add_argument("-t", "--path_test", dest='test_mode', action='store_const', const=True, default=False,help='Changes to test mode to compare dijkstra and AStar solutions'), 
+    parser.add_argument("-t", "--path_test", dest='test_mode', action='store_const', const=True, default=False,help='Changes to test mode to compare dijkstra and AStar solutions')
+    parser.add_argument("-i", "--ion_on", dest='is_ion', action='store_const', const=True, default=False,help='initializes graph generator with plt.ion() enabling interactive mode')
     parser.add_argument("fname", help="Obstacle course file to test")
     
     args = parser.parse_args()
     args = vars(args)
-    args["start"] = [args["start"]] #run_test expects start and end as list of points
+    args["start"] = [args["start"]] #run test expects start and end as list of points
     args["end"] = [args["end"]]
     args["obs_fpath"] = args["base_path"] + args["fname"]
     return args

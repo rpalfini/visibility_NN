@@ -43,14 +43,26 @@ end_list = vg.init_points(end_vals)
 
 tic = time.perf_counter()
 
-vg_gen = vg.visibility_graph_generator(is_ion=args["is_ion"])
+
 if args["test_mode"]:
+    vg_gen = vg.visibility_graph_generator(is_ion=args["is_ion"])
     vg_gen.run_test(start_list,end_list,obstacle_list,algorithm="dijkstra")
     vg_gen.run_test(start_list,end_list,obstacle_list,algorithm="AStar")
-    plt.show()
+    if vg.compare_solutions(vg_gen.graphs_memory[0].opt_path,vg_gen.graphs_memory[1].opt_path):
+        print('solution PATH is SAME')
+    else:
+        print('solution PATH is DIFFERENT')
+        print(f'd = {vg_gen.graphs_memory[0].opt_path}')
+        print(f'a = {vg_gen.graphs_memory[1].opt_path}')
+    if vg_gen.graphs_memory[0].opt_path_cost == vg_gen.graphs_memory[1].opt_path_cost:
+        print('solution COST is SAME')
+    else:
+        print('solution COST is DIFFERENT')
+        print(f'd = {vg_gen.graphs_memory[0].opt_path_cost}, a* = {vg_gen.graphs_memory[1].opt_path_cost}')
     vg_gen.plot_solution(0,"dijkstra")
     vg_gen.plot_solution(1,"AStar")
 else:
+    vg_gen = vg.visibility_graph_generator(is_ion=args["is_ion"])
     vg_gen.run_test(start_list,end_list,obstacle_list,algorithm=args["solve_option"])
     vg_gen.plot_solution(0,"env 3_0")
 
@@ -62,8 +74,6 @@ vg_gen.save_plot_image(f'{args["fname"]}_obs_fig')
 
 # today = date.today()
 # vg_gen.output_csv(today.strftime("%Y_%m_%d")+'three_obst data_large_1')
-
-plt.show()
 
 if batch:
     if osSleep:

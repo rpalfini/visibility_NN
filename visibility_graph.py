@@ -63,6 +63,7 @@ class vis_graph:
         self.edge_type_dict = {} # matches the format of vis_graph but only records if edge is surfing or hugging for plotting purposes
         self.node_obst_dict = {} # keeps track of which obstacle each node is on, adding this to make plotting arcs
         self.pw_opt_func = {} # record parameters of piecewise function for label evaulation
+        self.opt_path_cost = 0
         self.obstacles = obstacles
 
     def view_vis_graph(self):
@@ -308,6 +309,7 @@ class vis_graph:
         self.node_obst_dict[cand_node_id]['obstacle'] = obstacle
 
     def find_shortest_path(self):
+        self.algo = 'Dijkstra'
         start_id = self.get_node_id(self.start)
         end_id = self.get_node_id(self.end)
         self.opt_path = dijk.shortestPath(self.vis_graph,start_id,end_id)
@@ -315,11 +317,21 @@ class vis_graph:
             print(self.opt_path)
 
     def find_shortest_path_a_star(self):
+        self.algo = 'AStar'
         start_id = self.get_node_id(self.start)
         end_id = self.get_node_id(self.end)
         self.opt_path = ast.shortestPath(self.vis_graph, self.h_graph, start_id, end_id)
         if self.debug == True:
             print(self.opt_path)
+
+    def eval_path_cost(self):
+        cost = 0
+        for ii,node_id in enumerate(self.opt_path):
+            if node_id == 'start':
+                continue
+            cost += self.vis_graph[self.opt_path[ii-1]][self.opt_path[ii]]
+        self.opt_path_cost = cost
+        return cost
     
     def create_pw_opt_path_func(self):
         def decide_zero_slope_sign(node_id):
@@ -521,6 +533,7 @@ class visibility_graph_generator:
                 else: # Default Dijkstra
                     print("Utilizing Dijkstra...")
                     graph.find_shortest_path()
+                graph.eval_path_cost()
                 graph.create_pw_opt_path_func()
                 labels = graph.gen_obs_labels()
                 obs_att = graph.get_obs_prop()
@@ -614,9 +627,15 @@ class visibility_graph_generator:
     ## "private" plot methods
     def get_start_end_data(self,test_num):
         #TODO this is part of method so i can still plot things even if I dont save the graphs but i probably wont end up using it..
-        data = self.vis_data[test_num,:]
-        start = (data[0],data[1])
-        end = (data[2],data[3])
+        try:
+            data = self.vis_data[test_num,:]
+            start = (data[0],data[1])
+            end = (data[2],data[3])
+        except:
+            graph = self.graphs_memory[test_num]
+            start = (graph.start.x, graph.start.y)
+            end = (graph.end.x, graph.end.y)
+
         return start, end
 
     def update_axis_lim(self,test_num):
@@ -878,6 +897,16 @@ def read_obstacle_list(fname):
         
     obs_file = obs_file.close()
     return obstacle_courses
+
+def compare_solutions(sol1,sol2):
+    '''returns if two lists are the same'''
+    same = True
+    for i1,i2 in zip(sol1,sol2):
+        if i1 != i2:
+            same = False
+            break
+    return same
+
 
 def append_dict(dict_in,item):
     num_keys = len(dict_in)

@@ -37,7 +37,8 @@
             "program": "${file}",
             "args": [
                 "1_courses_10_obstacles_normal.txt",
-                "-i"
+                "-i",
+                "-t"
             ],
             "console": "integratedTerminal",
             "justMyCode": true

@@ -44,6 +44,10 @@ Meaning for the labels values is defined in vis_graph_enum.py but a down label c
 16. Code to combine created csv data files.
 17. Implement NN for navigation prediction for multiple obstacles.
 18. Add ability to save data as .npy files
-19. ~~Update plotting methods to take the graph object as input, so that i can call the plotting methods during debugging by just calling with a graph object. (Robby)~~
+19. ~~Update plotting methods to take the graph object as input, so that I can call the plotting methods during debugging by just calling with a graph object. (Robby)~~
 20. Fix bugs that occur when two points have same x coordinate
 21. Move plot_network to parent class
+22. Update vis_graph algorithm to allow start point in front of obstacles on the x-axis
+23. Fix collision check to check for obstacles vertically and horizontally.  Can we only consider obstacle centers or do we need to check their extrema?
+24. Change plot handles from subplots to just plots.
+25. Finish adding batch mode in vis_main.py

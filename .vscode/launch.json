@@ -24,7 +24,46 @@
                 "0",
                 "-e",
                 "25",
-                "20"
+                "20",
+                "-i"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: vis_main2",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "1_courses_10_obstacles_normal.txt",
+                "-i",
+                "-t"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: vis_main_all_options",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "1_courses_5_obstacles_normal.txt",
+                "-s",
+                "5",
+                "0",
+                "-e",
+                "25",
+                "20",
+                "-b",
+                "False",
+                "-t",
+                "-c",
+                "0",
+                "-p",
+                "./obs_courses/",
+                "-i"
             ],
             "console": "integratedTerminal",
             "justMyCode": true

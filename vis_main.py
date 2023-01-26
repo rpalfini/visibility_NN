@@ -13,8 +13,9 @@ from obstacle_course_gen import convert2bool
 # example python vis_main.py 1_courses_5_obstacles_normal.txt 
 args = vg.arg_parse()
 
-   
-batch = convert2bool(args["batch"])
+#TODO fully add batch code which involves loading start/end values, maybe make it a function in vis_graph where it can generate a range of start/end values we want to test  
+# batch = convert2bool(args["batch"])
+batch = args["batch"]
 
 if batch:
     osSleep = None
@@ -25,14 +26,16 @@ if batch:
 
 # start_vals = [(0,3)]
 # end_vals = [(30,15)]
-start_vals = [[float(x) for x in args["start"]]] # double bracket as the input needs to be pair(x,y) in a list
-#TODO make start/end point files I can load as start and end or have option that specifies if i am using the batch start/end list or if I am using a signle start end point specified by the user
-end_vals = [[float(x) for x in args["end"]]]
+start_vals = args["start"]
+end_vals = args["end"]
 
 
-obs_file_path = args["obs_path"] + args["fname"]
+# obs_file_path = args["obs_path"] + args["fname"]
+obs_file_path = args["obs_fpath"]
 obs_courses_dict = vg.read_obstacle_list(obs_file_path)
-obstacle_list = obs_courses_dict[int(args["course"])]
+obstacle_list = obs_courses_dict[args["course"]]
+
+
 
 # columns = ['start_x','start_y']
 
@@ -46,8 +49,15 @@ end_list = vg.init_points(end_vals)
 tic = time.perf_counter()
 
 vg_gen = vg.visibility_graph_generator()
-vg_gen.run_test(start_list,end_list,obstacle_list,algorithm=args["solve_option"])
-vg_gen.plot_solution(0,"env 3_0")
+if args["test_mode"]:
+    vg_gen.run_test(start_list,end_list,obstacle_list,algorithm="dijkstra")
+    vg_gen.run_test(start_list,end_list,obstacle_list,algorithm="AStar")
+    plt.show()
+    vg_gen.plot_solution(0,"dijkstra")
+    vg_gen.plot_solution(1,"AStar")
+else:
+    vg_gen.run_test(start_list,end_list,obstacle_list,algorithm=args["solve_option"])
+    vg_gen.plot_solution(0,"env 3_0")
 
 toc = time.perf_counter()
 print(f"created the data in {toc - tic:0.4f} seconds")

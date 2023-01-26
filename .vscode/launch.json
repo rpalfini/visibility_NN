@@ -24,7 +24,8 @@
                 "0",
                 "-e",
                 "25",
-                "20"
+                "20",
+                "-i"
             ],
             "console": "integratedTerminal",
             "justMyCode": true

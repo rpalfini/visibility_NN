@@ -18,7 +18,7 @@
             "request": "launch",
             "program": "${file}",
             "args": [
-                "1_courses_5_obstacles_normal.txt",
+                "1_courses_10_obstacles_normal.txt",
                 "-s",
                 "5",
                 "0",
@@ -64,6 +64,17 @@
                 "-p",
                 "./obs_courses/",
                 "-i"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: vis_main2",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "1_courses_10_obstacles_normal.txt"
             ],
             "console": "integratedTerminal",
             "justMyCode": true

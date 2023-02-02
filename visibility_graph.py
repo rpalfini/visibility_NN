@@ -9,6 +9,7 @@ import param_func as pf
 import os
 import copy
 import warnings
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 class point:
     key_precision = 6
@@ -62,6 +63,7 @@ class vis_graph:
         self.edge_type_dict = {} # matches the format of vis_graph but only records if edge is surfing or hugging for plotting purposes
         self.node_obst_dict = {} # keeps track of which obstacle each node is on, adding this to make plotting arcs
         self.pw_opt_func = {} # record parameters of piecewise function for label evaulation
+        self.opt_path_cost = 0
         self.obstacles = obstacles
 
     def view_vis_graph(self):
@@ -109,6 +111,11 @@ class vis_graph:
     def process_cand_node(self,start_node,cand_node,obstacle,is_end_node = False):
         '''this method adds cand_node, and edge to node dictionary and vis_graph, if the node is visible.  
         It also attaches cand_node to obstacle'''
+        check = False
+        if check:
+            viewer = graph_viewer(self)
+            viewer.plot_obstacles(0)
+            viewer.plot_cand_edge(start_node,cand_node)
         if self.is_node_vis(start_node,cand_node):
             self.update_node_props(cand_node,obstacle)
             # if start_node is an end_node, then add to graph vertically
@@ -117,7 +124,8 @@ class vis_graph:
                 self.add_edge2graph(start_node,cand_node,edge_length)
             else:
                 self.add_edge2graph(cand_node,start_node,edge_length)
-
+        if check:
+            del viewer
     def process_cand_edge(self,node_obst1,node_obst2):
         '''tags nodes to appropriate obstacles, inputs are tuple of cand_node and its obstacle'''
         if self.is_node_vis(node_obst1[0],node_obst2[0]):
@@ -151,7 +159,7 @@ class vis_graph:
                 continue
             
             if id(obst) == id(next_obst): # dont calculate visibility with itself
-                raise('Obstacle not deleted correctly from list')
+                raise Exception('Obstacle not deleted correctly from list')
             
             self.internal_bitangents(obst_A,obst_B)
             self.external_bitangents(obst_A,obst_B)
@@ -206,21 +214,27 @@ class vis_graph:
         elif start_node.x > end_node.x:
             left_node = end_node
             right_node = start_node
-        else:
-            raise('start_node and end_node have same x coordinate')
+        else:#TODO add implementation for checking if nodes are between when start node and end node have same x coordinate
+            raise Exception('start_node and end_node have same x coordinate')
         
         for obstacle in self.obstacles:
             if self.is_obst_between_points(left_node,right_node,obstacle):
                 if check_collision(a,b,c,obstacle.center_x,obstacle.center_y,obstacle.radius):
+                    if self.debug:
+                        print(f'non visible edge found:')
+                        print(f'start=({left_node.x},{left_node.y})')
+                        print(f'end_node=({right_node.x},{right_node.y})')
+                        print(f'obstacle(r,x,y) = ({obstacle.view()}\n')
                     is_valid = False
                     break
         return is_valid
 
     def is_obst_between_points(self,start_node,end_node,obstacle):
+        '''returns if obstace is between horizontally and vertically.'''
         if obstacle.center_x > start_node.x and obstacle.center_x < end_node.x:
             is_between = True
         else:
-            is_between = False
+            is_between = False #TODO add an output that says if obstacle is between points when start_node and end_node have same x coord.  Maybe we want to check y coordinate also
         if self.debug:
             print(f'vis_graph.is_obst_between_points()')
             print(f'obstacle at ({obstacle.center_x},{obstacle.center_y})')
@@ -295,6 +309,7 @@ class vis_graph:
         self.node_obst_dict[cand_node_id]['obstacle'] = obstacle
 
     def find_shortest_path(self):
+        self.algo = 'Dijkstra'
         start_id = self.get_node_id(self.start)
         end_id = self.get_node_id(self.end)
         self.opt_path = dijk.shortestPath(self.vis_graph,start_id,end_id)
@@ -302,11 +317,21 @@ class vis_graph:
             print(self.opt_path)
 
     def find_shortest_path_a_star(self):
+        self.algo = 'AStar'
         start_id = self.get_node_id(self.start)
         end_id = self.get_node_id(self.end)
         self.opt_path = ast.shortestPath(self.vis_graph, self.h_graph, start_id, end_id)
         if self.debug == True:
             print(self.opt_path)
+
+    def eval_path_cost(self):
+        cost = 0
+        for ii,node_id in enumerate(self.opt_path):
+            if node_id == 'start':
+                continue
+            cost += self.vis_graph[self.opt_path[ii-1]][self.opt_path[ii]]
+        self.opt_path_cost = cost
+        return cost
     
     def create_pw_opt_path_func(self):
         def decide_zero_slope_sign(node_id):
@@ -434,7 +459,7 @@ class vis_graph:
         elif not is_hugging:
             return edge_type.line
         else:
-            raise('invalid edge type')
+            raise Exception('invalid edge type')
 
     def is_edge_CW(self,start_id,end_id): 
         return self.edge_type_dict[start_id][end_id]['is_CW']
@@ -456,14 +481,14 @@ class visibility_graph_generator:
     #TODO look into pickle for saving vis_graph_gen objects
     debug = True # guess i could have super class to inherit this as well as any debug routines
 
-    def __init__(self,obstacles=None,record_on = True):
+    def __init__(self,obstacles=None,record_on=True,is_ion=False):
         # variables for buidling vis graph
         self.record_graph_objects = record_on
         self.graphs_memory = {} # this dictionary stores the graph created start/end, graph created, and a node_point_dictionary, used for plotting
 
         # variables for outputting training data
         self.df_columns = ['start','end','obst1_dir']
-        self.num_col = 16 #TODO this should be equal to 4*num_obs + 4 (start_x start_y end_x end_Y (radius center_x center_y label))
+        # self.num_col = 16 #TODO this should be equal to 4*num_obs + 4 (start_x start_y end_x end_Y (radius center_x center_y label))
         #TODO determine if using np array is the best way to ouptut the data
         #TODO num_col should be determined based on the graph and how many obstacles it has or it should be based on the maximum size we want for our neural net
         # self.vis_data = np.array([],dtype = np.double).reshape(0,self.num_col) #TODO delete if new data storage method is faster
@@ -480,32 +505,35 @@ class visibility_graph_generator:
         else:
             self.obstacles = obstacles #TODO determine if i want to store obstacle list in this object
         # visibility viewer initialization
-        self.fig, self.vis_axs = plt.subplots(1,1)
-        self.vis_axs.set_xlim(self.axis_xlim)
-        self.vis_axs.set_ylim(self.axis_ylim)
-        self.vis_axs.grid(visible=True)
-        self.vis_axs.set_aspect('equal')
+
+        if is_ion:
+            plt.ion() 
+        self.fig = plt.figure()
+        if is_ion:
+            self.place_figure() #sets location of plot window to second monitor on the left
+        self._init_graph_props()        
 
     #vis graph methods
-    def run_test(self,start_list,end_list,obstacle_list,algorithm="djikstra"):
+    def run_test(self,start_list,end_list,obstacle_list,algorithm="dijkstra"):
         # main function that creates training data for start/end points
-        self.init_data_memory(start_list,end_list)
+        num_obs = len(obstacle_list)
+        self.init_data_memory(start_list,end_list,num_obs)
         ii = 0
         base_graph = vis_graph(obstacle_list)
         base_graph.make_obs_vis_graph()
         for start in start_list:
             for end in end_list:
                 graph = copy.deepcopy(base_graph)
-                # graph.clear_obs_nodes() #TODO verify removing this doesnt break the code
                 graph.build_vis_graph(start,end)
                 graph.build_h_graph()
-                # method that calculates shortest distance, djikstra algo
+                # method that calculates shortest distance, dijkstra algo
                 if (algorithm == "AStar"):
                     print("Utilizing A-Star...")
                     graph.find_shortest_path_a_star()
-                else: # Default Djikstra
-                    print("Utilizing Djikstra...")
+                else: # Default Dijkstra
+                    print("Utilizing Dijkstra...")
                     graph.find_shortest_path()
+                graph.eval_path_cost()
                 graph.create_pw_opt_path_func()
                 labels = graph.gen_obs_labels()
                 obs_att = graph.get_obs_prop()
@@ -513,19 +541,23 @@ class visibility_graph_generator:
                 if self.record_graph_objects == True:
                     self.store_vis_graph(graph)
                 if self.debug:
-                    if ii % 1000 == 0: print(f'completed {ii} our of {len(start_list)*len(end_list)}')
+                    if ii % 1000 == 0: print(f'completed {ii} out of {len(start_list)*len(end_list)}')
                     ii += 1
+
+    def run_ginput_test(self,obstacle_list,algorithm="dijkstra"):
+        pass
 
     def store_vis_graph(self,graph): #TODO move this to child class that is generator + plotter
         # when debugging different graph configurations
         append_dict(self.graphs_memory,graph)
    
     ## output methods
-    def init_data_memory(self,start_list,end_list):
+    def init_data_memory(self,start_list,end_list,num_obs):
         nstart = len(start_list)
         nend = len(end_list)
         ndata = nstart*nend
         # self.vis_data = np.array([],dtype = np.double).reshape(ndata,self.num_col)
+        self.num_col = 4*num_obs + 4
         self.vis_data = np.empty((ndata,self.num_col),dtype = np.double)
 
     def record_result(self,start,end,obstacle_att,direction_labels,idx):
@@ -562,7 +594,7 @@ class visibility_graph_generator:
         else:
             np.savetxt(fname, self.vis_data, delimiter=",")
 
-    ## plot viewer methods
+    ## plot viewer methods    
     def plot_env(self,test_num,title=None):
         self.plot_start_end(test_num)
         self.plot_obstacles(test_num)
@@ -573,7 +605,6 @@ class visibility_graph_generator:
         self.plot_start_end(test_num)
         self.plot_obstacles(test_num)
         self.plot_shortest_path(test_num) 
-        # self.plot_vis_graph(test_num) #TODO add test_num to be plotted
         self.finish_plot(title)
 
     def plot_full_vis_graph(self,test_num,title=None):
@@ -582,21 +613,85 @@ class visibility_graph_generator:
         self.plot_vis_graph(test_num) #TODO add test_num to be plotted
         self.finish_plot(title)
 
-    # def plot_shortest_path(self):
-    def plot_start_end(self,test_num):
-        data = self.vis_data[test_num,:]
+    def plot_just_obstacles(self,test_num,title=None):
+        #TODO update axis limits so that all obstacles can be seen
+        self.plot_obstacles(test_num)
+        self.finish_plot(title)
+
+    def plot_network(self,test_num):
+        #TODO decide if i want it to be called plot_network or plot_full_vis_graph
+        self.plot_start_end(test_num)
+        self.plot_obstacles(test_num)
+        self.plot_vis_graph(test_num)
+
+    ## "private" plot methods
+    def get_start_end_data(self,test_num):
+        #TODO this is part of method so i can still plot things even if I dont save the graphs but i probably wont end up using it..
+        try:
+            data = self.vis_data[test_num,:]
+            start = (data[0],data[1])
+            end = (data[2],data[3])
+        except:
+            graph = self.graphs_memory[test_num]
+            start = (graph.start.x, graph.start.y)
+            end = (graph.end.x, graph.end.y)
+
+        return start, end
+
+    def update_axis_lim(self,test_num):
+        
+        x_points = []
+        y_points = []
+        # get start, end, and obstacles and add to compare list
+        start,end = self.get_start_end_data(test_num)
         graph = self.graphs_memory[test_num]
 
-        self.vis_axs.scatter(data[0],data[1],color='red',marker="^",linewidth=self.line_width,label="start")
-        self.vis_axs.scatter(data[2],data[3],color='green',marker="o",linewidth=self.line_width,label="end")
+        # add all critical x and y points
+        x_points.append(start[0])
+        x_points.append(end[0])
+        y_points.append(start[1])
+        y_points.append(end[1])
+        for obstacle in graph.obstacles:
+            x_low = obstacle.center_x - obstacle.radius
+            x_high = obstacle.center_x + obstacle.radius
+            x_points.append(x_low)
+            x_points.append(x_high)
+            y_low = obstacle.center_y - obstacle.radius
+            y_high = obstacle.center_y + obstacle.radius
+            y_points.append(y_low)
+            y_points.append(y_high)
+
+        x_min = min(x_points)
+        x_max = max(x_points)
+        y_min = min(y_points)
+        y_max = max(y_points)
+
+        # compare max/min's to axis limits and adjust if they are violated
+        if self.axis_xlim[0] > x_min-2:
+            self.axis_xlim[0] = x_min-2
+        if self.axis_xlim[1] < x_max+2:
+            self.axis_xlim[1] = x_max+2
+        if self.axis_ylim[0] > y_min-2:
+            self.axis_ylim[0] = y_min-2
+        if self.axis_ylim[1] < y_max+2:
+            self.axis_ylim[1] = y_max+2
+        self._init_graph_props()
+
+    def plot_start_end(self,test_num):
+        self._act_fig()
+        self.update_axis_lim(test_num)
+        start,end = self.get_start_end_data(test_num)
+        plt.scatter(start[0],start[1],color='red',marker="^",linewidth=self.line_width,label="start")
+        plt.scatter(end[0],end[1],color='green',marker="o",linewidth=self.line_width,label="end")
 
     def plot_obstacles(self,test_num):
         # plots obstacles
+        self._act_fig()
         graph = self.graphs_memory[test_num]
         for obstacle in graph.obstacles:
             obst_x, obst_y = self.make_circle_points(obstacle)
-            # self.vis_axs.plot(obst_x, obst_y,color='blue',linewidth=self.line_width,label="obstacle")
-            self.vis_axs.plot(obst_x, obst_y,color='blue',linewidth=self.line_width)
+            # plt.plot(obst_x, obst_y,color='blue',linewidth=self.line_width,label="obstacle")
+            plt.plot(obst_x, obst_y,color='blue',linewidth=self.line_width)
 
     def make_circle_points(self,obstacle):
         #TODO could remove this function and use make_arc_points instead
@@ -616,9 +711,11 @@ class visibility_graph_generator:
         if graph.is_edge_CW(start_id,end_id) == True:
             ang_diff = -ang_diff
         if self.debug == True:
-            print('start id ' + str(start_id) + ' end id ' + str(end_id))
+            print('start id         ' + str(start_id) + ' end id ' + str(end_id))
             # print('ang start ' + str(ang_start*180/np.pi) + ' ang end ' + str(ang_end*180/np.pi))
-            print('ang_diff ' + str(ang_diff*180/np.pi) + ' is_CW ' + str(graph.is_edge_CW(start_id,end_id)))
+            print('ang_diff         ' + str(ang_diff*180/np.pi) + ' is_CW ' + str(graph.is_edge_CW(start_id,end_id)))
+            print('distance to node ' + str(graph.vis_graph[start_id][end_id]))
+            print('distance to end  ' + str(graph.h_graph[end_id]))
         thetas = np.linspace(ang_start,ang_start+ang_diff,100)
         bound_x = obstacle.radius*np.cos(thetas) + obstacle.center_x
         bound_y = obstacle.radius*np.sin(thetas) + obstacle.center_y
@@ -626,6 +723,7 @@ class visibility_graph_generator:
 
     def plot_vis_graph(self,test_num):
         # this method plots the visibility graph generated
+        self._act_fig()
         node_points = []
         graph = self.graphs_memory[test_num]
         for node_id in graph.vis_graph:
@@ -634,12 +732,12 @@ class visibility_graph_generator:
                 #TODO replace bleow with method plot_graph_edge()
                 if graph.is_edge_hugging(node_id,adj_node_id) == False: # 
                     node_points.append(graph.get_node_xy(adj_node_id))
-                    self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
+                    plt.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
                     node_points.pop()
                 else:
                     arc_points = self.make_arc_points(node_id,adj_node_id,graph)
                     for point in arc_points: node_points.append(point)
-                    self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width) # plot formatted points
+                    plt.plot(*zip(*node_points),color='purple',linewidth=self.line_width) # plot formatted points
                     # node_points.remove(arc_points) #TODO verify this code removes all points except for the root node id
                     del node_points[1:]
             if len(node_points) > 1:
@@ -647,8 +745,9 @@ class visibility_graph_generator:
             node_points.pop() #reset node_points
 
     def finish_plot(self,title=None):
-        self.vis_axs.set_title(title)
-        self.vis_axs.legend()
+        self._act_fig()
+        plt.legend()
+        plt.title(title)
 
     def plot_shortest_path(self,test_num):
         graph = self.graphs_memory[test_num]
@@ -660,38 +759,115 @@ class visibility_graph_generator:
                 self.plot_graph_edge(graph,node_id,next_node_id)
 
     def plot_graph_edge(self,graph,start_id,end_id):
+        self._act_fig()
         node_points = []
         node_points.append(graph.get_node_xy(start_id))
         if graph.is_edge_hugging(start_id,end_id) == False: # 
             node_points.append(graph.get_node_xy(end_id))
-            self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
+            plt.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
         else:
             arc_points = self.make_arc_points(start_id,end_id,graph)
             for point in arc_points: node_points.append(point)
-            self.vis_axs.plot(*zip(*node_points),color='purple',linewidth=self.line_width) # plot formatted points
+            plt.plot(*zip(*node_points),color='purple',linewidth=self.line_width) # plot formatted points
             # node_points.remove(arc_points) #TODO verify this code removes all points except for the root node id
 
+    def plot_all_node_labels(self,test_num):
+        self._act_fig()
+        graph = self.graphs_memory[test_num]
+        for node_id in graph.node_dict:
+            node = graph.node_dict[node_id]
+            plt.text(node[0],node[1],str(node_id))
+    
+    def plot_opt_path_node_labels(self,test_num):
+        self._act_fig()
+        graph = self.graphs_memory[test_num]
+        for node_id in graph.opt_path:
+            node = graph.get_node_obj(node_id)
+            plt.text(node.x,node.y,str(node_id))
+
+    def plot_labels(self,test_num):
+        '''plots up down labels for obstacles'''
+        self._act_fig()
+        graph = self.graphs_memory[test_num]
+        for label,obstacle in zip(graph.obstacle_labels,graph.obstacles):
+            if label == dir_label.up:
+                plt.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=6)
+            elif label == dir_label.down:
+                plt.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=7)
+            else:
+                raise Exception('invalid label type')
+
     def clear_plot(self):
-        self.vis_axs.cla()
-        self.vis_axs.grid(visible=True)
+        plt.cla()
+        self._init_graph_props()
 
     def save_plot_image(self,fig_name):
+        '''creates .png of visibility graph'''
         self.fig.savefig(fig_name + '.png')
-        # creates .png of visibility graph
+
+    def place_figure(self,location=(-1500,600)):
+        self.fig.canvas.manager.window.move(*location)
+
+    def _init_graph_props(self):
+        self._act_fig()
+        plt.xlim(self.axis_xlim)
+        plt.ylim(self.axis_ylim)
+        plt.grid(visible=True)
+        ax = plt.gca()
+        ax.set_aspect('equal')
+
+    def _act_fig(self):
+        '''This method makes sure correct figure is being plotted on'''
+        plt.figure(self.fig.number)
 
 class graph_viewer(visibility_graph_generator):
     # This class allows us to look at the vis graph before it is finished
-    def __init__(self, vis_graph_obj, obstacles=None, record_on=True):
-        super().__init__(obstacles, record_on)
-        self.store_vis_graph(vis_graph_obj) # this is needed so we can reuse plot methods from parent
+    def __init__(self, vis_graph_obj, obstacles=None, record_on=True,is_ion=True):
+        super().__init__(obstacles, record_on, is_ion) # this is needed so we can reuse plot methods from parent
+        self.store_vis_graph(vis_graph_obj) 
 
-    def plot_network(self,test_num=0):
-        self.plot_obstacles(test_num)
-        self.plot_vis_graph(test_num)
+    #TODO create method that gets obstacle data here and in parent class
 
+    def get_start_end_data(self, test_num=0):
+        graph = self.graphs_memory[test_num]
+        start = (graph.start.x, graph.start.y)
+        end = (graph.end.x, graph.end.y)
+        return start,end
+
+    def plot_network(self, test_num=0):
+        return super().plot_network(test_num)
+    
+    def plot_cand_edge(self,node1,node2):
+        '''used for debugging new edges and plotting as they are found'''
+        self._act_fig()
+        x_points = [node1.x,node2.x]
+        y_points = [node1.y,node2.y]
+        plt.plot(x_points,y_points,color='red')
+        
 # global methods
 # for reading new file list
+def arg_parse():
+    parser = ArgumentParser(description="obstacle testing file",formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-b", "--batch", type=bool, default = False, help="Creates unique file name and does not display courses")
+    parser.add_argument("-p", "--base_path", default = "./obs_courses/",help="path to folder containing obstacle course files")
+    parser.add_argument("-c","--course", type=int, default=0, help="specify obstacle course number when multiple courses available")
+    #TODO figure out better way to specify start and end points as sometimes we want to use a vector of start/end points
+    parser.add_argument("-s", "--start", type=float, default = [0,3], nargs=2, help='course start point')
+    parser.add_argument("-e", "--end", type=float, default = [30,15], nargs=2, help='course end point')
+    parser.add_argument("-a", "--astar", dest='solve_option', action='store_const', const='AStar', default='dijkstra',help='Change shortest path solver from dijkstra to AStar')
+    parser.add_argument("-t", "--path_test", dest='test_mode', action='store_const', const=True, default=False,help='Changes to test mode to compare dijkstra and AStar solutions')
+    parser.add_argument("-i", "--ion_on", dest='is_ion', action='store_const', const=True, default=False,help='initializes graph generator with plt.ion() enabling interactive mode')
+    parser.add_argument("fname", help="Obstacle course file to test")
+    
+    args = parser.parse_args()
+    args = vars(args)
+    args["start"] = [args["start"]] #run test expects start and end as list of points
+    args["end"] = [args["end"]]
+    args["obs_fpath"] = args["base_path"] + args["fname"]
+    return args
+
 def read_obstacle_list(fname):
+    #TODO move this function to the obstacle_course_gen.py file
     def read_obstacle(obs_string):
         data = obs_string.split(",")
         r = float(data[0])
@@ -722,6 +898,16 @@ def read_obstacle_list(fname):
     obs_file = obs_file.close()
     return obstacle_courses
 
+def compare_solutions(sol1,sol2):
+    '''returns if two lists are the same'''
+    same = True
+    for i1,i2 in zip(sol1,sol2):
+        if i1 != i2:
+            same = False
+            break
+    return same
+
+
 def append_dict(dict_in,item):
     num_keys = len(dict_in)
     dict_in[num_keys] = item
@@ -735,6 +921,7 @@ def remove_list_item(item,list_in):
 
 def check_collision(a,b,c,x,y,radius):
     dist = round((abs(a * x + b * y + c)) / np.sqrt(a * a + b * b),4) # rounding for numerical errors
+    radius = round(radius,4)
     if radius > dist:
         collision = True
     else:
@@ -805,7 +992,7 @@ def init_points(point_list):
 def init_obs(obs_list,radius_list):
     #TODO This only allows for one obstacle radius size
     if len(obs_list) != len(radius_list):
-        raise('obstacle list and radius list different lengths')
+        raise Exception('obstacle list and radius list different lengths')
     obs_loc = init_points(obs_list)
     obs_data = zip(obs_loc,radius_list)
     obs_obj = []

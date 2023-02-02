@@ -1,0 +1,1477 @@
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.298516268266246,6.977596530534071)
+end_node at (12.552225597600632,6.033605204198894
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.298516268266246,6.977596530534071)
+end_node at (12.552225597600632,6.033605204198894
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.298516268266246,6.977596530534071)
+end_node at (12.552225597600632,6.033605204198894
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.298516268266246,6.977596530534071)
+end_node at (12.552225597600632,6.033605204198894
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.298516268266246,6.977596530534071)
+end_node at (12.552225597600632,6.033605204198894
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.298516268266246,6.977596530534071)
+end_node at (12.552225597600632,6.033605204198894
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (7.855329885579909,4.25317270023516)
+end_node at (10.217005171630138,10.120240949647261
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (7.855329885579909,4.25317270023516)
+end_node at (10.217005171630138,10.120240949647261
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (7.855329885579909,4.25317270023516)
+end_node at (10.217005171630138,10.120240949647261
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (7.855329885579909,4.25317270023516)
+end_node at (10.217005171630138,10.120240949647261
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (7.855329885579909,4.25317270023516)
+end_node at (10.217005171630138,10.120240949647261
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (7.855329885579909,4.25317270023516)
+end_node at (10.217005171630138,10.120240949647261
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.769230769230769,3.153846153846154)
+end_node at (14.153846153846153,6.230769230769231
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.769230769230769,3.153846153846154)
+end_node at (14.153846153846153,6.230769230769231
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.769230769230769,3.153846153846154)
+end_node at (14.153846153846153,6.230769230769231
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.769230769230769,3.153846153846154)
+end_node at (14.153846153846153,6.230769230769231
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.769230769230769,3.153846153846154)
+end_node at (14.153846153846153,6.230769230769231
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.769230769230769,3.153846153846154)
+end_node at (14.153846153846153,6.230769230769231
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (4.8,6.6)
+end_node at (11.2,11.4
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (4.8,6.6)
+end_node at (11.2,11.4
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (4.8,6.6)
+end_node at (11.2,11.4
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (4.8,6.6)
+end_node at (11.2,11.4
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (4.8,6.6)
+end_node at (11.2,11.4
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (4.8,6.6)
+end_node at (11.2,11.4
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.431942903075394,6.952799356944487)
+end_node at (19.568057096924605,4.047200643055513
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.431942903075394,6.952799356944487)
+end_node at (19.568057096924605,4.047200643055513
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.431942903075394,6.952799356944487)
+end_node at (19.568057096924605,4.047200643055513
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.431942903075394,6.952799356944487)
+end_node at (19.568057096924605,4.047200643055513
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.431942903075394,6.952799356944487)
+end_node at (19.568057096924605,4.047200643055513
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.431942903075394,6.952799356944487)
+end_node at (19.568057096924605,4.047200643055513
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.705112934488058,3.1284189171671883)
+end_node at (19.294887065511944,7.871581082832812
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.705112934488058,3.1284189171671883)
+end_node at (19.294887065511944,7.871581082832812
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.705112934488058,3.1284189171671883)
+end_node at (19.294887065511944,7.871581082832812
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.705112934488058,3.1284189171671883)
+end_node at (19.294887065511944,7.871581082832812
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.705112934488058,3.1284189171671883)
+end_node at (19.294887065511944,7.871581082832812
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.705112934488058,3.1284189171671883)
+end_node at (19.294887065511944,7.871581082832812
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.142494099975819,3.00508260033853)
+end_node at (20.14249409997582,4.00508260033853
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.142494099975819,3.00508260033853)
+end_node at (20.14249409997582,4.00508260033853
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.142494099975819,3.00508260033853)
+end_node at (20.14249409997582,4.00508260033853
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.142494099975819,3.00508260033853)
+end_node at (20.14249409997582,4.00508260033853
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.142494099975819,3.00508260033853)
+end_node at (20.14249409997582,4.00508260033853
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.142494099975819,3.00508260033853)
+end_node at (20.14249409997582,4.00508260033853
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (5.85750590002418,6.99491739966147)
+end_node at (19.85750590002418,7.99491739966147
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (5.85750590002418,6.99491739966147)
+end_node at (19.85750590002418,7.99491739966147
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (5.85750590002418,6.99491739966147)
+end_node at (19.85750590002418,7.99491739966147
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (5.85750590002418,6.99491739966147)
+end_node at (19.85750590002418,7.99491739966147
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (15.701742479635211,10.304065785815494)
+end_node at (18.19883834690986,5.130622809456337
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (15.701742479635211,10.304065785815494)
+end_node at (18.19883834690986,5.130622809456337
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (15.701742479635211,10.304065785815494)
+end_node at (18.19883834690986,5.130622809456337
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (15.701742479635211,10.304065785815494)
+end_node at (18.19883834690986,5.130622809456337
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (15.701742479635211,10.304065785815494)
+end_node at (18.19883834690986,5.130622809456337
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (15.701742479635211,10.304065785815494)
+end_node at (18.19883834690986,5.130622809456337
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (13.918947175537202,6.144210076253472)
+end_node at (19.387368549641867,7.903859949164352
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (13.918947175537202,6.144210076253472)
+end_node at (19.387368549641867,7.903859949164352
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (13.918947175537202,6.144210076253472)
+end_node at (19.387368549641867,7.903859949164352
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (13.918947175537202,6.144210076253472)
+end_node at (19.387368549641867,7.903859949164352
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (13.918947175537202,6.144210076253472)
+end_node at (19.387368549641867,7.903859949164352
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (13.918947175537202,6.144210076253472)
+end_node at (19.387368549641867,7.903859949164352
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (14.533594998576495,11.578388330011823)
+end_node at (21.022396665717665,7.718925553341215
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (14.533594998576495,11.578388330011823)
+end_node at (21.022396665717665,7.718925553341215
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (14.533594998576495,11.578388330011823)
+end_node at (21.022396665717665,7.718925553341215
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (14.533594998576495,11.578388330011823)
+end_node at (21.022396665717665,7.718925553341215
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (14.533594998576495,11.578388330011823)
+end_node at (21.022396665717665,7.718925553341215
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (14.533594998576495,11.578388330011823)
+end_node at (21.022396665717665,7.718925553341215
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (12.190542932457987,6.11126684240197)
+end_node at (19.46036195497199,4.074177894934646
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (12.190542932457987,6.11126684240197)
+end_node at (19.46036195497199,4.074177894934646
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (12.190542932457987,6.11126684240197)
+end_node at (19.46036195497199,4.074177894934646
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (12.190542932457987,6.11126684240197)
+end_node at (19.46036195497199,4.074177894934646
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (12.190542932457987,6.11126684240197)
+end_node at (19.46036195497199,4.074177894934646
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (12.190542932457987,6.11126684240197)
+end_node at (19.46036195497199,4.074177894934646
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (2,3)
+end_node at (24,14
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (2,3)
+end_node at (6.0,3.0
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (2,3)
+end_node at (6.0,3.0
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (2,3)
+end_node at (6.0,3.0
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (2,3)
+end_node at (4.3999999999999995,6.199999999999999
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (2,3)
+end_node at (4.3999999999999995,6.199999999999999
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (2,3)
+end_node at (4.3999999999999995,6.199999999999999
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (5.28777847135552,6.868887501733403)
+end_node at (24,14
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (5.28777847135552,6.868887501733403)
+end_node at (24,14
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (7.067777084200035,3.308890276044375)
+end_node at (24,14
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (7.067777084200035,3.308890276044375)
+end_node at (24,14
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (2,3)
+end_node at (13.7642003254187,6.098966070065717
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (2,3)
+end_node at (10.974653177766013,11.213135840762309
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (12.475544529720587,11.95380203461471)
+end_node at (24,14
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (12.475544529720587,11.95380203461471)
+end_node at (24,14
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (12.475544529720587,11.95380203461471)
+end_node at (24,14
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (14.880619853841058,6.662636321549674)
+end_node at (24,14
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (14.880619853841058,6.662636321549674)
+end_node at (24,14
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (14.880619853841058,6.662636321549674)
+end_node at (24,14
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (2,3)
+end_node at (20.110601029679586,4.003060488589147
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (2,3)
+end_node at (19.45696653788798,7.92486743933878
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (18.456440422583732,7.271779788708136)
+end_node at (24,14
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (18.456440422583732,7.271779788708136)
+end_node at (24,14
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (18.456440422583732,7.271779788708136)
+end_node at (24,14
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (21.94355957741627,5.528220211291865)
+end_node at (24,14
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (21.94355957741627,5.528220211291865)
+end_node at (24,14
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (21.94355957741627,5.528220211291865)
+end_node at (24,14
+is_between = False
+
+start node (6.431943, 6.952799) next node (6.298516, 6.977597)
+above ang dif 0.06786869278936147 aka 3.8885896579003756
+start node (6.431943, 6.952799) next node (7.85533, 4.253173)
+below ang dif 1.7357958122636177 aka 99.45377413918787
+
+start node (6.298516, 6.977597) next node (4.8, 6.6)
+above ang dif 0.7933190688151692 aka 45.45383445035772
+start node (6.298516, 6.977597) next node (6.431943, 6.952799)
+below ang dif 0.06786869278936147 aka 3.8885896579003756
+
+start node (4.8, 6.6) next node (4.4, 6.2)
+above ang dif 0.28379410920832804 aka 16.26020470831197
+start node (4.8, 6.6) next node (6.298516, 6.977597)
+below ang dif 0.7933190688151692 aka 45.45383445035772
+
+start node (4.4, 6.2) next node (6.0, 3.0)
+above ang dif 2.2142974355881804 aka 126.86989764584399
+start node (4.4, 6.2) next node (4.8, 6.6)
+below ang dif 0.28379410920832804 aka 16.26020470831197
+
+start node (6.0, 3.0) next node (6.142494, 3.005083)
+above ang dif 0.07130746478529026 aka 4.085616779974873
+start node (6.0, 3.0) next node (4.4, 6.2)
+below ang dif 2.2142974355881804 aka 126.86989764584399
+
+start node (6.142494, 3.005083) next node (6.705113, 3.128419)
+above ang dif 0.2889941175965358 aka 16.5581432423889
+start node (6.142494, 3.005083) next node (6.0, 3.0)
+below ang dif 0.07130746478529026 aka 4.085616779974873
+
+start node (6.705113, 3.128419) next node (6.769231, 3.153846)
+above ang dif 0.03448953731793569 aka 1.976104925676668
+start node (6.705113, 3.128419) next node (6.142494, 3.005083)
+below ang dif 0.2889941175965358 aka 16.5581432423889
+
+start node (6.769231, 3.153846) next node (7.85533, 4.253173)
+above ang dif 0.7933190688151681 aka 45.453834450357654
+start node (6.769231, 3.153846) next node (6.705113, 3.128419)
+below ang dif 0.03448953731793569 aka 1.976104925676668
+
+start node (7.85533, 4.253173) next node (6.431943, 6.952799)
+above ang dif 1.7357958122636177 aka 99.45377413918787
+start node (7.85533, 4.253173) next node (6.769231, 3.153846)
+below ang dif 0.7933190688151681 aka 45.453834450357654
+
+start node (15.701742, 10.304066) next node (14.533595, 11.578388)
+above ang dif 0.5845253666464783 aka 33.49083652718022
+start node (15.701742, 10.304066) next node (14.88062, 6.662636)
+below ang dif 1.3429552227389934 aka 76.94566633799572
+
+start node (14.533595, 11.578388) next node (12.475545, 11.953802)
+above ang dif 0.7122999107364301 aka 40.81177863274272
+start node (14.533595, 11.578388) next node (15.701742, 10.304066)
+below ang dif 0.5845253666464783 aka 33.49083652718022
+
+start node (12.475545, 11.953802) next node (11.2, 11.4)
+above ang dif 0.4677796924003541 aka 26.801802116468163
+start node (12.475545, 11.953802) next node (14.533595, 11.578388)
+below ang dif 0.7122999107364301 aka 40.81177863274272
+
+start node (11.2, 11.4) next node (10.217005, 10.120241)
+above ang dif 0.5446090797216452 aka 31.203801752554053
+start node (11.2, 11.4) next node (12.475545, 11.953802)
+below ang dif 0.4677796924003541 aka 26.801802116468163
+
+start node (10.217005, 10.120241) next node (12.190543, 6.111267)
+above ang dif 1.6802773868481964 aka 96.27280267767239
+start node (10.217005, 10.120241) next node (11.2, 11.4)
+below ang dif 0.5446090797216452 aka 31.203801752554053
+
+start node (12.190543, 6.111267) next node (12.552226, 6.033605)
+above ang dif 0.1233871182047821 aka 7.069561119415821
+start node (12.190543, 6.111267) next node (10.217005, 10.120241)
+below ang dif 1.6802773868481964 aka 96.27280267767239
+
+start node (12.552226, 6.033605) next node (13.918947, 6.14421)
+above ang dif 0.4611382484416957 aka 26.421275407764377
+start node (12.552226, 6.033605) next node (12.190543, 6.111267)
+below ang dif 0.1233871182047821 aka 7.069561119415821
+
+start node (13.918947, 6.14421) next node (14.153846, 6.230769)
+above ang dif 0.08347083127994992 aka 4.782526344789706
+start node (13.918947, 6.14421) next node (12.552226, 6.033605)
+below ang dif 0.4611382484416957 aka 26.421275407764377
+
+start node (14.153846, 6.230769) next node (14.88062, 6.662636)
+above ang dif 0.28274245016106114 aka 16.199949083416826
+start node (14.153846, 6.230769) next node (13.918947, 6.14421)
+below ang dif 0.08347083127994992 aka 4.782526344789706
+
+start node (14.88062, 6.662636) next node (15.701742, 10.304066)
+above ang dif 1.3429552227389934 aka 76.94566633799572
+start node (14.88062, 6.662636) next node (14.153846, 6.230769)
+below ang dif 0.28274245016106114 aka 16.199949083416826
+
+start node (21.022397, 7.718926) next node (19.387369, 7.90386)
+above ang dif 0.8478987827633104 aka 48.58102170661752
+start node (21.022397, 7.718926) next node (21.94356, 5.52822)
+below ang dif 1.2723520355540714 aka 72.90040169212756
+
+start node (19.387369, 7.90386) next node (19.294887, 7.871581)
+above ang dif 0.04898129396201534 aka 2.806421419113101
+start node (19.387369, 7.90386) next node (21.022397, 7.718926)
+below ang dif 0.8478987827633104 aka 48.58102170661752
+
+start node (19.294887, 7.871581) next node (18.45644, 7.27178)
+above ang dif 0.5213337295141327 aka 29.870222418974645
+start node (19.294887, 7.871581) next node (19.387369, 7.90386)
+below ang dif 0.04898129396201534 aka 2.806421419113101
+
+start node (18.45644, 7.27178) next node (18.198838, 5.130623)
+above ang dif 1.1388534807038568 aka 65.25149792811455
+start node (18.45644, 7.27178) next node (19.294887, 7.871581)
+below ang dif 0.5213337295141327 aka 29.870222418974645
+
+start node (18.198838, 5.130623) next node (19.460362, 4.074178)
+above ang dif 0.84789878276331 aka 48.5810217066175
+start node (18.198838, 5.130623) next node (18.45644, 7.27178)
+below ang dif 1.1388534807038568 aka 65.25149792811455
+
+start node (19.460362, 4.074178) next node (19.568057, 4.047201)
+above ang dif 0.05551842541542129 aka 3.180971461515484
+start node (19.460362, 4.074178) next node (18.198838, 5.130623)
+below ang dif 0.84789878276331 aka 48.5810217066175
+
+start node (19.568057, 4.047201) next node (20.142494, 4.005083)
+above ang dif 0.2889941175965376 aka 16.558143242389
+start node (19.568057, 4.047201) next node (19.460362, 4.074178)
+below ang dif 0.05551842541542129 aka 3.180971461515484
+
+start node (20.142494, 4.005083) next node (21.94356, 5.52822)
+above ang dif 1.2613546589069307 aka 72.27029842453065
+start node (20.142494, 4.005083) next node (19.568057, 4.047201)
+below ang dif 0.2889941175965376 aka 16.558143242389
+
+start node (21.94356, 5.52822) next node (21.022397, 7.718926)
+above ang dif 1.2723520355540714 aka 72.90040169212756
+start node (21.94356, 5.52822) next node (20.142494, 4.005083)
+below ang dif 1.2613546589069307 aka 72.27029842453065
+
+Utilizing Djikstra...
+['start', 24, 12, 10, 4, 5, 27, 'end']
+completed 0 our of 1
+start id 24 end id 12
+ang_diff 4.085616779974873 is_CW False
+start id 12 end id 10
+ang_diff 16.5581432423889 is_CW False
+start id 10 end id 4
+ang_diff 1.976104925676668 is_CW False
+start id 5 end id 27
+ang_diff 16.199949083416826 is_CW False
+created the data in 0.1109 seconds
+file name already exists, overwrite? (y/n)vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.298516268266246,6.977596530534071)
+end_node at (12.552225597600632,6.033605204198894
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.298516268266246,6.977596530534071)
+end_node at (12.552225597600632,6.033605204198894
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.298516268266246,6.977596530534071)
+end_node at (12.552225597600632,6.033605204198894
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.298516268266246,6.977596530534071)
+end_node at (12.552225597600632,6.033605204198894
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.298516268266246,6.977596530534071)
+end_node at (12.552225597600632,6.033605204198894
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.298516268266246,6.977596530534071)
+end_node at (12.552225597600632,6.033605204198894
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (7.855329885579909,4.25317270023516)
+end_node at (10.217005171630138,10.120240949647261
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (7.855329885579909,4.25317270023516)
+end_node at (10.217005171630138,10.120240949647261
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (7.855329885579909,4.25317270023516)
+end_node at (10.217005171630138,10.120240949647261
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (7.855329885579909,4.25317270023516)
+end_node at (10.217005171630138,10.120240949647261
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (7.855329885579909,4.25317270023516)
+end_node at (10.217005171630138,10.120240949647261
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (7.855329885579909,4.25317270023516)
+end_node at (10.217005171630138,10.120240949647261
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.769230769230769,3.153846153846154)
+end_node at (14.153846153846153,6.230769230769231
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.769230769230769,3.153846153846154)
+end_node at (14.153846153846153,6.230769230769231
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.769230769230769,3.153846153846154)
+end_node at (14.153846153846153,6.230769230769231
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.769230769230769,3.153846153846154)
+end_node at (14.153846153846153,6.230769230769231
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.769230769230769,3.153846153846154)
+end_node at (14.153846153846153,6.230769230769231
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.769230769230769,3.153846153846154)
+end_node at (14.153846153846153,6.230769230769231
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (4.8,6.6)
+end_node at (11.2,11.4
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (4.8,6.6)
+end_node at (11.2,11.4
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (4.8,6.6)
+end_node at (11.2,11.4
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (4.8,6.6)
+end_node at (11.2,11.4
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (4.8,6.6)
+end_node at (11.2,11.4
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (4.8,6.6)
+end_node at (11.2,11.4
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.431942903075394,6.952799356944487)
+end_node at (19.568057096924605,4.047200643055513
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.431942903075394,6.952799356944487)
+end_node at (19.568057096924605,4.047200643055513
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.431942903075394,6.952799356944487)
+end_node at (19.568057096924605,4.047200643055513
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.431942903075394,6.952799356944487)
+end_node at (19.568057096924605,4.047200643055513
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.431942903075394,6.952799356944487)
+end_node at (19.568057096924605,4.047200643055513
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.431942903075394,6.952799356944487)
+end_node at (19.568057096924605,4.047200643055513
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.705112934488058,3.1284189171671883)
+end_node at (19.294887065511944,7.871581082832812
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.705112934488058,3.1284189171671883)
+end_node at (19.294887065511944,7.871581082832812
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.705112934488058,3.1284189171671883)
+end_node at (19.294887065511944,7.871581082832812
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.705112934488058,3.1284189171671883)
+end_node at (19.294887065511944,7.871581082832812
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.705112934488058,3.1284189171671883)
+end_node at (19.294887065511944,7.871581082832812
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.705112934488058,3.1284189171671883)
+end_node at (19.294887065511944,7.871581082832812
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.142494099975819,3.00508260033853)
+end_node at (20.14249409997582,4.00508260033853
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.142494099975819,3.00508260033853)
+end_node at (20.14249409997582,4.00508260033853
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.142494099975819,3.00508260033853)
+end_node at (20.14249409997582,4.00508260033853
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (6.142494099975819,3.00508260033853)
+end_node at (20.14249409997582,4.00508260033853
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (6.142494099975819,3.00508260033853)
+end_node at (20.14249409997582,4.00508260033853
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (6.142494099975819,3.00508260033853)
+end_node at (20.14249409997582,4.00508260033853
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (5.85750590002418,6.99491739966147)
+end_node at (19.85750590002418,7.99491739966147
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (5.85750590002418,6.99491739966147)
+end_node at (19.85750590002418,7.99491739966147
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (5.85750590002418,6.99491739966147)
+end_node at (19.85750590002418,7.99491739966147
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (5.85750590002418,6.99491739966147)
+end_node at (19.85750590002418,7.99491739966147
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (15.701742479635211,10.304065785815494)
+end_node at (18.19883834690986,5.130622809456337
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (15.701742479635211,10.304065785815494)
+end_node at (18.19883834690986,5.130622809456337
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (15.701742479635211,10.304065785815494)
+end_node at (18.19883834690986,5.130622809456337
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (15.701742479635211,10.304065785815494)
+end_node at (18.19883834690986,5.130622809456337
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (15.701742479635211,10.304065785815494)
+end_node at (18.19883834690986,5.130622809456337
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (15.701742479635211,10.304065785815494)
+end_node at (18.19883834690986,5.130622809456337
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (13.918947175537202,6.144210076253472)
+end_node at (19.387368549641867,7.903859949164352
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (13.918947175537202,6.144210076253472)
+end_node at (19.387368549641867,7.903859949164352
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (13.918947175537202,6.144210076253472)
+end_node at (19.387368549641867,7.903859949164352
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (13.918947175537202,6.144210076253472)
+end_node at (19.387368549641867,7.903859949164352
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (13.918947175537202,6.144210076253472)
+end_node at (19.387368549641867,7.903859949164352
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (13.918947175537202,6.144210076253472)
+end_node at (19.387368549641867,7.903859949164352
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (14.533594998576495,11.578388330011823)
+end_node at (21.022396665717665,7.718925553341215
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (14.533594998576495,11.578388330011823)
+end_node at (21.022396665717665,7.718925553341215
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (14.533594998576495,11.578388330011823)
+end_node at (21.022396665717665,7.718925553341215
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (14.533594998576495,11.578388330011823)
+end_node at (21.022396665717665,7.718925553341215
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (14.533594998576495,11.578388330011823)
+end_node at (21.022396665717665,7.718925553341215
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (14.533594998576495,11.578388330011823)
+end_node at (21.022396665717665,7.718925553341215
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (12.190542932457987,6.11126684240197)
+end_node at (19.46036195497199,4.074177894934646
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (12.190542932457987,6.11126684240197)
+end_node at (19.46036195497199,4.074177894934646
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (12.190542932457987,6.11126684240197)
+end_node at (19.46036195497199,4.074177894934646
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (12.190542932457987,6.11126684240197)
+end_node at (19.46036195497199,4.074177894934646
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (12.190542932457987,6.11126684240197)
+end_node at (19.46036195497199,4.074177894934646
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (12.190542932457987,6.11126684240197)
+end_node at (19.46036195497199,4.074177894934646
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (2,3)
+end_node at (24,14
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (2,3)
+end_node at (6.0,3.0
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (2,3)
+end_node at (6.0,3.0
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (2,3)
+end_node at (6.0,3.0
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (2,3)
+end_node at (4.3999999999999995,6.199999999999999
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (2,3)
+end_node at (4.3999999999999995,6.199999999999999
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (2,3)
+end_node at (4.3999999999999995,6.199999999999999
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (5.28777847135552,6.868887501733403)
+end_node at (24,14
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (5.28777847135552,6.868887501733403)
+end_node at (24,14
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (7.067777084200035,3.308890276044375)
+end_node at (24,14
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (7.067777084200035,3.308890276044375)
+end_node at (24,14
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (2,3)
+end_node at (13.7642003254187,6.098966070065717
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (2,3)
+end_node at (10.974653177766013,11.213135840762309
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (12.475544529720587,11.95380203461471)
+end_node at (24,14
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (12.475544529720587,11.95380203461471)
+end_node at (24,14
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (12.475544529720587,11.95380203461471)
+end_node at (24,14
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (14.880619853841058,6.662636321549674)
+end_node at (24,14
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (14.880619853841058,6.662636321549674)
+end_node at (24,14
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (14.880619853841058,6.662636321549674)
+end_node at (24,14
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (2,3)
+end_node at (20.110601029679586,4.003060488589147
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (2,3)
+end_node at (19.45696653788798,7.92486743933878
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (18.456440422583732,7.271779788708136)
+end_node at (24,14
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (18.456440422583732,7.271779788708136)
+end_node at (24,14
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (18.456440422583732,7.271779788708136)
+end_node at (24,14
+is_between = True
+
+vis_graph.is_obst_between_points()
+obstacle at (6,5)
+start_node at (21.94355957741627,5.528220211291865)
+end_node at (24,14
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (13,9)
+start_node at (21.94355957741627,5.528220211291865)
+end_node at (24,14
+is_between = False
+
+vis_graph.is_obst_between_points()
+obstacle at (20,6)
+start_node at (21.94355957741627,5.528220211291865)
+end_node at (24,14
+is_between = False
+
+start node (6.431943, 6.952799) next node (6.298516, 6.977597)
+above ang dif 0.06786869278936147 aka 3.8885896579003756
+start node (6.431943, 6.952799) next node (7.85533, 4.253173)
+below ang dif 1.7357958122636177 aka 99.45377413918787
+
+start node (6.298516, 6.977597) next node (4.8, 6.6)
+above ang dif 0.7933190688151692 aka 45.45383445035772
+start node (6.298516, 6.977597) next node (6.431943, 6.952799)
+below ang dif 0.06786869278936147 aka 3.8885896579003756
+
+start node (4.8, 6.6) next node (4.4, 6.2)
+above ang dif 0.28379410920832804 aka 16.26020470831197
+start node (4.8, 6.6) next node (6.298516, 6.977597)
+below ang dif 0.7933190688151692 aka 45.45383445035772
+
+start node (4.4, 6.2) next node (6.0, 3.0)
+above ang dif 2.2142974355881804 aka 126.86989764584399
+start node (4.4, 6.2) next node (4.8, 6.6)
+below ang dif 0.28379410920832804 aka 16.26020470831197
+
+start node (6.0, 3.0) next node (6.142494, 3.005083)
+above ang dif 0.07130746478529026 aka 4.085616779974873
+start node (6.0, 3.0) next node (4.4, 6.2)
+below ang dif 2.2142974355881804 aka 126.86989764584399
+
+start node (6.142494, 3.005083) next node (6.705113, 3.128419)
+above ang dif 0.2889941175965358 aka 16.5581432423889
+start node (6.142494, 3.005083) next node (6.0, 3.0)
+below ang dif 0.07130746478529026 aka 4.085616779974873
+
+start node (6.705113, 3.128419) next node (6.769231, 3.153846)
+above ang dif 0.03448953731793569 aka 1.976104925676668
+start node (6.705113, 3.128419) next node (6.142494, 3.005083)
+below ang dif 0.2889941175965358 aka 16.5581432423889
+
+start node (6.769231, 3.153846) next node (7.85533, 4.253173)
+above ang dif 0.7933190688151681 aka 45.453834450357654
+start node (6.769231, 3.153846) next node (6.705113, 3.128419)
+below ang dif 0.03448953731793569 aka 1.976104925676668
+
+start node (7.85533, 4.253173) next node (6.431943, 6.952799)
+above ang dif 1.7357958122636177 aka 99.45377413918787
+start node (7.85533, 4.253173) next node (6.769231, 3.153846)
+below ang dif 0.7933190688151681 aka 45.453834450357654
+
+start node (15.701742, 10.304066) next node (14.533595, 11.578388)
+above ang dif 0.5845253666464783 aka 33.49083652718022
+start node (15.701742, 10.304066) next node (14.88062, 6.662636)
+below ang dif 1.3429552227389934 aka 76.94566633799572
+
+start node (14.533595, 11.578388) next node (12.475545, 11.953802)
+above ang dif 0.7122999107364301 aka 40.81177863274272
+start node (14.533595, 11.578388) next node (15.701742, 10.304066)
+below ang dif 0.5845253666464783 aka 33.49083652718022
+
+start node (12.475545, 11.953802) next node (11.2, 11.4)
+above ang dif 0.4677796924003541 aka 26.801802116468163
+start node (12.475545, 11.953802) next node (14.533595, 11.578388)
+below ang dif 0.7122999107364301 aka 40.81177863274272
+
+start node (11.2, 11.4) next node (10.217005, 10.120241)
+above ang dif 0.5446090797216452 aka 31.203801752554053
+start node (11.2, 11.4) next node (12.475545, 11.953802)
+below ang dif 0.4677796924003541 aka 26.801802116468163
+
+start node (10.217005, 10.120241) next node (12.190543, 6.111267)
+above ang dif 1.6802773868481964 aka 96.27280267767239
+start node (10.217005, 10.120241) next node (11.2, 11.4)
+below ang dif 0.5446090797216452 aka 31.203801752554053
+
+start node (12.190543, 6.111267) next node (12.552226, 6.033605)
+above ang dif 0.1233871182047821 aka 7.069561119415821
+start node (12.190543, 6.111267) next node (10.217005, 10.120241)
+below ang dif 1.6802773868481964 aka 96.27280267767239
+
+start node (12.552226, 6.033605) next node (13.918947, 6.14421)
+above ang dif 0.4611382484416957 aka 26.421275407764377
+start node (12.552226, 6.033605) next node (12.190543, 6.111267)
+below ang dif 0.1233871182047821 aka 7.069561119415821
+
+start node (13.918947, 6.14421) next node (14.153846, 6.230769)
+above ang dif 0.08347083127994992 aka 4.782526344789706
+start node (13.918947, 6.14421) next node (12.552226, 6.033605)
+below ang dif 0.4611382484416957 aka 26.421275407764377
+
+start node (14.153846, 6.230769) next node (14.88062, 6.662636)
+above ang dif 0.28274245016106114 aka 16.199949083416826
+start node (14.153846, 6.230769) next node (13.918947, 6.14421)
+below ang dif 0.08347083127994992 aka 4.782526344789706
+
+start node (14.88062, 6.662636) next node (15.701742, 10.304066)
+above ang dif 1.3429552227389934 aka 76.94566633799572
+start node (14.88062, 6.662636) next node (14.153846, 6.230769)
+below ang dif 0.28274245016106114 aka 16.199949083416826
+
+start node (21.022397, 7.718926) next node (19.387369, 7.90386)
+above ang dif 0.8478987827633104 aka 48.58102170661752
+start node (21.022397, 7.718926) next node (21.94356, 5.52822)
+below ang dif 1.2723520355540714 aka 72.90040169212756
+
+start node (19.387369, 7.90386) next node (19.294887, 7.871581)
+above ang dif 0.04898129396201534 aka 2.806421419113101
+start node (19.387369, 7.90386) next node (21.022397, 7.718926)
+below ang dif 0.8478987827633104 aka 48.58102170661752
+
+start node (19.294887, 7.871581) next node (18.45644, 7.27178)
+above ang dif 0.5213337295141327 aka 29.870222418974645
+start node (19.294887, 7.871581) next node (19.387369, 7.90386)
+below ang dif 0.04898129396201534 aka 2.806421419113101
+
+start node (18.45644, 7.27178) next node (18.198838, 5.130623)
+above ang dif 1.1388534807038568 aka 65.25149792811455
+start node (18.45644, 7.27178) next node (19.294887, 7.871581)
+below ang dif 0.5213337295141327 aka 29.870222418974645
+
+start node (18.198838, 5.130623) next node (19.460362, 4.074178)
+above ang dif 0.84789878276331 aka 48.5810217066175
+start node (18.198838, 5.130623) next node (18.45644, 7.27178)
+below ang dif 1.1388534807038568 aka 65.25149792811455
+
+start node (19.460362, 4.074178) next node (19.568057, 4.047201)
+above ang dif 0.05551842541542129 aka 3.180971461515484
+start node (19.460362, 4.074178) next node (18.198838, 5.130623)
+below ang dif 0.84789878276331 aka 48.5810217066175
+
+start node (19.568057, 4.047201) next node (20.142494, 4.005083)
+above ang dif 0.2889941175965376 aka 16.558143242389
+start node (19.568057, 4.047201) next node (19.460362, 4.074178)
+below ang dif 0.05551842541542129 aka 3.180971461515484
+
+start node (20.142494, 4.005083) next node (21.94356, 5.52822)
+above ang dif 1.2613546589069307 aka 72.27029842453065
+start node (20.142494, 4.005083) next node (19.568057, 4.047201)
+below ang dif 0.2889941175965376 aka 16.558143242389
+
+start node (21.94356, 5.52822) next node (21.022397, 7.718926)
+above ang dif 1.2723520355540714 aka 72.90040169212756
+start node (21.94356, 5.52822) next node (20.142494, 4.005083)
+below ang dif 1.2613546589069307 aka 72.27029842453065
+
+Utilizing Djikstra...
+['start', 24, 12, 10, 4, 5, 27, 'end']
+completed 0 out of 1
+start id         24 end id 12
+ang_diff         4.085616779974873 is_CW False
+distance to node 0.14261492957058053
+distance to end  20.970901878430908
+start id         12 end id 10
+ang_diff         16.5581432423889 is_CW False
+distance to node 0.5779882351930716
+distance to end  20.428029612505966
+start id         10 end id 4
+ang_diff         1.976104925676668 is_CW False
+distance to node 0.06897907463587138
+distance to end  20.360217620115495
+start id         5 end id 27
+ang_diff         16.199949083416826 is_CW False
+distance to node 0.8482273504831834
+distance to end  11.704699910719626
+created the data in 0.1238 seconds
+file name already exists, overwrite? (y/n)

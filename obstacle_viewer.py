@@ -6,11 +6,14 @@ from matplotlib import pyplot as plt
 # obs_file = r"./obs_courses/1_courses_5_obstacles_normal.txt"
 obs_file = "/obs_courses/23_01_20_1_courses_5_obstacles_normal.txt"
 
-course_num = 0
+args = vg.arg_parse()
+obs_file = args["obs_fpath"]
+
+course_num = args["course"]
 g_title = f"course {course_num}"
 obs_dict = vg.read_obstacle_list(obs_file)
 obs_list = obs_dict[course_num]
-vis_viewer = vg.visibility_graph_generator()
+vis_viewer = vg.visibility_graph_generator(is_ion=args["is_ion"])
 graph = vg.vis_graph(obs_list)
 graph.make_obs_vis_graph()
 vis_viewer.store_vis_graph(graph)

@@ -33,16 +33,11 @@ obs_file_path = args["obs_fpath"]
 obs_courses_dict = vg.read_obstacle_list(obs_file_path)
 obstacle_list = obs_courses_dict[args["course"]]
 
-
-
-# columns = ['start_x','start_y']
-
 # create start/end points
 start_list = vg.init_points(start_vals)
 end_list = vg.init_points(end_vals)
 
 tic = time.perf_counter()
-
 
 if args["test_mode"]:
     vg_gen = vg.visibility_graph_generator(is_ion=args["is_ion"])
@@ -64,7 +59,8 @@ if args["test_mode"]:
 else:
     vg_gen = vg.visibility_graph_generator(is_ion=args["is_ion"])
     vg_gen.run_test(start_list,end_list,obstacle_list,algorithm=args["solve_option"])
-    vg_gen.plot_solution(0,"env 3_0")
+    g_title = f"course {args['fname']}"
+    vg_gen.plot_solution(0,g_title)
 
 toc = time.perf_counter()
 print(f"created the data in {toc - tic:0.4f} seconds")

@@ -5,6 +5,24 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: vertical_test",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "vertical_vis_test.txt",
+                "-i",
+                "-s",
+                "14.1",
+                "19",
+                "-e",
+                "16.5",
+                "1"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: My Current File",
             "type": "python",
             "request": "launch",

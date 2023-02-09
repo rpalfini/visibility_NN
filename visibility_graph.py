@@ -920,13 +920,20 @@ def remove_list_item(item,list_in):
     return new_obs_list
 
 def check_collision(a,b,c,x,y,radius):
+    '''checks if line collides with circle, check intersection can see if the line segments are intersecting'''
     dist = round((abs(a * x + b * y + c)) / np.sqrt(a * a + b * b),4) # rounding for numerical errors
     radius = round(radius,4)
     if radius > dist:
-        collision = True
+        collision_cand = True
     else:
-        collision = False
-    return collision
+        collision_cand = False
+    x = (b*(b*x-a*y)-a*c) / (a*a + b*b)
+    y = (a*(-b*x+a*y)-b*c) / (a*a + b*b)
+    return collision_cand
+
+def check_intersection():
+    '''checks if two line segments are intersecting'''
+    return True
 
 def slope_int_form(start_node,end_node):
     slope = (end_node.y-start_node.y)/(end_node.x-start_node.x)

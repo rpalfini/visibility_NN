@@ -5,6 +5,60 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: vertical_error",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "vertical_vis_test.txt",
+                "-i",
+                "-s",
+                "14",
+                "19",
+                "-e",
+                "17",
+                "1"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: vertical_wide_test",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "vertical_wide_test.txt",
+                "-i",
+                "-s",
+                "14",
+                "19",
+                "-e",
+                "17.1",
+                "1"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: vertical_test",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "vertical_vis_test.txt",
+                "-i",
+                "-s",
+                "14.1",
+                "19",
+                "-e",
+                "16.5",
+                "1"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: My Current File",
             "type": "python",
             "request": "launch",

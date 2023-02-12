@@ -35,6 +35,9 @@ class obstacle:
         self.node_list = set() #using set as there shouldn't be more than one of a given node
 
     def add_node(self,point):
+        #TODO would this exception help find an error in the algorithm?
+        # if point in self.node_list:
+        #     raise Exception("point already in obstacle definition")
         self.node_list.add(point)
 
     def output_prop(self):
@@ -126,6 +129,7 @@ class vis_graph:
                 self.add_edge2graph(cand_node,start_node,edge_length)
         if check:
             del viewer
+
     def process_cand_edge(self,node_obst1,node_obst2):
         '''tags nodes to appropriate obstacles, inputs are tuple of cand_node and its obstacle'''
         if self.is_node_vis(node_obst1[0],node_obst2[0]):
@@ -205,7 +209,7 @@ class vis_graph:
     def is_node_vis(self,start_node,end_node):        
         # checks if visibility line intersects other obstacles
         is_valid = True
-        a,b,c = planar_line_form(start_node,end_node)
+        
         #TODO make sure that obstacle we are touching doesnt result in non-visibility
         
         if start_node.x < end_node.x:
@@ -219,7 +223,7 @@ class vis_graph:
         
         for obstacle in self.obstacles:
             if self.is_obst_between_points(left_node,right_node,obstacle):
-                if check_collision(a,b,c,obstacle.center_x,obstacle.center_y,obstacle.radius):
+                if check_collision(start_node,end_node,obstacle):
                     if self.debug:
                         print(f'non visible edge found:')
                         print(f'start=({left_node.x},{left_node.y})')
@@ -919,8 +923,12 @@ def remove_list_item(item,list_in):
     new_obs_list.remove(item)
     return new_obs_list
 
-def check_collision(a,b,c,x,y,radius):
+def check_collision(start_node,end_node,obstacle):
     '''checks if line collides with circle, check intersection can see if the line segments are intersecting'''
+    a,b,c = planar_line_form(start_node,end_node)
+    x = obstacle.center_x
+    y = obstacle.center_y
+    r = obstacle.center_z
     dist = round((abs(a * x + b * y + c)) / np.sqrt(a * a + b * b),4) # rounding for numerical errors
     radius = round(radius,4)
     if radius > dist:
@@ -929,10 +937,16 @@ def check_collision(a,b,c,x,y,radius):
         collision_cand = False
     x = (b*(b*x-a*y)-a*c) / (a*a + b*b)
     y = (a*(-b*x+a*y)-b*c) / (a*a + b*b)
-    return collision_cand
+    collision_point = point(x,y)
+    if check_intersection((collision_point,obstacle.center_loc),(start_node,end_node)):
+        collision = True
+    else:
+        collision = False
+    return collision
 
-def check_intersection():
-    '''checks if two line segments are intersecting'''
+def check_intersection(segment1,segment2):
+    '''checks if two line segments are intersecting.  Line segment should be tuple of 2 point objects'''
+
     return True
 
 def slope_int_form(start_node,end_node):

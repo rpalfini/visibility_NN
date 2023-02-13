@@ -219,6 +219,7 @@ class vis_graph:
         
         check = False
         if check:
+            #TODO figure out how to prevent graph viewer from plotting same thing multiple times
             viewer = graph_viewer(self)
             viewer.plot_obstacles(0)
             viewer.plot_cand_edge(start_node,end_node)
@@ -833,8 +834,11 @@ class graph_viewer(visibility_graph_generator):
     def __init__(self, vis_graph_obj, obstacles=None, record_on=True,is_ion=True):
         super().__init__(obstacles, record_on, is_ion) # this is needed so we can reuse plot methods from parent
         self.store_vis_graph(vis_graph_obj) 
+        self.previous_segment() # this is used only for debugging to track what the 
 
     #TODO create method that gets obstacle data here and in parent class
+    def store_last_plotted():
+        '''store_last_plotted is used to store last thing plotted to prevent plot from replotting'''
 
     def get_start_end_data(self, test_num=0):
         graph = self.graphs_memory[test_num]
@@ -987,8 +991,21 @@ def in_range(var,bounds,tol):
         return False
 
 def slope_int_form(start_node,end_node):
-    slope = (end_node.y-start_node.y)/(end_node.x-start_node.x)
-    y_int = end_node.y-slope*end_node.x
+    tol = 0.0000002
+    y_diff = end_node.y-start_node.y
+    x_diff = end_node.x-start_node.x
+    if -tol <= x_diff <= tol:
+        if y_diff < 0:
+            slope = float('-inf')
+        elif y_diff > 0:
+            slope = float('inf')
+        else:
+            raise Exception("start_node and end_node are the same point")
+        y_int = None
+    else:
+        slope = (end_node.y-start_node.y)/(end_node.x-start_node.x) 
+        y_int = end_node.y-slope*end_node.x
+ 
     return slope, y_int
 
 def planar_line_form(start_node,end_node):

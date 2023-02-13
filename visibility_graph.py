@@ -837,8 +837,6 @@ class graph_viewer(visibility_graph_generator):
         self.previous_segment() # this is used only for debugging to track what the 
 
     #TODO create method that gets obstacle data here and in parent class
-    def store_last_plotted():
-        '''store_last_plotted is used to store last thing plotted to prevent plot from replotting'''
 
     def get_start_end_data(self, test_num=0):
         graph = self.graphs_memory[test_num]
@@ -849,6 +847,19 @@ class graph_viewer(visibility_graph_generator):
     def plot_network(self, test_num=0):
         return super().plot_network(test_num)
     
+    def store_last_plotted():
+        '''store_last_plotted is used to store last thing plotted to prevent plot from replotting'''
+        pass
+
+    def reinit_vis_graph(self,vis_graph_obj):
+        self.clear_graph_memory()
+        self.store_vis_graph(vis_graph_obj)
+        self._act_fig()
+        self.clear_plot()
+    
+    def clear_graph_memory(self):
+        self.graphs_memory = {} #TODO check if this clears the graphs memory
+
     def plot_cand_edge(self,node1,node2):
         '''used for debugging new edges and plotting as they are found'''
         self._act_fig()

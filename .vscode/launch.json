@@ -5,6 +5,26 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: vertical_obstacles",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "obs_same_x_axis_test.txt",
+                "-i",
+                "-s",
+                "2",
+                "18",
+                "-e",
+                "18",
+                "3",
+                "-p",
+                "./obs_courses/testing_courses/"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: vertical_error",
             "type": "python",
             "request": "launch",
@@ -17,7 +37,9 @@
                 "19",
                 "-e",
                 "17",
-                "1"
+                "1",
+                "-p",
+                "./obs_courses/testing_courses/"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -35,7 +57,9 @@
                 "19",
                 "-e",
                 "17.1",
-                "1"
+                "1",
+                "-p",
+                "./obs_courses/testing_courses/"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -53,7 +77,9 @@
                 "19",
                 "-e",
                 "16.5",
-                "1"
+                "1",
+                "-p",
+                "./obs_courses/testing_courses/"
             ],
             "console": "integratedTerminal",
             "justMyCode": true

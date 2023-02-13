@@ -72,6 +72,12 @@ class vis_graph:
         self.pw_opt_func = {} # record parameters of piecewise function for label evaulation
         self.opt_path_cost = 0
         self.obstacles = obstacles
+        self.debug_view_enabled = False
+
+    def attach_graph_viewer(self):
+        if not self.debug_view_enabled:
+            self.viewer = graph_viewer(self)    
+            self.debug_view_enabled = True
 
     def view_vis_graph(self):
         for key,value in recursive_items(self.vis_graph):
@@ -217,12 +223,17 @@ class vis_graph:
         # checks if visibility line intersects other obstacles
         is_valid = True
         
-        check = False
+        check = True #option to enable when debugging, should be off normally
         if check:
             #TODO figure out how to prevent graph viewer from plotting same thing multiple times
-            viewer = graph_viewer(self)
-            viewer.plot_obstacles(0)
-            viewer.plot_cand_edge(start_node,end_node)
+            # viewer = graph_viewer(self)
+            # viewer.plot_obstacles(0)
+            # viewer.plot_cand_edge(start_node,end_node)
+            self.attach_graph_viewer()
+            self.viewer.reinit_vis_graph(self)
+            self.viewer.plot_obstacles(0)
+            self.viewer.plot_cand_edge(start_node,end_node)
+            
         
         for obstacle in self.obstacles:
             if check_collision(start_node,end_node,obstacle):
@@ -232,9 +243,6 @@ class vis_graph:
                     print(f'end_node=({end_node.x},{end_node.y})')
                     print(f'obstacle(r,x,y) = ({obstacle.view()}\n')
                 is_valid = False
-                if check:
-                    del viewer
-                break
 
         return is_valid
 
@@ -834,7 +842,7 @@ class graph_viewer(visibility_graph_generator):
     def __init__(self, vis_graph_obj, obstacles=None, record_on=True,is_ion=True):
         super().__init__(obstacles, record_on, is_ion) # this is needed so we can reuse plot methods from parent
         self.store_vis_graph(vis_graph_obj) 
-        self.previous_segment() # this is used only for debugging to track what the 
+        # self.previous_segment() # this is used only for debugging to track what the 
 
     #TODO create method that gets obstacle data here and in parent class
 
@@ -858,7 +866,7 @@ class graph_viewer(visibility_graph_generator):
         self.clear_plot()
     
     def clear_graph_memory(self):
-        self.graphs_memory = {} #TODO check if this clears the graphs memory
+        self.graphs_memory = {}
 
     def plot_cand_edge(self,node1,node2):
         '''used for debugging new edges and plotting as they are found'''

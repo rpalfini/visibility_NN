@@ -22,6 +22,10 @@ class point:
         # outputs the points as a tuple to be used as a key in node dictionary
         return round(self.x,self.key_precision), round(self.y,self.key_precision)
 
+    def output(self):
+        # this is used by check_collision()
+        return(self.x,self.y)
+
     def view(self):
         print("(" + str(self.x) + "," + str(self.y) + ")")
         return(self.x,self.y)
@@ -141,7 +145,7 @@ class vis_graph:
         is_end_node sets the order of edge storage'''
         center_dist = self.euclid_dist(start_node,obstacle.center_loc) # distance from obstacle center to point
         theta = np.arccos(obstacle.radius/center_dist)
-        phi = self.rotation_to_horiz(obstacle.center_loc,start_node)
+        phi = self.rotation_from_horiz(obstacle.center_loc,start_node)
         
         cand_node1 = point(self.direction_step(obstacle.center_loc,obstacle.radius,phi + theta)) #candidate node1
         cand_node2 = point(self.direction_step(obstacle.center_loc,obstacle.radius,phi - theta)) #candidate node2
@@ -159,6 +163,7 @@ class vis_graph:
                 obst_A = next_obst
                 obst_B = obst
             else:
+                #TODO this method needs to work when multiple obstacles have same x-coordinate
                 warnings.warn('multiple obstacles have same x-coordinate, skipping vis graph')
                 continue
             
@@ -174,8 +179,8 @@ class vis_graph:
         '''Finds internal bitangents, obstacle L should be to the left of obstacle R on x axis'''
         center_dist = self.euclid_dist(obst_L.center_loc,obst_R.center_loc)
         theta = np.arccos((obst_L.radius+obst_R.radius)/center_dist)
-        phi_L = self.rotation_to_horiz(obst_L.center_loc,obst_R.center_loc)
-        phi_R = self.rotation_to_horiz(obst_R.center_loc,obst_L.center_loc) # this will be phi_L - pi
+        phi_L = self.rotation_from_horiz(obst_L.center_loc,obst_R.center_loc)
+        phi_R = self.rotation_from_horiz(obst_R.center_loc,obst_L.center_loc) # this will be phi_L - pi
               
         cand_nodeL1 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi_L + theta))
         cand_nodeL2 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi_L - theta))
@@ -193,9 +198,9 @@ class vis_graph:
 
         # need to compare obstacle radii to determine angle directions
         if obst_L.radius > obst_R.radius:
-            phi = self.rotation_to_horiz(obst_L.center_loc,obst_R.center_loc)
+            phi = self.rotation_from_horiz(obst_L.center_loc,obst_R.center_loc)
         else:
-            phi = self.rotation_to_horiz(obst_R.center_loc,obst_L.center_loc)
+            phi = self.rotation_from_horiz(obst_R.center_loc,obst_L.center_loc)
 
         cand_nodeL1 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi + theta))
         cand_nodeL2 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi - theta))
@@ -248,20 +253,20 @@ class vis_graph:
         return is_between
 
     def direction_step(self,start,dist,angle):
-        # calculates tangent node location on an obstacle
+        '''calculates tangent node location on an obstacle'''
         x = dist*np.cos(angle) + start.x
         y = dist*np.sin(angle) + start.y
         return (x,y)
 
-    def rotation_to_horiz(self,point1,point2):
-        # calculates rotation of connecting line to horizontal axis
+    def rotation_from_horiz(self,point1,point2):
+        '''calculates rotation from positive horizontal axis at point1.y to line defined by point1, point2.  Direction of rotation is smaller of two rotations from pos horizontal axis to line, i.e. the one <= to pi rotation'''
         dy = point2.y - point1.y
         dx = point2.x - point1.x
         rotation_1_2 = np.arctan2(dy,dx)
         return rotation_1_2
 
     def euclid_dist(self,point1,point2):
-        # calculates euclidean distance b/T two points
+        '''calculates euclidean distance b/T two points'''
         dist = np.sqrt((point1.x - point2.x)**2 + (point1.y - point2.y)**2)
         return dist
 
@@ -795,9 +800,9 @@ class visibility_graph_generator:
         graph = self.graphs_memory[test_num]
         for label,obstacle in zip(graph.obstacle_labels,graph.obstacles):
             if label == dir_label.up:
-                plt.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=6)
+                plt.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=6) # marker 6 is an up arrow
             elif label == dir_label.down:
-                plt.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=7)
+                plt.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=7) # marker 7 is a down arrow
             else:
                 raise Exception('invalid label type')
 
@@ -925,29 +930,63 @@ def remove_list_item(item,list_in):
 
 def check_collision(start_node,end_node,obstacle):
     '''checks if line collides with circle, check intersection can see if the line segments are intersecting'''
+    # first check if the entire line defined by start_node,end_node intersects with the obstacle
     a,b,c = planar_line_form(start_node,end_node)
     x = obstacle.center_x
     y = obstacle.center_y
     r = obstacle.center_z
     dist = round((abs(a * x + b * y + c)) / np.sqrt(a * a + b * b),4) # rounding for numerical errors
     radius = round(radius,4)
-    if radius > dist:
-        collision_cand = True
+    if radius <= dist:
+        return False
     else:
-        collision_cand = False
-    x = (b*(b*x-a*y)-a*c) / (a*a + b*b)
-    y = (a*(-b*x+a*y)-b*c) / (a*a + b*b)
-    collision_point = point(x,y)
-    if check_intersection((collision_point,obstacle.center_loc),(start_node,end_node)):
-        collision = True
-    else:
-        collision = False
-    return collision
+        # if the line intersects the obstacle, now check if the intersection occurs in the segment between start_node and end_node
+        x = (b*(b*x-a*y)-a*c) / (a*a + b*b)
+        y = (a*(-b*x+a*y)-b*c) / (a*a + b*b)
+        collision_point = point(x,y)
+        if check_intersection((collision_point,obstacle.center_loc),(start_node,end_node)):
+            collision = True
+        else:
+            collision = False
+        return collision
 
-def check_intersection(segment1,segment2):
+def check_intersection(seg1,seg2):
     '''checks if two line segments are intersecting.  Line segment should be tuple of 2 point objects'''
+    dbg = True
+    # based on chapter 4, slide 172 of Lectures on Robotic Planning and Kinematics by Francessco Bullo and Stephen L. Smith available here http://motion.me.ucsb.edu/book-lrpk/
+    x1,y1 = seg1[0].coord_key()
+    x2,y2 = seg1[1].coord_key()
+    x3,y3 = seg2[0].coord_key()
+    x4,y4 = seg2[1].coord_key()
+    tol = 0.00002
 
-    return True
+    a = y1-y3
+    b = x4-x3
+    c = y4-y3
+    d = x1-x3
+    e = x2-x1
+    f = y2-y1
+
+    Sa = (a*b-c*d)/(c*e-f*b)
+    Sb = (a*e-d*f)/(e*c-f*b)
+    A_in_range = in_range(Sa,(0,1),tol)
+    B_in_range = in_range(Sb,(0,1),tol)
+    if A_in_range and B_in_range:
+        intersects = True
+    else:
+        intersects = False
+        if dbg:
+            print(f'Sa = {Sa}, in_range = {A_in_range}, tol = {tol}')
+            print(f'Sb = {Sb}, in_range = {B_in_range}, tol = {tol}')
+
+    return intersects
+
+def in_range(var,bounds,tol):
+    '''checks if variable is in range specified by tuple bounds(lower,higher), with given tol'''
+    if bounds[0]-tol <= var <= bounds[1]+tol:
+        return True
+    else:
+        return False
 
 def slope_int_form(start_node,end_node):
     slope = (end_node.y-start_node.y)/(end_node.x-start_node.x)

@@ -5,6 +5,26 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: check_intersection_test",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "check_intersection_test.txt",
+                "-i",
+                "-s",
+                "1",
+                "18",
+                "-e",
+                "18",
+                "1",
+                "-p",
+                "./obs_courses/testing_courses/"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: vertical_obstacles",
             "type": "python",
             "request": "launch",

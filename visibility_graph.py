@@ -118,11 +118,7 @@ class vis_graph:
     def process_cand_node(self,start_node,cand_node,obstacle,is_end_node = False):
         '''this method adds cand_node, and edge to node dictionary and vis_graph, if the node is visible.  
         It also attaches cand_node to obstacle'''
-        check = False
-        if check:
-            viewer = graph_viewer(self)
-            viewer.plot_obstacles(0)
-            viewer.plot_cand_edge(start_node,cand_node)
+
         if self.is_node_vis(start_node,cand_node):
             self.update_node_props(cand_node,obstacle)
             # if start_node is an end_node, then add to graph vertically
@@ -131,8 +127,7 @@ class vis_graph:
                 self.add_edge2graph(start_node,cand_node,edge_length)
             else:
                 self.add_edge2graph(cand_node,start_node,edge_length)
-        if check:
-            del viewer
+
 
     def process_cand_edge(self,node_obst1,node_obst2):
         '''tags nodes to appropriate obstacles, inputs are tuple of cand_node and its obstacle'''
@@ -172,7 +167,7 @@ class vis_graph:
                     obst_B = obst
                 else:
                     #TODO I don't think this will catch something that the following exception wouldnt have already caught
-                    raise Exception("obstacles have same x and y axis vis_obst_obst() call")
+                    raise Exception("obstacles have same x and y coordinate: vis_obst_obst()")
             
             if id(obst) == id(next_obst): # dont calculate visibility with itself
                 raise Exception('Obstacle not deleted correctly from list')
@@ -222,27 +217,24 @@ class vis_graph:
         # checks if visibility line intersects other obstacles
         is_valid = True
         
-        #TODO make sure that obstacle we are touching doesnt result in non-visibility
-        
-        if start_node.x < end_node.x:
-            left_node = start_node
-            right_node = end_node
-        elif start_node.x > end_node.x:
-            left_node = end_node
-            right_node = start_node
-        else:#TODO add implementation for checking if nodes are between when start node and end node have same x coordinate
-            raise Exception('start_node and end_node have same x coordinate')
+        check = False
+        if check:
+            viewer = graph_viewer(self)
+            viewer.plot_obstacles(0)
+            viewer.plot_cand_edge(start_node,end_node)
         
         for obstacle in self.obstacles:
-            if self.is_obst_between_points(left_node,right_node,obstacle):
-                if check_collision(start_node,end_node,obstacle):
-                    if self.debug:
-                        print(f'non visible edge found:')
-                        print(f'start=({left_node.x},{left_node.y})')
-                        print(f'end_node=({right_node.x},{right_node.y})')
-                        print(f'obstacle(r,x,y) = ({obstacle.view()}\n')
-                    is_valid = False
-                    break
+            if check_collision(start_node,end_node,obstacle):
+                if self.debug:
+                    print(f'non visible edge found:')
+                    print(f'start=({start_node.x},{start_node.y})')
+                    print(f'end_node=({end_node.x},{end_node.y})')
+                    print(f'obstacle(r,x,y) = ({obstacle.view()}\n')
+                is_valid = False
+                if check:
+                    del viewer
+                break
+
         return is_valid
 
     def is_obst_between_points(self,start_node,end_node,obstacle):
@@ -350,6 +342,7 @@ class vis_graph:
         return cost
     
     def create_pw_opt_path_func(self):
+        '''Creates a piecewise function of the optimal path to use for creating object labels'''
         def decide_zero_slope_sign(node_id):
             # this function is to deal with case where we have 0 slope line
             obstacle = self.get_node_obs(node_id)
@@ -361,7 +354,6 @@ class vis_graph:
                 is_pos = True
             return is_pos
 
-        '''Creates a piecewise function of the optimal path to use for creating object labels'''
         for idx,node_id in enumerate(self.opt_path):
             if node_id == 'start': # equation is up to a node, and there are no points before the start
                 continue
@@ -636,7 +628,7 @@ class visibility_graph_generator:
 
     def plot_network(self,test_num):
         #TODO decide if i want it to be called plot_network or plot_full_vis_graph
-        self.plot_start_end(test_num)
+        # self.plot_start_end(test_num)
         self.plot_obstacles(test_num)
         self.plot_vis_graph(test_num)
 
@@ -757,7 +749,7 @@ class visibility_graph_generator:
                     # node_points.remove(arc_points) #TODO verify this code removes all points except for the root node id
                     del node_points[1:]
             if len(node_points) > 1:
-                raise Exception("sorry, node_points was not reset properly during plotting")
+                raise Exception("node_points was not reset properly during plotting")
             node_points.pop() #reset node_points
 
     def finish_plot(self,title=None):
@@ -948,9 +940,9 @@ def check_collision(start_node,end_node,obstacle):
         return False
     else:
         # if the line intersects the obstacle, now check if the intersection occurs in the segment between start_node and end_node
-        x = (b*(b*x-a*y)-a*c) / (a*a + b*b)
-        y = (a*(-b*x+a*y)-b*c) / (a*a + b*b)
-        collision_point = point((x,y))
+        x_col = (b*(b*x-a*y)-a*c) / (a*a + b*b)
+        y_col = (a*(-b*x+a*y)-b*c) / (a*a + b*b)
+        collision_point = point((x_col,y_col))
         if check_intersection((collision_point,obstacle.center_loc),(start_node,end_node)):
             collision = True
         else:
@@ -982,9 +974,9 @@ def check_intersection(seg1,seg2):
         intersects = True
     else:
         intersects = False
-        if dbg:
-            print(f'Sa = {Sa}, in_range = {A_in_range}, tol = {tol}')
-            print(f'Sb = {Sb}, in_range = {B_in_range}, tol = {tol}')
+    if dbg:
+        print(f'Sa = {Sa}, in_range = {A_in_range}, tol = {tol}')
+        print(f'Sb = {Sb}, in_range = {B_in_range}, tol = {tol}')
 
     return intersects
 

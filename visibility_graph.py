@@ -931,17 +931,16 @@ def check_collision(start_node,end_node,obstacle):
     '''checks if line collides with circle, check intersection can see if the line segments are intersecting'''
     # first check if the entire line defined by start_node,end_node intersects with the obstacle
     a,b,c = planar_line_form(start_node,end_node)
-    x = obstacle.center_x
-    y = obstacle.center_y
+    x0 = obstacle.center_x
+    y0 = obstacle.center_y
     radius = obstacle.radius
-    dist = round((abs(a * x + b * y + c)) / np.sqrt(a * a + b * b),4) # rounding for numerical errors
-    radius = round(radius,4)
+    dist = round((abs(a * x0 + b * y0 + c)) / np.sqrt(a * a + b * b),4) # rounding for numerical errors; from https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
     if radius <= dist:
         return False
     else:
         # if the line intersects the obstacle, now check if the intersection occurs in the segment between start_node and end_node
-        x_col = (b*(b*x-a*y)-a*c) / (a*a + b*b)
-        y_col = (a*(-b*x+a*y)-b*c) / (a*a + b*b)
+        x_col = (b*(b*x0-a*y0)-a*c) / (a*a + b*b)
+        y_col = (a*(-b*x0+a*y0)-b*c) / (a*a + b*b)
         collision_point = point((x_col,y_col))
         if check_intersection((collision_point,obstacle.center_loc),(start_node,end_node)):
             collision = True
@@ -953,10 +952,10 @@ def check_intersection(seg1,seg2):
     '''checks if two line segments are intersecting.  Line segment should be tuple of 2 point objects'''
     dbg = True
     # based on chapter 4, slide 172 of Lectures on Robotic Planning and Kinematics by Francessco Bullo and Stephen L. Smith available here http://motion.me.ucsb.edu/book-lrpk/
-    x1,y1 = seg1[0].coord_key()
-    x2,y2 = seg1[1].coord_key()
-    x3,y3 = seg2[0].coord_key()
-    x4,y4 = seg2[1].coord_key()
+    x1,y1 = seg1[0].output()
+    x2,y2 = seg1[1].output()
+    x3,y3 = seg2[0].output()
+    x4,y4 = seg2[1].output()
     tol = 0.00002
 
     a = y1-y3
@@ -993,13 +992,11 @@ def slope_int_form(start_node,end_node):
     return slope, y_int
 
 def planar_line_form(start_node,end_node):
-    # returns line connecting nodes in planar line form for check_collision
-    slope,y_int = slope_int_form(start_node,end_node) # TODO replace with decorator?
-    # slope = (end_node.y-start_node.y)/(end_node.x-start_node.x)
-    # y_int = end_node.y-slope*end_node.x
-    a = -slope
-    b = 1
-    c = -y_int
+    x1,y1 = start_node.output()
+    x2,y2 = end_node.output()
+    a = y1-y2
+    b = x2-x1
+    c = y1*x1-y1*x2+y2*x1-y1*x1
     return a,b,c
 
 def find_point_angle(node,obstacle):

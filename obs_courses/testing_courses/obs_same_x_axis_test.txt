@@ -1,0 +1,4 @@
+New Obstacle Set:
+radius,x,y
+2,10,15
+4,10,5

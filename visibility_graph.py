@@ -163,9 +163,16 @@ class vis_graph:
                 obst_A = next_obst
                 obst_B = obst
             else:
-                #TODO this method needs to work when multiple obstacles have same x-coordinate
-                warnings.warn('multiple obstacles have same x-coordinate, skipping vis graph')
-                continue
+                # if obstacles have same x coordinate, compare diff of their y-coords
+                if diff.y > 0:
+                    obst_A = obst 
+                    obst_B = next_obst
+                elif diff.y < 0:
+                    obst_A = next_obst
+                    obst_B = obst
+                else:
+                    #TODO I don't think this will catch something that the following exception wouldnt have already caught
+                    raise Exception("obstacles have same x and y axis vis_obst_obst() call")
             
             if id(obst) == id(next_obst): # dont calculate visibility with itself
                 raise Exception('Obstacle not deleted correctly from list')
@@ -180,7 +187,7 @@ class vis_graph:
         center_dist = self.euclid_dist(obst_L.center_loc,obst_R.center_loc)
         theta = np.arccos((obst_L.radius+obst_R.radius)/center_dist)
         phi_L = self.rotation_from_horiz(obst_L.center_loc,obst_R.center_loc)
-        phi_R = self.rotation_from_horiz(obst_R.center_loc,obst_L.center_loc) # this will be phi_L - pi
+        phi_R = self.rotation_from_horiz(obst_R.center_loc,obst_L.center_loc) # abs(phi_R) is supplementary angle of abs(phi_L)
               
         cand_nodeL1 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi_L + theta))
         cand_nodeL2 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi_L - theta))
@@ -192,14 +199,14 @@ class vis_graph:
         self.process_cand_edge((cand_nodeL2,obst_L),(cand_nodeR1,obst_R))
         
     def external_bitangents(self,obst_L,obst_R):
-        
+        '''Finds external bitangents, obstacle being left or right doesnt affect this calculation'''
         center_dist = self.euclid_dist(obst_L.center_loc,obst_R.center_loc)
         theta = np.arccos(abs(obst_L.radius-obst_R.radius)/center_dist)
 
         # need to compare obstacle radii to determine angle directions
         if obst_L.radius > obst_R.radius:
             phi = self.rotation_from_horiz(obst_L.center_loc,obst_R.center_loc)
-        else:
+        else: # if radii are the same size, it doesnt matter the order you calculate rotation_from_horiz
             phi = self.rotation_from_horiz(obst_R.center_loc,obst_L.center_loc)
 
         cand_nodeL1 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi + theta))
@@ -259,7 +266,7 @@ class vis_graph:
         return (x,y)
 
     def rotation_from_horiz(self,point1,point2):
-        '''calculates rotation from positive horizontal axis at point1.y to line defined by point1, point2.  Direction of rotation is smaller of two rotations from pos horizontal axis to line, i.e. the one <= to pi rotation'''
+        '''calculates rotation from positive horizontal axis at point1.y to line defined by point1, point2.  Direction of rotation is smaller of absolute value of two rotations from pos horizontal axis to line, i.e. the one <= to pi rotation'''
         dy = point2.y - point1.y
         dx = point2.x - point1.x
         rotation_1_2 = np.arctan2(dy,dx)
@@ -934,7 +941,7 @@ def check_collision(start_node,end_node,obstacle):
     a,b,c = planar_line_form(start_node,end_node)
     x = obstacle.center_x
     y = obstacle.center_y
-    r = obstacle.center_z
+    radius = obstacle.radius
     dist = round((abs(a * x + b * y + c)) / np.sqrt(a * a + b * b),4) # rounding for numerical errors
     radius = round(radius,4)
     if radius <= dist:
@@ -943,7 +950,7 @@ def check_collision(start_node,end_node,obstacle):
         # if the line intersects the obstacle, now check if the intersection occurs in the segment between start_node and end_node
         x = (b*(b*x-a*y)-a*c) / (a*a + b*b)
         y = (a*(-b*x+a*y)-b*c) / (a*a + b*b)
-        collision_point = point(x,y)
+        collision_point = point((x,y))
         if check_intersection((collision_point,obstacle.center_loc),(start_node,end_node)):
             collision = True
         else:

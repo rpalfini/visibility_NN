@@ -234,7 +234,6 @@ class vis_graph:
             self.viewer.plot_obstacles(0)
             self.viewer.plot_cand_edge(start_node,end_node)
             
-        
         for obstacle in self.obstacles:
             if check_collision(start_node,end_node,obstacle):
                 if self.debug:
@@ -363,13 +362,14 @@ class vis_graph:
                 is_pos = True
             return is_pos
 
+        is_slope_inf = False # this flag is used to handle specific edge case where first line segment is infinite slope
         for idx,node_id in enumerate(self.opt_path):
             if node_id == 'start': # equation is up to a node, and there are no points before the start
                 continue
             x_key,_ = self.get_node_xy(node_id)
             node_before = self.opt_path[idx-1] #node before node_id
-            # we can store
             edge_key = self.get_edge_type(self.is_edge_hugging(node_before,node_id)) # finding edge type between this and previous node
+            
             if edge_key == edge_type.line:
                 slope,y_int = slope_int_form(self.get_node_obj(node_before),self.get_node_obj(node_id))
                 if slope > 0:
@@ -377,12 +377,27 @@ class vis_graph:
                 elif slope < 0:
                     is_pos = False
                 elif slope == 0:
-                    is_pos = decide_zero_slope_sign(node_id)
+                    # for the case we have zero_slope_sign on the last segment to the end
+                    if node_id == 'end':
+                        is_pos = self.pw_opt_func[self.get_x_key_smaller(x_key)].is_slope_pos()
+                    else:
+                        is_pos = decide_zero_slope_sign(node_id)
+                else:
+                    raise Exception(f'invalid slope value: {slope}')
+                if slope == float("-inf") or slope == float("inf"):
+                    is_slope_inf = True
+                    inf_slope_sign = is_pos
+                    continue # we can ignore these in pw_func becasue previous steps guarantee the obstacle is not intersecting with the infinite slope segment.  Thus we can just ignore it as the value is handled by the other parts of the pw_func.
                 self.pw_opt_func[x_key] = pf.line(slope,y_int,is_pos)
             elif edge_key == edge_type.circle:
-                is_slope_pos = self.pw_opt_func[self.get_x_key_smaller(x_key)].is_slope_pos() # determine if previous segment has pos or neg slope
+                if is_slope_inf == True and not self.pw_opt_func: # only covers the case where first line in slope is inf
+                    is_slope_pos = inf_slope_sign
+                else:
+                    is_slope_pos = self.pw_opt_func[self.get_x_key_smaller(x_key)].is_slope_pos() # determine if previous segment has pos or neg slope
                 obstacle = self.get_node_obs(node_id)
                 self.pw_opt_func[x_key] = pf.circle(*obstacle.output_prop(),is_slope_pos)
+            else:
+                raise Exception(f'invalid Edge key found: {edge_key}')
 
     # functions for working with pw_opt_func
     def gen_obs_labels(self):
@@ -417,6 +432,7 @@ class vis_graph:
     
     def create_label(self,obstacle):
         x_key = self.get_x_key_larger(obstacle.center_x)
+        # adding this code to detect when x_key gets added twice to pw_opt_func dictionary
         y_path = self.pw_opt_func[x_key].evaluate(obstacle.center_x)
         return dir_label.up if y_path > obstacle.center_y else dir_label.down
 
@@ -467,10 +483,11 @@ class vis_graph:
         return self.edge_type_dict[start_id][end_id]['ang']
 
     def is_edge_hugging(self,start_id,end_id):
+        '''returns value of is_hugging from edge_type_dict'''
         return self.edge_type_dict[start_id][end_id]['is_hugging']
 
     def get_edge_type(self,is_hugging):
-        # temporary method to bridge gap between allowing multiple types of edges besides hugging and surfing
+        '''temporary method to bridge gap between allowing multiple types of edges besides hugging and surfing'''
         if is_hugging:
             return edge_type.circle
         elif not is_hugging:

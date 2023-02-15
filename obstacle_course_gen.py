@@ -68,8 +68,8 @@ def make_circle_points(obstacle):
     bound_y = r*np.sin(thetas) + y
     return bound_x, bound_y
 
-def gen_obs(num_obstacles = 6,show_result = False, start_x=0, start_y=0, bound_x=20, bound_y=20, fname="obstacle_locations.txt"):
-    
+def gen_obs(num_obstacles = 6,show_result = False, start_x=5, start_y=5, bound_x=25, bound_y=25, fname="obstacle_locations.txt"):
+    ''' main function loop that attempts to place objects in course field'''
     output_result = True
     obstacles = []
     bound_x = bound_x
@@ -126,7 +126,7 @@ def gen_multi_courses(num_obs):
 
 def parse_input():
     parser = ArgumentParser(description="obstacle course generator",formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-b", "--batch", default = True, help="Creates unique file name and does not display courses")
+    parser.add_argument("-b", "--batch", default = True, help="Creates unique file name and does not display courses via plot")
     parser.add_argument("-s", "--start", default = [5,5], nargs=2, help='specify start boundaries for x and y of obstacle course')
     parser.add_argument("-r", "--range", default = [25,25], nargs=2, help="range of obstacle course in x and y")
     parser.add_argument("num_obstacles", default = 10, help="Number of obstacles per course")

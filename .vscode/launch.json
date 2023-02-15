@@ -45,6 +45,26 @@
             "justMyCode": true
         },
         {
+            "name": "Python: vertical_label_error",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "vertical_inf_label_test.txt",
+                "-i",
+                "-s",
+                "14",
+                "19",
+                "-e",
+                "22",
+                "1",
+                "-p",
+                "./obs_courses/testing_courses/"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: vertical_error",
             "type": "python",
             "request": "launch",

@@ -22,16 +22,18 @@ if batch:
         osSleep.inhibit()
 
 
-# start_vals = [(0,3)]
-# end_vals = [(30,15)]
-start_vals = args["start"]
-end_vals = args["end"]
-
-
 # obs_file_path = args["obs_path"] + args["fname"]
 obs_file_path = args["obs_fpath"]
 obs_courses_dict = vg.read_obstacle_list(obs_file_path)
 obstacle_list = obs_courses_dict[args["course"]]
+
+# start_vals = [(0,3)]
+# end_vals = [(30,15)]
+if not batch:
+    start_vals = args["start"]
+    end_vals = args["end"]
+else:
+    start_vals,end_vals = vg.init_start_end(obstacle_list)
 
 # create start/end points
 start_list = vg.init_points(start_vals)
@@ -65,8 +67,9 @@ else:
 toc = time.perf_counter()
 print(f"created the data in {toc - tic:0.4f} seconds")
 
-vg_gen.output_csv(f'{args["fname"]}_obs_data')
-vg_gen.save_plot_image(f'{args["fname"]}_obs_fig')
+file_title = args["fname"].replace('.txt','')
+vg_gen.output_csv(f'{file_title}_obs_data')
+vg_gen.save_plot_image(f'{file_title}_obs_fig')
 
 # today = date.today()
 # vg_gen.output_csv(today.strftime("%Y_%m_%d")+'three_obst data_large_1')

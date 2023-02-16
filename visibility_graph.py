@@ -101,7 +101,7 @@ class vis_graph:
         '''builds tangent visibility graph of obstacles for a start/end pair'''
         self.init_start_end(start,end)
         # check if start/end is visible and add to graph if it is
-        self.process_cand_node(self.start,self.end,obstacle=None) #TODO if start/end is visible, no need to create the rest of graph, just go to creating labels
+        self.process_cand_node(self.start,self.end,obstacle=None)
         # creates surfing edges for point to obstacle connections
         for obstacle in self.obstacles:
             self.vis_point_obst(self.start,obstacle)
@@ -225,10 +225,6 @@ class vis_graph:
         
         check = True #option to enable when debugging, should be off normally
         if check:
-            #TODO figure out how to prevent graph viewer from plotting same thing multiple times
-            # viewer = graph_viewer(self)
-            # viewer.plot_obstacles(0)
-            # viewer.plot_cand_edge(start_node,end_node)
             self.attach_graph_viewer()
             self.viewer.reinit_vis_graph(self)
             self.viewer.plot_obstacles(0)
@@ -548,9 +544,14 @@ class visibility_graph_generator:
         self._init_graph_props()        
 
     #vis graph methods
-    def run_test(self,start_list,end_list,obstacle_list,algorithm="dijkstra"):
+    def run_test(self,start_list,end_list,obstacle_list,algorithm="dijkstra",pad_list=True):
         # main function that creates training data for start/end points
-        num_obs = len(obstacle_list)
+        if pad_list:
+            num_obs = 20
+            if len(obstacle_list)>num_obs:
+                raise Exception('number of obstacles greater than size of padded list')
+        else:
+            num_obs = len(obstacle_list)
         self.init_data_memory(start_list,end_list,num_obs)
         ii = 0
         base_graph = vis_graph(obstacle_list)
@@ -571,7 +572,7 @@ class visibility_graph_generator:
                 graph.create_pw_opt_path_func()
                 labels = graph.gen_obs_labels()
                 obs_att = graph.get_obs_prop()
-                self.record_result(start,end,obs_att,labels,ii)
+                self.record_result(start,end,obs_att,labels,ii,pad_list,num_obs)
                 if self.record_graph_objects == True:
                     self.store_vis_graph(graph)
                 if self.debug:
@@ -594,13 +595,19 @@ class visibility_graph_generator:
         self.num_col = 4*num_obs + 4
         self.vis_data = np.empty((ndata,self.num_col),dtype = np.double)
 
-    def record_result(self,start,end,obstacle_att,direction_labels,idx):
+    def record_result(self,start,end,obstacle_att,direction_labels,idx,pad_list,num_obs):
         # result_df = pd.DataFrame()
         # self.vis_df = pd.concat([self.vis_df, result_df])
         label_values = [label.value for label in direction_labels] #use value as labels are enums
         # results_array = np.array([start.x, start.y, end.x, end.y,*obstacle_att, *label_values]).reshape(1,self.num_col) # direction label of 1 is up and 0 is down
         # self.vis_data = np.concatenate([results_array,self.vis_data])
-        results_array = [start.x, start.y, end.x, end.y,*obstacle_att, *label_values]# direction label of 1 is up and 0 is down
+        if pad_list:
+            pad_length = num_obs-len(label_values)
+            obs_pad = [0] * pad_length * 3 # 3 obstacle properties
+            label_pad = [1] * pad_length
+            results_array = [start.x, start.y, end.x, end.y,*obstacle_att, *obs_pad, *label_values, *label_pad]# direction label of 1 is up and 0 is down
+        else:
+            results_array = [start.x, start.y, end.x, end.y,*obstacle_att, *label_values]# direction label of 1 is up and 0 is down
         self.vis_data[idx,:] = results_array
 
     def output_csv(self,file_name):
@@ -946,6 +953,27 @@ def read_obstacle_list(fname):
     obs_file = obs_file.close()
     return obstacle_courses
 
+def init_start_end(obstacle_list):
+    '''This function can create a list of start/end points to use with vis_graph'''
+    tol = 0.01
+    num_points = 60
+    min_x,max_x = find_test_range(obstacle_list)
+    start_x = np.linspace(min_x-tol-50,min_x-tol,num_points) # could try using np.arange
+    start_y = np.linspace(-10,50,num_points)
+    end_x = np.linspace(max_x+tol,max_x+tol+50,num_points)
+    end_y = start_y
+    start_x = np.linspace(-10,min_x-tol,num_points)
+    start_y = np.linspace(-10,50,num_points)
+    end_x = np.linspace(max_x+tol,50,num_points)
+    end_y = start_y
+
+    start_vals = get_list_points(start_x,start_y)
+    end_vals = get_list_points(end_x,end_y)
+
+    start_list = init_points(start_vals)
+    end_list = init_points(end_vals)
+    
+
 def compare_solutions(sol1,sol2):
     '''returns if two lists are the same'''
     same = True
@@ -955,17 +983,16 @@ def compare_solutions(sol1,sol2):
             break
     return same
 
-
 def append_dict(dict_in,item):
     num_keys = len(dict_in)
     dict_in[num_keys] = item
 
-def remove_list_item(item,list_in):
-    #TODO this function might not work
-    # removes obstacle from obstacle list without modifying original obstacle_list
-    new_obs_list = list_in[:]
-    new_obs_list.remove(item)
-    return new_obs_list
+# def remove_list_item(item,list_in):
+#     #TODO this function Does not work dont use it
+#     # removes obstacle from obstacle list without modifying original obstacle_list
+#     new_obs_list = list_in[:]
+#     new_obs_list.remove(item)
+#     return new_obs_list
 
 def check_collision(start_node,end_node,obstacle):
     '''checks if line collides with circle, check intersection can see if the line segments are intersecting'''
@@ -1111,7 +1138,7 @@ def init_obs(obs_list,radius_list):
     return obs_obj
 
 def find_test_range(obstacle_list):
-    prop_list = [obs.output_prop() for obs in obstacle_list]
+    prop_list = [obs.output_prop() for obs in obstacle_list] #note for some reason output_prop outputs obstacles in the fromat x,y,r instead of the r, x,y used elsewhere...
     obs_min_x = [prop[0]-prop[2] for prop in prop_list]
     obs_max_x = [prop[0]+prop[2] for prop in prop_list]
     return min(obs_min_x),max(obs_max_x)

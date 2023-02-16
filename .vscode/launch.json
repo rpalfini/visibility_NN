@@ -5,6 +5,21 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: batch_test",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_16_1_courses_5_obstacles_normal_small.txt",
+                "-b",
+                "True",
+                "-gs",
+                "-a"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: check_intersection_test",
             "type": "python",
             "request": "launch",

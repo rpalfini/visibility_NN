@@ -61,7 +61,7 @@ class obstacle:
         return(self.radius,self.center_x,self.center_y)
 
 class vis_graph:
-    debug = True
+    debug = False
 
     def __init__(self,obstacles):
         self.node_dict = bidict({}) # stores the nodes as associated with each point, bidict allows lookup in both directions
@@ -223,7 +223,7 @@ class vis_graph:
         # checks if visibility line intersects other obstacles
         is_valid = True
         
-        check = True #option to enable when debugging, should be off normally
+        check = False #option to enable when debugging, should be off normally
         if check:
             #TODO figure out how to prevent graph viewer from plotting same thing multiple times
             # viewer = graph_viewer(self)
@@ -379,7 +379,8 @@ class vis_graph:
                 elif slope == 0:
                     # for the case we have zero_slope_sign on the last segment to the end
                     if node_id == 'end':
-                        is_pos = self.pw_opt_func[self.get_x_key_smaller(x_key)].is_slope_pos()
+                        # is_pos = self.pw_opt_func[self.get_x_key_smaller(x_key)].is_slope_pos()
+                        is_pos = True # this value is not used again after the "end" node so it doesnt matter what it is
                     else:
                         is_pos = decide_zero_slope_sign(node_id)
                 else:
@@ -513,7 +514,7 @@ class vis_graph:
 
 class visibility_graph_generator:
     #TODO look into pickle for saving vis_graph_gen objects
-    debug = True # guess i could have super class to inherit this as well as any debug routines
+    debug = False # guess i could have super class to inherit this as well as any debug routines
 
     def __init__(self,obstacles=None,record_on=True,is_ion=False):
         # variables for buidling vis graph
@@ -562,10 +563,12 @@ class visibility_graph_generator:
                 graph.build_h_graph()
                 # method that calculates shortest distance, dijkstra algo
                 if (algorithm == "AStar"):
-                    print("Utilizing A-Star...")
+                    if self.debug:
+                        print("Utilizing A-Star...")
                     graph.find_shortest_path_a_star()
                 else: # Default Dijkstra
-                    print("Utilizing Dijkstra...")
+                    if self.debug:
+                        print("Utilizing Dijkstra...")
                     graph.find_shortest_path()
                 graph.eval_path_cost()
                 graph.create_pw_opt_path_func()
@@ -574,9 +577,9 @@ class visibility_graph_generator:
                 self.record_result(start,end,obs_att,labels,ii)
                 if self.record_graph_objects == True:
                     self.store_vis_graph(graph)
-                if self.debug:
-                    if ii % 1000 == 0: print(f'completed {ii} out of {len(start_list)*len(end_list)}')
-                    ii += 1
+                # if self.debug:
+                if ii % 1000 == 0: print(f'completed {ii} out of {len(start_list)*len(end_list)}')
+                ii += 1
 
     def run_ginput_test(self,obstacle_list,algorithm="dijkstra"):
         pass
@@ -899,12 +902,12 @@ def arg_parse():
     parser.add_argument("-b", "--batch", type=bool, default = False, help="Creates unique file name and does not display courses")
     parser.add_argument("-p", "--base_path", default = "./obs_courses/",help="path to folder containing obstacle course files")
     parser.add_argument("-c","--course", type=int, default=0, help="specify obstacle course number when multiple courses available")
-    #TODO figure out better way to specify start and end points as sometimes we want to use a vector of start/end points
     parser.add_argument("-s", "--start", type=float, default = [0,3], nargs=2, help='course start point')
     parser.add_argument("-e", "--end", type=float, default = [30,15], nargs=2, help='course end point')
     parser.add_argument("-a", "--astar", dest='solve_option', action='store_const', const='AStar', default='dijkstra',help='Change shortest path solver from dijkstra to AStar')
-    parser.add_argument("-t", "--path_test", dest='test_mode', action='store_const', const=True, default=False,help='Changes to test mode to compare dijkstra and AStar solutions')
-    parser.add_argument("-i", "--ion_on", dest='is_ion', action='store_const', const=True, default=False,help='initializes graph generator with plt.ion() enabling interactive mode')
+    parser.add_argument("-t", "--path_test", dest='test_mode', action='store_const', const=True, default=False,help='Changes to test mode to compare dijkstra and AStar solutions.  Only works if batch mode if off.')
+    parser.add_argument("-i", "--ion_on", dest='is_ion',action='store_const', const=True, default=False,help='initializes graph generator with plt.ion() enabling interactive mode')
+    parser.add_argument("-gs","--graph_storage",dest='record_on',action='store_const',const=False,default=True,help="Turns off storage of graph objects in vis_obs generator")
     parser.add_argument("fname", help="Obstacle course file to test")
     
     args = parser.parse_args()
@@ -946,6 +949,36 @@ def read_obstacle_list(fname):
     obs_file = obs_file.close()
     return obstacle_courses
 
+def create_start_end(obstacle_list,npoints):
+    '''Creates start and end lists for batch testing'''
+    tol = 0.01
+    num_points = npoints
+    min_x,max_x = find_test_range(obstacle_list)
+    range_start = point((0,0))
+    range_bound = point((30,30))
+
+    if min_x <= 5 or max_x >= 25:
+        raise Exception('Obstacles are not in bounds (5,25)')
+    
+    # if we want dynamic bounds based on obstacle locations
+    start_x = np.linspace(range_start.x,min_x-tol,num_points) # could try using np.arange
+    start_y = np.linspace(range_start.y,range_bound.y,num_points)
+    end_x = np.linspace(max_x+tol,range_bound.x,num_points)
+    end_y = start_y
+    # if we want fixed bounds
+    # start_x = np.linspace(range_start.x,5,num_points)
+    # start_y = np.linspace(range_start.y,range_bound.y,num_points)
+    # end_x = np.linspace(25,range_bound.x,num_points)
+    # end_y = start_y
+
+    start_vals = get_list_points(start_x,start_y)
+    end_vals = get_list_points(end_x,end_y)
+
+    start_list = init_points(start_vals)
+    end_list = init_points(end_vals)
+
+    return start_list, end_list
+
 def compare_solutions(sol1,sol2):
     '''returns if two lists are the same'''
     same = True
@@ -973,7 +1006,7 @@ def check_collision(start_node,end_node,obstacle):
     a,b,c = planar_line_form(start_node,end_node)
     x0 = obstacle.center_x
     y0 = obstacle.center_y
-    radius = obstacle.radius
+    radius = round(obstacle.radius,4)
     dist = round((abs(a * x0 + b * y0 + c)) / np.sqrt(a * a + b * b),4) # rounding for numerical errors; from https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
     if radius <= dist:
         return False
@@ -990,7 +1023,7 @@ def check_collision(start_node,end_node,obstacle):
 
 def check_intersection(seg1,seg2):
     '''checks if two line segments are intersecting.  Line segment should be tuple of 2 point objects'''
-    dbg = True
+    dbg = False
     # based on chapter 4, slide 172 of Lectures on Robotic Planning and Kinematics by Francessco Bullo and Stephen L. Smith available here http://motion.me.ucsb.edu/book-lrpk/
     x1,y1 = seg1[0].output()
     x2,y2 = seg1[1].output()

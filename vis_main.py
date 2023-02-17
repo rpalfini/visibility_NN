@@ -29,10 +29,11 @@ obstacle_list = obs_courses_dict[args["course"]]
 tic = time.perf_counter()
 if batch:
     # this mode tests multiple courses
-    # npoints = (10,40)
-    npoints = (3,3)
+    npoints = (10,30)
+    # npoints = (5,5)
     
     for ii in range(len(obs_courses_dict)):
+        print(f'Testing course {ii} out of {len(obs_courses_dict)}')
         obstacle_list = obs_courses_dict[ii]
         start_list, end_list = vg.create_start_end(obstacle_list,npoints)
         vg_gen = vg.visibility_graph_generator(record_on=args["record_on"],is_ion=args["is_ion"])

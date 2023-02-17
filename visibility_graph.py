@@ -578,8 +578,8 @@ class visibility_graph_generator:
                 if self.record_graph_objects == True:
                     self.store_vis_graph(graph)
                 # if self.debug:
-                ii += 1
                 if ii % 1000 == 0: print(f'completed {ii} out of {len(start_list)*len(end_list)}')
+                ii += 1
         print(f'completed {ii} out of {len(start_list)*len(end_list)}')  
 
     def run_ginput_test(self,obstacle_list,algorithm="dijkstra"):
@@ -958,6 +958,10 @@ def read_obstacle_list(fname):
     obs_file = obs_file.close()
     return obstacle_courses
 
+def combine_csv_files():
+    #TODO write code that searches for files with matching string and combines into one file
+    pass
+
 def create_start_end(obstacle_list,npoints):
     '''Creates start and end lists for batch testing'''
     tol = 0.01
@@ -968,7 +972,7 @@ def create_start_end(obstacle_list,npoints):
     range_bound = point((30,30))
 
     if min_x <= 5 or max_x >= 25:
-        raise Exception('Obstacles are not in bounds (5,25)')
+        raise Exception('Obstacles are not in x bounds (5,25)')
     
     # if we want dynamic bounds based on obstacle locations
     start_x = np.linspace(range_start.x,min_x-tol,num_points_x) # could try using np.arange

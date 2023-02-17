@@ -21,27 +21,27 @@ if batch:
         osSleep = wi.WindowsInhibitor()
         osSleep.inhibit()
 
-
 # obs_file_path = args["obs_path"] + args["fname"]
 obs_file_path = args["obs_fpath"]
 obs_courses_dict = vg.read_obstacle_list(obs_file_path)
 obstacle_list = obs_courses_dict[args["course"]]
 
-# start_vals = [(0,3)]
-# end_vals = [(30,15)]
 if not batch:
+    # start_vals = [(0,3)]
+    # end_vals = [(30,15)]
     start_vals = args["start"]
     end_vals = args["end"]
+    # create start/end points
+    start_list = vg.init_points(start_vals)
+    end_list = vg.init_points(end_vals)
 else:
-    start_vals,end_vals = vg.init_start_end(obstacle_list)
+    npoints = 60
 
-# create start/end points
-start_list = vg.init_points(start_vals)
-end_list = vg.init_points(end_vals)
+    start_list, end_list = vg.create_start_end(obstacle_list,npoints)
 
 tic = time.perf_counter()
 
-if args["test_mode"]:
+if args["test_mode"] and not batch:
     vg_gen = vg.visibility_graph_generator(is_ion=args["is_ion"])
     vg_gen.run_test(start_list,end_list,obstacle_list,algorithm="dijkstra")
     vg_gen.run_test(start_list,end_list,obstacle_list,algorithm="AStar")
@@ -59,10 +59,11 @@ if args["test_mode"]:
     vg_gen.plot_solution(0,"dijkstra")
     vg_gen.plot_solution(1,"AStar")
 else:
-    vg_gen = vg.visibility_graph_generator(is_ion=args["is_ion"])
+    vg_gen = vg.visibility_graph_generator(record_on=args["record_on"],is_ion=args["is_ion"])
     vg_gen.run_test(start_list,end_list,obstacle_list,algorithm=args["solve_option"])
     g_title = f"course {args['fname']}"
-    vg_gen.plot_solution(0,g_title)
+    if not batch:
+        vg_gen.plot_solution(0,g_title)
 
 toc = time.perf_counter()
 print(f"created the data in {toc - tic:0.4f} seconds")

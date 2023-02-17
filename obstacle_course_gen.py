@@ -127,10 +127,10 @@ def gen_multi_courses(num_obs):
 def parse_input():
     parser = ArgumentParser(description="obstacle course generator",formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument("-b", "--batch", default = True, help="Creates unique file name and does not display courses via plot")
-    parser.add_argument("-s", "--start", default = [5,5], nargs=2, help='specify start boundaries for x and y of obstacle course')
-    parser.add_argument("-r", "--range", default = [25,25], nargs=2, help="range of obstacle course in x and y")
-    parser.add_argument("num_obstacles", default = 10, help="Number of obstacles per course")
-    parser.add_argument("num_courses", default = 10, help="Number of courses to make")
+    parser.add_argument("-s", "--start", default = [5,0.1], nargs=2, help='specify start boundaries for x and y of obstacle course')
+    parser.add_argument("-r", "--range", default = [20,30], nargs=2, help="range of obstacle course in x and y")
+    parser.add_argument("-no","--num_obstacles", default = 10, help="Number of obstacles per course")
+    parser.add_argument("-nc","--num_courses", default = 10, help="Number of courses to make")
     args = parser.parse_args()
     args = vars(args)
     return args
@@ -152,7 +152,7 @@ if __name__ == "__main__":
     args = parse_input()
     batch = convert2bool(args["batch"])
     obstacles = int(args["num_obstacles"])
-    start_x = int(args["start"][0])
+    start_x = int(args["start"][0]) #TODO update this to not use int conversion
     start_y = int(args["start"][1])
     bound_x = int(args["range"][0])
     bound_y = int(args["range"][1])

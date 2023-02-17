@@ -516,7 +516,6 @@ class visibility_graph_generator:
         # variables for buidling vis graph
         self.record_graph_objects = record_on
         self.graphs_memory = {} # this dictionary stores the graph created start/end, graph created, and a node_point_dictionary, used for plotting
-
         # variables for outputting training data
         self.df_columns = ['start','end','obst1_dir']
         # self.num_col = 16 #TODO this should be equal to 4*num_obs + 4 (start_x start_y end_x end_Y (radius center_x center_y label))
@@ -571,16 +570,17 @@ class visibility_graph_generator:
                     if self.debug:
                         print("Utilizing Dijkstra...")
                     graph.find_shortest_path()
-                graph.eval_path_cost()
+                opt_cost = graph.eval_path_cost()
                 graph.create_pw_opt_path_func()
                 labels = graph.gen_obs_labels()
                 obs_att = graph.get_obs_prop()
-                self.record_result(start,end,obs_att,labels,ii,pad_list,num_obs)
+                self.record_result(start,end,obs_att,labels,ii,pad_list,num_obs,opt_cost)
                 if self.record_graph_objects == True:
                     self.store_vis_graph(graph)
                 # if self.debug:
-                if ii % 1000 == 0: print(f'completed {ii} out of {len(start_list)*len(end_list)}')
                 ii += 1
+                if ii % 1000 == 0: print(f'completed {ii} out of {len(start_list)*len(end_list)}')
+        print(f'completed {ii} out of {len(start_list)*len(end_list)}')  
 
     def run_ginput_test(self,obstacle_list,algorithm="dijkstra"):
         pass
@@ -591,14 +591,16 @@ class visibility_graph_generator:
    
     ## output methods
     def init_data_memory(self,start_list,end_list,num_obs):
+        '''initializes the data memory for a course test'''
         nstart = len(start_list)
         nend = len(end_list)
         ndata = nstart*nend
         # self.vis_data = np.array([],dtype = np.double).reshape(ndata,self.num_col)
-        self.num_col = 4*num_obs + 4
+        self.num_col = 4*num_obs + 5
         self.vis_data = np.empty((ndata,self.num_col),dtype = np.double)
+        self.is_memory_init = True
 
-    def record_result(self,start,end,obstacle_att,direction_labels,idx,pad_list,num_obs):
+    def record_result(self,start,end,obstacle_att,direction_labels,idx,pad_list,num_obs,opt_path_cost):
         # result_df = pd.DataFrame()
         # self.vis_df = pd.concat([self.vis_df, result_df])
         label_values = [label.value for label in direction_labels] #use value as labels are enums
@@ -608,9 +610,9 @@ class visibility_graph_generator:
             pad_length = num_obs-len(label_values)
             obs_pad = [0] * pad_length * 3 # 3 obstacle properties
             label_pad = [1] * pad_length
-            results_array = [start.x, start.y, end.x, end.y,*obstacle_att, *obs_pad, *label_values, *label_pad]# direction label of 1 is up and 0 is down
+            results_array = [start.x, start.y, end.x, end.y,*obstacle_att, *obs_pad, *label_values, *label_pad, opt_path_cost]# direction label of 1 is up and 0 is down
         else:
-            results_array = [start.x, start.y, end.x, end.y,*obstacle_att, *label_values]# direction label of 1 is up and 0 is down
+            results_array = [start.x, start.y, end.x, end.y,*obstacle_att, *label_values, opt_path_cost]# direction label of 1 is up and 0 is down
         self.vis_data[idx,:] = results_array
 
     def output_csv(self,file_name):
@@ -959,7 +961,8 @@ def read_obstacle_list(fname):
 def create_start_end(obstacle_list,npoints):
     '''Creates start and end lists for batch testing'''
     tol = 0.01
-    num_points = npoints
+    num_points_x = npoints[0]
+    num_points_y = npoints[1]
     min_x,max_x = find_test_range(obstacle_list)
     range_start = point((0,0))
     range_bound = point((30,30))
@@ -968,9 +971,9 @@ def create_start_end(obstacle_list,npoints):
         raise Exception('Obstacles are not in bounds (5,25)')
     
     # if we want dynamic bounds based on obstacle locations
-    start_x = np.linspace(range_start.x,min_x-tol,num_points) # could try using np.arange
-    start_y = np.linspace(range_start.y,range_bound.y,num_points)
-    end_x = np.linspace(max_x+tol,range_bound.x,num_points)
+    start_x = np.linspace(range_start.x,min_x-tol,num_points_x) # could try using np.arange
+    start_y = np.linspace(range_start.y,range_bound.y,num_points_y)
+    end_x = np.linspace(max_x+tol,range_bound.x,num_points_x)
     end_y = start_y
     # if we want fixed bounds
     # start_x = np.linspace(range_start.x,5,num_points)

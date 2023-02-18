@@ -124,15 +124,26 @@ class vis_graph:
     def process_cand_node(self,start_node,cand_node,obstacle,is_end_node = False):
         '''this method adds cand_node, and edge to node dictionary and vis_graph, if the node is visible.  
         It also attaches cand_node to obstacle'''
+        # def check_start_end(start_node,cand_node):
+        #     is_start_end = False
+        #     if start_node == 'start' or cand_node == 'start':
+        #         is_start_end = True
+        #     if start_node == 'end' or cand_node == 'end':
+        #         is_start_end = True
+        #     return is_start_end
 
         if self.is_node_vis(start_node,cand_node):
             self.update_node_props(cand_node,obstacle)
             # if start_node is an end_node, then add to graph vertically
             edge_length = self.euclid_dist(start_node,cand_node)
-            if is_end_node is False: 
-                self.add_edge2graph(start_node,cand_node,edge_length)
-            else:
-                self.add_edge2graph(cand_node,start_node,edge_length)
+            # if check_start_end(start_node,cand_node):
+            #     if is_end_node is False: 
+            #         self.add_edge2graph(start_node,cand_node,edge_length)
+            #     else:
+            #         self.add_edge2graph(cand_node,start_node,edge_length)
+            # else:
+            self.add_edge2graph(start_node,cand_node,edge_length)
+            self.add_edge2graph(cand_node,start_node,edge_length)
         
         cat = 0 # so i have a line for breakpoint
 

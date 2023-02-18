@@ -103,6 +103,7 @@ def gen_obs(num_obstacles = 6,show_result = False, start_x=5, start_y=5, bound_x
     if output_result:
         with open(fname,"a") as file:
             file.write("New Obstacle Set:\n")
+            file.write(f"# obs = {num_obstacles}, ")
             file.write(f"radius bounds, mu, sigma = ({r_bound[0]}-{r_bound[1]},{mu},{sigma})\n")
             file.write(f"x bounds, mu, sigma = ({start_x}-{start_x + bound_x},{mu_circle},{sigma_circle})\n")
             file.write(f"y bounds, mu, sigma = ({start_y}-{start_y + bound_y},{mu_circle},{sigma_circle})\n")

@@ -133,6 +133,8 @@ class vis_graph:
                 self.add_edge2graph(start_node,cand_node,edge_length)
             else:
                 self.add_edge2graph(cand_node,start_node,edge_length)
+        
+        cat = 0 # so i have a line for breakpoint
 
 
     def process_cand_edge(self,node_obst1,node_obst2):
@@ -223,12 +225,13 @@ class vis_graph:
         # checks if visibility line intersects other obstacles
         is_valid = True
         
-        check = False #option to enable when debugging, should be off normally
+        check = True #option to enable when debugging, should be off normally
         if check:
             self.attach_graph_viewer()
             self.viewer.reinit_vis_graph(self)
             self.viewer.plot_obstacles(0)
             self.viewer.plot_cand_edge(start_node,end_node)
+            self.viewer.update_axis_lim(0)
             
         for obstacle in self.obstacles:
             if check_collision(start_node,end_node,obstacle):
@@ -238,6 +241,9 @@ class vis_graph:
                     print(f'end_node=({end_node.x},{end_node.y})')
                     print(f'obstacle(r,x,y) = ({obstacle.view()}\n')
                 is_valid = False
+
+        if check:
+            self.viewer.set_title(f'is_valid = {is_valid}')
 
         return is_valid
 
@@ -336,15 +342,25 @@ class vis_graph:
         if self.debug == True:
             print(self.opt_path)
 
-    def eval_path_cost(self):
+    def eval_opt_path_cost(self):
+        # cost = 0
+        # for ii,node_id in enumerate(self.opt_path):
+        #     if node_id == 'start':
+        #         continue
+        #     cost += self.vis_graph[self.opt_path[ii-1]][self.opt_path[ii]]
+        # self.opt_path_cost = cost
+        # return cost
+        self.opt_path_cost = self.eval_path_cost(self.opt_path)
+        return self.opt_path_cost
+    
+    def eval_path_cost(self,path_list):
         cost = 0
-        for ii,node_id in enumerate(self.opt_path):
+        for ii,node_id in enumerate(path_list):
             if node_id == 'start':
                 continue
-            cost += self.vis_graph[self.opt_path[ii-1]][self.opt_path[ii]]
-        self.opt_path_cost = cost
+            cost += self.vis_graph[path_list[ii-1]][path_list[ii]]
         return cost
-    
+
     def create_pw_opt_path_func(self):
         '''Creates a piecewise function of the optimal path to use for creating object labels'''
         def decide_zero_slope_sign(node_id):
@@ -366,6 +382,10 @@ class vis_graph:
             node_before = self.opt_path[idx-1] #node before node_id
             edge_key = self.get_edge_type(self.is_edge_hugging(node_before,node_id)) # finding edge type between this and previous node
             
+            x_before,_ = self.get_node_xy(node_before)
+            if x_before >= x_key:
+                raise Exception("invalid opt path found")
+
             if edge_key == edge_type.line:
                 slope,y_int = slope_int_form(self.get_node_obj(node_before),self.get_node_obj(node_id))
                 if slope > 0:
@@ -570,7 +590,7 @@ class visibility_graph_generator:
                     if self.debug:
                         print("Utilizing Dijkstra...")
                     graph.find_shortest_path()
-                opt_cost = graph.eval_path_cost()
+                opt_cost = graph.eval_opt_path_cost()
                 graph.create_pw_opt_path_func()
                 labels = graph.gen_obs_labels()
                 obs_att = graph.get_obs_prop()
@@ -667,6 +687,7 @@ class visibility_graph_generator:
     def plot_network(self,test_num):
         #TODO decide if i want it to be called plot_network or plot_full_vis_graph
         # self.plot_start_end(test_num)
+        self.update_axis_lim(test_num)
         self.plot_obstacles(test_num)
         self.plot_vis_graph(test_num)
 
@@ -689,14 +710,17 @@ class visibility_graph_generator:
         x_points = []
         y_points = []
         # get start, end, and obstacles and add to compare list
-        start,end = self.get_start_end_data(test_num)
         graph = self.graphs_memory[test_num]
-
+        
+        try:
+            start,end = self.get_start_end_data(test_num)
         # add all critical x and y points
-        x_points.append(start[0])
-        x_points.append(end[0])
-        y_points.append(start[1])
-        y_points.append(end[1])
+            x_points.append(start[0])
+            x_points.append(end[0])
+            y_points.append(start[1])
+            y_points.append(end[1])
+        except:
+            print('no start/end point found, continuing axis lim update')
         for obstacle in graph.obstacles:
             x_low = obstacle.center_x - obstacle.radius
             x_high = obstacle.center_x + obstacle.radius
@@ -790,6 +814,10 @@ class visibility_graph_generator:
                 raise Exception("node_points was not reset properly during plotting")
             node_points.pop() #reset node_points
 
+    def set_title(self,title):
+        self._act_fig()
+        plt.title(title)
+
     def finish_plot(self,title=None):
         self._act_fig()
         plt.legend()
@@ -824,6 +852,13 @@ class visibility_graph_generator:
             node = graph.node_dict[node_id]
             plt.text(node[0],node[1],str(node_id))
     
+    def plot_obstacle_node_labels(self,test_num,obstacle):
+        self._act_fig()
+        graph = self.graphs_memory[test_num]
+        for node in obstacle.node_list:
+            node_id = graph.get_node_id(node)
+            plt.text(node.x,node.y,str(node_id))
+
     def plot_opt_path_node_labels(self,test_num):
         self._act_fig()
         graph = self.graphs_memory[test_num]

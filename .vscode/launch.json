@@ -5,6 +5,58 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: other_err_case",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "1_courses_5_obstacles_normal.txt",
+                "-s",
+                "5",
+                "0",
+                "-e",
+                "25",
+                "20",
+                "-a"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: err_case",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "problem_course.txt",
+                "-s",
+                "8.125237433295657",
+                "24.827586206896555",
+                "-e",
+                "21.21640904985535",
+                "0",
+                "-a"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test2",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                // "23_02_16_1_courses_5_obstacles_normal_small.txt",
+                // "23_02_16_5_courses_20_obstacles_normal.txt",
+                "23_02_16_batch1_normal_last_100.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: batch_test",
             "type": "python",
             "request": "launch",

@@ -166,13 +166,17 @@ if __name__ == "__main__":
         courses = args["num_courses"]
         today = date.today()
         formatted_date = today.strftime("%y_%m_%d")
-        if args["fname_out"] == "obstacle_locations.txt":
-            fname = f"{formatted_date}_{courses}_courses_{obstacles}_obstacles_normal.txt"
-        else:
-            fname = args["fname_out"] + '.txt'
+        jj = 0
         for obs_num in range(obstacles):
-            for ii in range(courses):
-                gen_obs(num_obstacles=obs_num+1,fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
+            if obs_num % 3 == 0: # every third file after 1st is new_file
+                if args["fname_out"] == "obstacle_locations.txt":
+                    fname = f"{formatted_date}_{courses}_courses_{obs_num+1}_obstacles_normal.txt"
+                else:
+                    fname = f'{args["fname_out"]}_{jj}.txt'
+                    jj += 1
+                
+                for ii in range(courses):
+                    gen_obs(num_obstacles=obs_num+1,fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
     else:
         courses = args["num_courses"]
         today = date.today()

@@ -5,19 +5,295 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: other_err_case",
+            "name": "Python: no_rules_baby",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "args":[
-                "1_courses_5_obstacles_normal.txt",
-                "-s",
-                "5",
-                "0",
-                "-e",
-                "25",
-                "20",
-                "-a"
+                "23_02_18_batch2_6.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test20",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_20_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test19",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_19_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test18",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_18_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test17",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_17_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test16",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_16_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test15",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_15_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test14",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_14_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test13",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_13_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test12",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_12_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test11",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_11_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test10",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_10_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test9",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_9_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test8",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_8_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test7",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_7_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test6",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_6_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test5",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_5_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test4",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_4_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test3",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_3_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test2",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_2_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: batch_test",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "23_02_18_20_courses_1_obstacles_normal.txt",
+                "-b",
+                "True",
+                "-gs"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -36,38 +312,6 @@
                 "21.21640904985535",
                 "0",
                 "-a"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
-            "name": "Python: batch_test2",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "args":[
-                // "23_02_16_1_courses_5_obstacles_normal_small.txt",
-                // "23_02_16_5_courses_20_obstacles_normal.txt",
-                "23_02_16_batch1_normal_last_100.txt",
-                "-b",
-                "True",
-                "-gs"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
-            "name": "Python: batch_test",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "args":[
-                // "23_02_16_1_courses_5_obstacles_normal_small.txt",
-                // "23_02_16_5_courses_20_obstacles_normal.txt",
-                "23_02_16_batch1_normal.txt",
-                "-b",
-                "True",
-                "-gs"
             ],
             "console": "integratedTerminal",
             "justMyCode": true

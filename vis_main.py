@@ -1,4 +1,3 @@
-# from visibility_graph import *
 import visibility_graph as vg
 from matplotlib import pyplot as plt
 import os
@@ -29,11 +28,18 @@ obstacle_list = obs_courses_dict[args["course"]]
 tic = time.perf_counter()
 if batch:
     # this mode tests multiple courses
-    npoints = (10,30)
+    # npoints = (10,30)
     # npoints = (5,5)
     
     for ii in range(len(obs_courses_dict)):
         print(f'Testing course {ii} out of {len(obs_courses_dict)}')
+        if ii % 2 == 0:
+            npoints = (10,30)
+        elif ii % 3 == 0:
+            npoints = (15,40)
+        else:
+            npoints = (12,32)
+
         obstacle_list = obs_courses_dict[ii]
         start_list, end_list = vg.create_start_end(obstacle_list,npoints)
         vg_gen = vg.visibility_graph_generator(record_on=args["record_on"],is_ion=args["is_ion"])

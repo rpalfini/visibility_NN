@@ -236,7 +236,7 @@ class vis_graph:
         # checks if visibility line intersects other obstacles
         is_valid = True
         
-        check = True #option to enable when debugging, should be off normally
+        check = False #option to enable when debugging, should be off normally
         if check:
             self.attach_graph_viewer()
             self.viewer.reinit_vis_graph(self)

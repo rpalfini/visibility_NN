@@ -68,8 +68,8 @@ def make_circle_points(obstacle):
     bound_y = r*np.sin(thetas) + y
     return bound_x, bound_y
 
-def gen_obs(num_obstacles = 6,show_result = False, start_x=0, start_y=0, bound_x=20, bound_y=20, fname="obstacle_locations.txt"):
-    
+def gen_obs(num_obstacles = 6,show_result = False, start_x=5, start_y=5, bound_x=25, bound_y=25, fname="obstacle_locations.txt"):
+    ''' main function loop that attempts to place objects in course field'''
     output_result = True
     obstacles = []
     bound_x = bound_x
@@ -103,9 +103,10 @@ def gen_obs(num_obstacles = 6,show_result = False, start_x=0, start_y=0, bound_x
     if output_result:
         with open(fname,"a") as file:
             file.write("New Obstacle Set:\n")
+            file.write(f"# obs = {num_obstacles}, ")
             file.write(f"radius bounds, mu, sigma = ({r_bound[0]}-{r_bound[1]},{mu},{sigma})\n")
-            file.write(f"x bounds, mu, sigma = ({start_x}-{bound_x},{mu_circle},{sigma_circle})\n")
-            file.write(f"y bounds, mu, sigma = ({start_y}-{bound_y},{mu_circle},{sigma_circle})\n")
+            file.write(f"x bounds, mu, sigma = ({start_x}-{start_x + bound_x},{mu_circle},{sigma_circle})\n")
+            file.write(f"y bounds, mu, sigma = ({start_y}-{start_y + bound_y},{mu_circle},{sigma_circle})\n")
             # output file requirement is that radius,x,y is written line before the obstacles
             file.write("radius,x,y\n")
             for obs in obstacles:
@@ -126,11 +127,12 @@ def gen_multi_courses(num_obs):
 
 def parse_input():
     parser = ArgumentParser(description="obstacle course generator",formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-b", "--batch", default = True, help="Creates unique file name and does not display courses")
-    parser.add_argument("-s", "--start", default = [5,5], nargs=2, help='specify start boundaries for x and y of obstacle course')
-    parser.add_argument("-r", "--range", default = [25,25], nargs=2, help="range of obstacle course in x and y")
-    parser.add_argument("num_obstacles", default = 10, help="Number of obstacles per course")
-    parser.add_argument("num_courses", default = 10, help="Number of courses to make")
+    parser.add_argument("-b", "--batch", type=bool, default = True, help="Creates unique file name and does not display courses via plot")
+    parser.add_argument("-s", "--start", type=float, default = [5,0], nargs=2, help='specify start boundaries for x and y of obstacle course')
+    parser.add_argument("-r", "--range", type=float, default = [20,30], nargs=2, help="range of obstacle course in x and y")
+    parser.add_argument("-no","--num_obstacles", type=int, default = 10, help="Number of obstacles per course")
+    parser.add_argument("-nc","--num_courses", type=int, default = 10, help="Number of courses to make")
+    parser.add_argument("-f","--fname_out", default = "obstacle_locations.txt", help="argument to specify custom file name")
     args = parser.parse_args()
     args = vars(args)
     return args
@@ -150,19 +152,38 @@ def convert2bool(var):
 if __name__ == "__main__":
 
     args = parse_input()
-    batch = convert2bool(args["batch"])
-    obstacles = int(args["num_obstacles"])
-    start_x = int(args["start"][0])
-    start_y = int(args["start"][1])
-    bound_x = int(args["range"][0])
-    bound_y = int(args["range"][1])
-    
+    batch = args["batch"]
+    obstacles = args["num_obstacles"]
+    start_x = args["start"][0] #TODO update this to not use int conversion
+    start_y = args["start"][1]
+    bound_x = args["range"][0]
+    bound_y = args["range"][1]
+    gen_multi_courses = True
+
     if not batch:
-        gen_obs(num_obstacles=int(args["num_obstacles"]),show_result=True,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
-    else:
-        courses = int(args["num_courses"])
+        gen_obs(num_obstacles=args["num_obstacles"],show_result=True,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
+    elif gen_multi_courses: 
+        courses = args["num_courses"]
         today = date.today()
         formatted_date = today.strftime("%y_%m_%d")
-        fname = f"{formatted_date}_{courses}_courses_{obstacles}_obstacles_normal.txt"
+        jj = 0
+        for obs_num in range(obstacles):
+            if obs_num % 3 == 0: # every third file after 1st is new_file
+                if args["fname_out"] == "obstacle_locations.txt":
+                    fname = f"{formatted_date}_{courses}_courses_{obs_num+1}_obstacles_normal.txt"
+                else:
+                    fname = f'{args["fname_out"]}_{jj}.txt'
+                    jj += 1
+                
+                for ii in range(courses):
+                    gen_obs(num_obstacles=obs_num+1,fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
+    else:
+        courses = args["num_courses"]
+        today = date.today()
+        formatted_date = today.strftime("%y_%m_%d")
+        if args["fname_out"] == "obstacle_locations.txt":
+            fname = f"{formatted_date}_{courses}_courses_{obstacles}_obstacles_normal.txt"
+        else:
+            fname = args["fname_out"] + '.txt'
         for ii in range(courses):
-            gen_obs(num_obstacles=int(args["num_obstacles"]),fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
+            gen_obs(num_obstacles=args["num_obstacles"],fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)

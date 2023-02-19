@@ -22,6 +22,10 @@ class point:
         # outputs the points as a tuple to be used as a key in node dictionary
         return round(self.x,self.key_precision), round(self.y,self.key_precision)
 
+    def output(self):
+        # this is used by check_collision()
+        return(self.x,self.y)
+
     def view(self):
         print("(" + str(self.x) + "," + str(self.y) + ")")
         return(self.x,self.y)
@@ -35,6 +39,9 @@ class obstacle:
         self.node_list = set() #using set as there shouldn't be more than one of a given node
 
     def add_node(self,point):
+        #TODO would this exception help find an error in the algorithm?
+        # if point in self.node_list:
+        #     raise Exception("point already in obstacle definition")
         self.node_list.add(point)
 
     def output_prop(self):
@@ -54,7 +61,7 @@ class obstacle:
         return(self.radius,self.center_x,self.center_y)
 
 class vis_graph:
-    debug = True
+    debug = False
 
     def __init__(self,obstacles):
         self.node_dict = bidict({}) # stores the nodes as associated with each point, bidict allows lookup in both directions
@@ -65,6 +72,12 @@ class vis_graph:
         self.pw_opt_func = {} # record parameters of piecewise function for label evaulation
         self.opt_path_cost = 0
         self.obstacles = obstacles
+        self.debug_view_enabled = False
+
+    def attach_graph_viewer(self):
+        if not self.debug_view_enabled:
+            self.viewer = graph_viewer(self)    
+            self.debug_view_enabled = True
 
     def view_vis_graph(self):
         for key,value in recursive_items(self.vis_graph):
@@ -88,7 +101,7 @@ class vis_graph:
         '''builds tangent visibility graph of obstacles for a start/end pair'''
         self.init_start_end(start,end)
         # check if start/end is visible and add to graph if it is
-        self.process_cand_node(self.start,self.end,obstacle=None) #TODO if start/end is visible, no need to create the rest of graph, just go to creating labels
+        self.process_cand_node(self.start,self.end,obstacle=None)
         # creates surfing edges for point to obstacle connections
         for obstacle in self.obstacles:
             self.vis_point_obst(self.start,obstacle)
@@ -111,21 +124,30 @@ class vis_graph:
     def process_cand_node(self,start_node,cand_node,obstacle,is_end_node = False):
         '''this method adds cand_node, and edge to node dictionary and vis_graph, if the node is visible.  
         It also attaches cand_node to obstacle'''
-        check = False
-        if check:
-            viewer = graph_viewer(self)
-            viewer.plot_obstacles(0)
-            viewer.plot_cand_edge(start_node,cand_node)
+        # def check_start_end(start_node,cand_node):
+        #     is_start_end = False
+        #     if start_node == 'start' or cand_node == 'start':
+        #         is_start_end = True
+        #     if start_node == 'end' or cand_node == 'end':
+        #         is_start_end = True
+        #     return is_start_end
+
         if self.is_node_vis(start_node,cand_node):
             self.update_node_props(cand_node,obstacle)
             # if start_node is an end_node, then add to graph vertically
             edge_length = self.euclid_dist(start_node,cand_node)
-            if is_end_node is False: 
-                self.add_edge2graph(start_node,cand_node,edge_length)
-            else:
-                self.add_edge2graph(cand_node,start_node,edge_length)
-        if check:
-            del viewer
+            # if check_start_end(start_node,cand_node):
+            #     if is_end_node is False: 
+            #         self.add_edge2graph(start_node,cand_node,edge_length)
+            #     else:
+            #         self.add_edge2graph(cand_node,start_node,edge_length)
+            # else:
+            self.add_edge2graph(start_node,cand_node,edge_length)
+            self.add_edge2graph(cand_node,start_node,edge_length)
+        
+        cat = 0 # so i have a line for breakpoint
+
+
     def process_cand_edge(self,node_obst1,node_obst2):
         '''tags nodes to appropriate obstacles, inputs are tuple of cand_node and its obstacle'''
         if self.is_node_vis(node_obst1[0],node_obst2[0]):
@@ -137,7 +159,7 @@ class vis_graph:
         is_end_node sets the order of edge storage'''
         center_dist = self.euclid_dist(start_node,obstacle.center_loc) # distance from obstacle center to point
         theta = np.arccos(obstacle.radius/center_dist)
-        phi = self.rotation_to_horiz(obstacle.center_loc,start_node)
+        phi = self.rotation_from_horiz(obstacle.center_loc,start_node)
         
         cand_node1 = point(self.direction_step(obstacle.center_loc,obstacle.radius,phi + theta)) #candidate node1
         cand_node2 = point(self.direction_step(obstacle.center_loc,obstacle.radius,phi - theta)) #candidate node2
@@ -155,8 +177,16 @@ class vis_graph:
                 obst_A = next_obst
                 obst_B = obst
             else:
-                warnings.warn('multiple obstacles have same x-coordinate, skipping vis graph')
-                continue
+                # if obstacles have same x coordinate, compare diff of their y-coords
+                if diff.y > 0:
+                    obst_A = obst 
+                    obst_B = next_obst
+                elif diff.y < 0:
+                    obst_A = next_obst
+                    obst_B = obst
+                else:
+                    #TODO I don't think this will catch something that the following exception wouldnt have already caught
+                    raise Exception("obstacles have same x and y coordinate: vis_obst_obst()")
             
             if id(obst) == id(next_obst): # dont calculate visibility with itself
                 raise Exception('Obstacle not deleted correctly from list')
@@ -170,8 +200,8 @@ class vis_graph:
         '''Finds internal bitangents, obstacle L should be to the left of obstacle R on x axis'''
         center_dist = self.euclid_dist(obst_L.center_loc,obst_R.center_loc)
         theta = np.arccos((obst_L.radius+obst_R.radius)/center_dist)
-        phi_L = self.rotation_to_horiz(obst_L.center_loc,obst_R.center_loc)
-        phi_R = self.rotation_to_horiz(obst_R.center_loc,obst_L.center_loc) # this will be phi_L - pi
+        phi_L = self.rotation_from_horiz(obst_L.center_loc,obst_R.center_loc)
+        phi_R = self.rotation_from_horiz(obst_R.center_loc,obst_L.center_loc) # abs(phi_R) is supplementary angle of abs(phi_L)
               
         cand_nodeL1 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi_L + theta))
         cand_nodeL2 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi_L - theta))
@@ -183,15 +213,15 @@ class vis_graph:
         self.process_cand_edge((cand_nodeL2,obst_L),(cand_nodeR1,obst_R))
         
     def external_bitangents(self,obst_L,obst_R):
-        
+        '''Finds external bitangents, obstacle being left or right doesnt affect this calculation'''
         center_dist = self.euclid_dist(obst_L.center_loc,obst_R.center_loc)
         theta = np.arccos(abs(obst_L.radius-obst_R.radius)/center_dist)
 
         # need to compare obstacle radii to determine angle directions
         if obst_L.radius > obst_R.radius:
-            phi = self.rotation_to_horiz(obst_L.center_loc,obst_R.center_loc)
-        else:
-            phi = self.rotation_to_horiz(obst_R.center_loc,obst_L.center_loc)
+            phi = self.rotation_from_horiz(obst_L.center_loc,obst_R.center_loc)
+        else: # if radii are the same size, it doesnt matter the order you calculate rotation_from_horiz
+            phi = self.rotation_from_horiz(obst_R.center_loc,obst_L.center_loc)
 
         cand_nodeL1 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi + theta))
         cand_nodeL2 = point(self.direction_step(obst_L.center_loc,obst_L.radius,phi - theta))
@@ -205,28 +235,27 @@ class vis_graph:
     def is_node_vis(self,start_node,end_node):        
         # checks if visibility line intersects other obstacles
         is_valid = True
-        a,b,c = planar_line_form(start_node,end_node)
-        #TODO make sure that obstacle we are touching doesnt result in non-visibility
         
-        if start_node.x < end_node.x:
-            left_node = start_node
-            right_node = end_node
-        elif start_node.x > end_node.x:
-            left_node = end_node
-            right_node = start_node
-        else:#TODO add implementation for checking if nodes are between when start node and end node have same x coordinate
-            raise Exception('start_node and end_node have same x coordinate')
-        
+        check = False #option to enable when debugging, should be off normally
+        if check:
+            self.attach_graph_viewer()
+            self.viewer.reinit_vis_graph(self)
+            self.viewer.plot_obstacles(0)
+            self.viewer.plot_cand_edge(start_node,end_node)
+            self.viewer.update_axis_lim(0)
+            
         for obstacle in self.obstacles:
-            if self.is_obst_between_points(left_node,right_node,obstacle):
-                if check_collision(a,b,c,obstacle.center_x,obstacle.center_y,obstacle.radius):
-                    if self.debug:
-                        print(f'non visible edge found:')
-                        print(f'start=({left_node.x},{left_node.y})')
-                        print(f'end_node=({right_node.x},{right_node.y})')
-                        print(f'obstacle(r,x,y) = ({obstacle.view()}\n')
-                    is_valid = False
-                    break
+            if check_collision(start_node,end_node,obstacle):
+                if self.debug:
+                    print(f'non visible edge found:')
+                    print(f'start=({start_node.x},{start_node.y})')
+                    print(f'end_node=({end_node.x},{end_node.y})')
+                    print(f'obstacle(r,x,y) = ({obstacle.view()}\n')
+                is_valid = False
+
+        if check:
+            self.viewer.set_title(f'is_valid = {is_valid}')
+
         return is_valid
 
     def is_obst_between_points(self,start_node,end_node,obstacle):
@@ -244,20 +273,20 @@ class vis_graph:
         return is_between
 
     def direction_step(self,start,dist,angle):
-        # calculates tangent node location on an obstacle
+        '''calculates tangent node location on an obstacle'''
         x = dist*np.cos(angle) + start.x
         y = dist*np.sin(angle) + start.y
         return (x,y)
 
-    def rotation_to_horiz(self,point1,point2):
-        # calculates rotation of connecting line to horizontal axis
+    def rotation_from_horiz(self,point1,point2):
+        '''calculates rotation from positive horizontal axis at point1.y to line defined by point1, point2.  Direction of rotation is smaller of absolute value of two rotations from pos horizontal axis to line, i.e. the one <= to pi rotation'''
         dy = point2.y - point1.y
         dx = point2.x - point1.x
         rotation_1_2 = np.arctan2(dy,dx)
         return rotation_1_2
 
     def euclid_dist(self,point1,point2):
-        # calculates euclidean distance b/T two points
+        '''calculates euclidean distance b/T two points'''
         dist = np.sqrt((point1.x - point2.x)**2 + (point1.y - point2.y)**2)
         return dist
 
@@ -324,16 +353,27 @@ class vis_graph:
         if self.debug == True:
             print(self.opt_path)
 
-    def eval_path_cost(self):
+    def eval_opt_path_cost(self):
+        # cost = 0
+        # for ii,node_id in enumerate(self.opt_path):
+        #     if node_id == 'start':
+        #         continue
+        #     cost += self.vis_graph[self.opt_path[ii-1]][self.opt_path[ii]]
+        # self.opt_path_cost = cost
+        # return cost
+        self.opt_path_cost = self.eval_path_cost(self.opt_path)
+        return self.opt_path_cost
+    
+    def eval_path_cost(self,path_list):
         cost = 0
-        for ii,node_id in enumerate(self.opt_path):
+        for ii,node_id in enumerate(path_list):
             if node_id == 'start':
                 continue
-            cost += self.vis_graph[self.opt_path[ii-1]][self.opt_path[ii]]
-        self.opt_path_cost = cost
+            cost += self.vis_graph[path_list[ii-1]][path_list[ii]]
         return cost
-    
+
     def create_pw_opt_path_func(self):
+        '''Creates a piecewise function of the optimal path to use for creating object labels'''
         def decide_zero_slope_sign(node_id):
             # this function is to deal with case where we have 0 slope line
             obstacle = self.get_node_obs(node_id)
@@ -345,14 +385,18 @@ class vis_graph:
                 is_pos = True
             return is_pos
 
-        '''Creates a piecewise function of the optimal path to use for creating object labels'''
+        is_slope_inf = False # this flag is used to handle specific edge case where first line segment is infinite slope
         for idx,node_id in enumerate(self.opt_path):
             if node_id == 'start': # equation is up to a node, and there are no points before the start
                 continue
             x_key,_ = self.get_node_xy(node_id)
             node_before = self.opt_path[idx-1] #node before node_id
-            # we can store
             edge_key = self.get_edge_type(self.is_edge_hugging(node_before,node_id)) # finding edge type between this and previous node
+            
+            x_before,_ = self.get_node_xy(node_before)
+            if x_before >= x_key:
+                raise Exception("invalid opt path found")
+
             if edge_key == edge_type.line:
                 slope,y_int = slope_int_form(self.get_node_obj(node_before),self.get_node_obj(node_id))
                 if slope > 0:
@@ -360,12 +404,28 @@ class vis_graph:
                 elif slope < 0:
                     is_pos = False
                 elif slope == 0:
-                    is_pos = decide_zero_slope_sign(node_id)
+                    # for the case we have zero_slope_sign on the last segment to the end
+                    if node_id == 'end':
+                        # is_pos = self.pw_opt_func[self.get_x_key_smaller(x_key)].is_slope_pos()
+                        is_pos = True # this value is not used again after the "end" node so it doesnt matter what it is
+                    else:
+                        is_pos = decide_zero_slope_sign(node_id)
+                else:
+                    raise Exception(f'invalid slope value: {slope}')
+                if slope == float("-inf") or slope == float("inf"):
+                    is_slope_inf = True
+                    inf_slope_sign = is_pos
+                    continue # we can ignore these in pw_func becasue previous steps guarantee the obstacle is not intersecting with the infinite slope segment.  Thus we can just ignore it as the value is handled by the other parts of the pw_func.
                 self.pw_opt_func[x_key] = pf.line(slope,y_int,is_pos)
             elif edge_key == edge_type.circle:
-                is_slope_pos = self.pw_opt_func[self.get_x_key_smaller(x_key)].is_slope_pos() # determine if previous segment has pos or neg slope
+                if is_slope_inf == True and not self.pw_opt_func: # only covers the case where first line in slope is inf
+                    is_slope_pos = inf_slope_sign
+                else:
+                    is_slope_pos = self.pw_opt_func[self.get_x_key_smaller(x_key)].is_slope_pos() # determine if previous segment has pos or neg slope
                 obstacle = self.get_node_obs(node_id)
                 self.pw_opt_func[x_key] = pf.circle(*obstacle.output_prop(),is_slope_pos)
+            else:
+                raise Exception(f'invalid Edge key found: {edge_key}')
 
     # functions for working with pw_opt_func
     def gen_obs_labels(self):
@@ -400,6 +460,7 @@ class vis_graph:
     
     def create_label(self,obstacle):
         x_key = self.get_x_key_larger(obstacle.center_x)
+        # adding this code to detect when x_key gets added twice to pw_opt_func dictionary
         y_path = self.pw_opt_func[x_key].evaluate(obstacle.center_x)
         return dir_label.up if y_path > obstacle.center_y else dir_label.down
 
@@ -450,10 +511,11 @@ class vis_graph:
         return self.edge_type_dict[start_id][end_id]['ang']
 
     def is_edge_hugging(self,start_id,end_id):
+        '''returns value of is_hugging from edge_type_dict'''
         return self.edge_type_dict[start_id][end_id]['is_hugging']
 
     def get_edge_type(self,is_hugging):
-        # temporary method to bridge gap between allowing multiple types of edges besides hugging and surfing
+        '''temporary method to bridge gap between allowing multiple types of edges besides hugging and surfing'''
         if is_hugging:
             return edge_type.circle
         elif not is_hugging:
@@ -479,13 +541,12 @@ class vis_graph:
 
 class visibility_graph_generator:
     #TODO look into pickle for saving vis_graph_gen objects
-    debug = True # guess i could have super class to inherit this as well as any debug routines
+    debug = False # guess i could have super class to inherit this as well as any debug routines
 
     def __init__(self,obstacles=None,record_on=True,is_ion=False):
         # variables for buidling vis graph
         self.record_graph_objects = record_on
         self.graphs_memory = {} # this dictionary stores the graph created start/end, graph created, and a node_point_dictionary, used for plotting
-
         # variables for outputting training data
         self.df_columns = ['start','end','obst1_dir']
         # self.num_col = 16 #TODO this should be equal to 4*num_obs + 4 (start_x start_y end_x end_Y (radius center_x center_y label))
@@ -514,9 +575,14 @@ class visibility_graph_generator:
         self._init_graph_props()        
 
     #vis graph methods
-    def run_test(self,start_list,end_list,obstacle_list,algorithm="dijkstra"):
+    def run_test(self,start_list,end_list,obstacle_list,algorithm="dijkstra",pad_list=True):
         # main function that creates training data for start/end points
-        num_obs = len(obstacle_list)
+        if pad_list:
+            num_obs = 20
+            if len(obstacle_list)>num_obs:
+                raise Exception('number of obstacles greater than size of padded list')
+        else:
+            num_obs = len(obstacle_list)
         self.init_data_memory(start_list,end_list,num_obs)
         ii = 0
         base_graph = vis_graph(obstacle_list)
@@ -528,21 +594,24 @@ class visibility_graph_generator:
                 graph.build_h_graph()
                 # method that calculates shortest distance, dijkstra algo
                 if (algorithm == "AStar"):
-                    print("Utilizing A-Star...")
+                    if self.debug:
+                        print("Utilizing A-Star...")
                     graph.find_shortest_path_a_star()
                 else: # Default Dijkstra
-                    print("Utilizing Dijkstra...")
+                    if self.debug:
+                        print("Utilizing Dijkstra...")
                     graph.find_shortest_path()
-                graph.eval_path_cost()
+                opt_cost = graph.eval_opt_path_cost()
                 graph.create_pw_opt_path_func()
                 labels = graph.gen_obs_labels()
                 obs_att = graph.get_obs_prop()
-                self.record_result(start,end,obs_att,labels,ii)
+                self.record_result(start,end,obs_att,labels,ii,pad_list,num_obs,opt_cost)
                 if self.record_graph_objects == True:
                     self.store_vis_graph(graph)
-                if self.debug:
-                    if ii % 1000 == 0: print(f'completed {ii} out of {len(start_list)*len(end_list)}')
-                    ii += 1
+                # if self.debug:
+                if ii % 1000 == 0: print(f'completed {ii} out of {len(start_list)*len(end_list)}')
+                ii += 1
+        print(f'completed {ii} out of {len(start_list)*len(end_list)}')  
 
     def run_ginput_test(self,obstacle_list,algorithm="dijkstra"):
         pass
@@ -553,20 +622,28 @@ class visibility_graph_generator:
    
     ## output methods
     def init_data_memory(self,start_list,end_list,num_obs):
+        '''initializes the data memory for a course test'''
         nstart = len(start_list)
         nend = len(end_list)
         ndata = nstart*nend
         # self.vis_data = np.array([],dtype = np.double).reshape(ndata,self.num_col)
-        self.num_col = 4*num_obs + 4
+        self.num_col = 4*num_obs + 5
         self.vis_data = np.empty((ndata,self.num_col),dtype = np.double)
+        self.is_memory_init = True
 
-    def record_result(self,start,end,obstacle_att,direction_labels,idx):
+    def record_result(self,start,end,obstacle_att,direction_labels,idx,pad_list,num_obs,opt_path_cost):
         # result_df = pd.DataFrame()
         # self.vis_df = pd.concat([self.vis_df, result_df])
         label_values = [label.value for label in direction_labels] #use value as labels are enums
         # results_array = np.array([start.x, start.y, end.x, end.y,*obstacle_att, *label_values]).reshape(1,self.num_col) # direction label of 1 is up and 0 is down
         # self.vis_data = np.concatenate([results_array,self.vis_data])
-        results_array = [start.x, start.y, end.x, end.y,*obstacle_att, *label_values]# direction label of 1 is up and 0 is down
+        if pad_list:
+            pad_length = num_obs-len(label_values)
+            obs_pad = [0] * pad_length * 3 # 3 obstacle properties
+            label_pad = [1] * pad_length
+            results_array = [start.x, start.y, end.x, end.y,*obstacle_att, *obs_pad, *label_values, *label_pad, opt_path_cost]# direction label of 1 is up and 0 is down
+        else:
+            results_array = [start.x, start.y, end.x, end.y,*obstacle_att, *label_values, opt_path_cost]# direction label of 1 is up and 0 is down
         self.vis_data[idx,:] = results_array
 
     def output_csv(self,file_name):
@@ -620,7 +697,8 @@ class visibility_graph_generator:
 
     def plot_network(self,test_num):
         #TODO decide if i want it to be called plot_network or plot_full_vis_graph
-        self.plot_start_end(test_num)
+        # self.plot_start_end(test_num)
+        self.update_axis_lim(test_num)
         self.plot_obstacles(test_num)
         self.plot_vis_graph(test_num)
 
@@ -643,14 +721,17 @@ class visibility_graph_generator:
         x_points = []
         y_points = []
         # get start, end, and obstacles and add to compare list
-        start,end = self.get_start_end_data(test_num)
         graph = self.graphs_memory[test_num]
-
+        
+        try:
+            start,end = self.get_start_end_data(test_num)
         # add all critical x and y points
-        x_points.append(start[0])
-        x_points.append(end[0])
-        y_points.append(start[1])
-        y_points.append(end[1])
+            x_points.append(start[0])
+            x_points.append(end[0])
+            y_points.append(start[1])
+            y_points.append(end[1])
+        except:
+            print('no start/end point found, continuing axis lim update')
         for obstacle in graph.obstacles:
             x_low = obstacle.center_x - obstacle.radius
             x_high = obstacle.center_x + obstacle.radius
@@ -741,8 +822,12 @@ class visibility_graph_generator:
                     # node_points.remove(arc_points) #TODO verify this code removes all points except for the root node id
                     del node_points[1:]
             if len(node_points) > 1:
-                raise Exception("sorry, node_points was not reset properly during plotting")
+                raise Exception("node_points was not reset properly during plotting")
             node_points.pop() #reset node_points
+
+    def set_title(self,title):
+        self._act_fig()
+        plt.title(title)
 
     def finish_plot(self,title=None):
         self._act_fig()
@@ -778,6 +863,13 @@ class visibility_graph_generator:
             node = graph.node_dict[node_id]
             plt.text(node[0],node[1],str(node_id))
     
+    def plot_obstacle_node_labels(self,test_num,obstacle):
+        self._act_fig()
+        graph = self.graphs_memory[test_num]
+        for node in obstacle.node_list:
+            node_id = graph.get_node_id(node)
+            plt.text(node.x,node.y,str(node_id))
+
     def plot_opt_path_node_labels(self,test_num):
         self._act_fig()
         graph = self.graphs_memory[test_num]
@@ -791,9 +883,9 @@ class visibility_graph_generator:
         graph = self.graphs_memory[test_num]
         for label,obstacle in zip(graph.obstacle_labels,graph.obstacles):
             if label == dir_label.up:
-                plt.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=6)
+                plt.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=6) # marker 6 is an up arrow
             elif label == dir_label.down:
-                plt.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=7)
+                plt.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=7) # marker 7 is a down arrow
             else:
                 raise Exception('invalid label type')
 
@@ -825,6 +917,7 @@ class graph_viewer(visibility_graph_generator):
     def __init__(self, vis_graph_obj, obstacles=None, record_on=True,is_ion=True):
         super().__init__(obstacles, record_on, is_ion) # this is needed so we can reuse plot methods from parent
         self.store_vis_graph(vis_graph_obj) 
+        # self.previous_segment() # this is used only for debugging to track what the 
 
     #TODO create method that gets obstacle data here and in parent class
 
@@ -837,6 +930,19 @@ class graph_viewer(visibility_graph_generator):
     def plot_network(self, test_num=0):
         return super().plot_network(test_num)
     
+    def store_last_plotted():
+        '''store_last_plotted is used to store last thing plotted to prevent plot from replotting'''
+        pass
+
+    def reinit_vis_graph(self,vis_graph_obj):
+        self.clear_graph_memory()
+        self.store_vis_graph(vis_graph_obj)
+        self._act_fig()
+        self.clear_plot()
+    
+    def clear_graph_memory(self):
+        self.graphs_memory = {}
+
     def plot_cand_edge(self,node1,node2):
         '''used for debugging new edges and plotting as they are found'''
         self._act_fig()
@@ -851,12 +957,12 @@ def arg_parse():
     parser.add_argument("-b", "--batch", type=bool, default = False, help="Creates unique file name and does not display courses")
     parser.add_argument("-p", "--base_path", default = "./obs_courses/",help="path to folder containing obstacle course files")
     parser.add_argument("-c","--course", type=int, default=0, help="specify obstacle course number when multiple courses available")
-    #TODO figure out better way to specify start and end points as sometimes we want to use a vector of start/end points
     parser.add_argument("-s", "--start", type=float, default = [0,3], nargs=2, help='course start point')
     parser.add_argument("-e", "--end", type=float, default = [30,15], nargs=2, help='course end point')
     parser.add_argument("-a", "--astar", dest='solve_option', action='store_const', const='AStar', default='dijkstra',help='Change shortest path solver from dijkstra to AStar')
-    parser.add_argument("-t", "--path_test", dest='test_mode', action='store_const', const=True, default=False,help='Changes to test mode to compare dijkstra and AStar solutions')
-    parser.add_argument("-i", "--ion_on", dest='is_ion', action='store_const', const=True, default=False,help='initializes graph generator with plt.ion() enabling interactive mode')
+    parser.add_argument("-t", "--path_test", dest='test_mode', action='store_const', const=True, default=False,help='Changes to test mode to compare dijkstra and AStar solutions.  Only works if batch mode if off.')
+    parser.add_argument("-i", "--ion_on", dest='is_ion',action='store_const', const=True, default=False,help='initializes graph generator with plt.ion() enabling interactive mode')
+    parser.add_argument("-gs","--graph_storage",dest='record_on',action='store_const',const=False,default=True,help="Turns off storage of graph objects in vis_obs generator")
     parser.add_argument("fname", help="Obstacle course file to test")
     
     args = parser.parse_args()
@@ -898,6 +1004,41 @@ def read_obstacle_list(fname):
     obs_file = obs_file.close()
     return obstacle_courses
 
+def combine_csv_files():
+    #TODO write code that searches for files with matching string and combines into one file
+    pass
+
+def create_start_end(obstacle_list,npoints):
+    '''Creates start and end lists for batch testing'''
+    tol = 0.01
+    num_points_x = npoints[0]
+    num_points_y = npoints[1]
+    min_x,max_x = find_test_range(obstacle_list)
+    range_start = point((0,0))
+    range_bound = point((30,30))
+
+    if min_x <= 5 or max_x >= 25:
+        raise Exception('Obstacles are not in x bounds (5,25)')
+    
+    # if we want dynamic bounds based on obstacle locations
+    start_x = np.linspace(range_start.x,min_x-tol,num_points_x) # could try using np.arange
+    start_y = np.linspace(range_start.y,range_bound.y,num_points_y)
+    end_x = np.linspace(max_x+tol,range_bound.x,num_points_x)
+    end_y = start_y
+    # if we want fixed bounds
+    # start_x = np.linspace(range_start.x,5,num_points)
+    # start_y = np.linspace(range_start.y,range_bound.y,num_points)
+    # end_x = np.linspace(25,range_bound.x,num_points)
+    # end_y = start_y
+
+    start_vals = get_list_points(start_x,start_y)
+    end_vals = get_list_points(end_x,end_y)
+
+    start_list = init_points(start_vals)
+    end_list = init_points(end_vals)
+
+    return start_list, end_list
+
 def compare_solutions(sol1,sol2):
     '''returns if two lists are the same'''
     same = True
@@ -907,40 +1048,100 @@ def compare_solutions(sol1,sol2):
             break
     return same
 
-
 def append_dict(dict_in,item):
     num_keys = len(dict_in)
     dict_in[num_keys] = item
 
-def remove_list_item(item,list_in):
-    #TODO this function might not work
-    # removes obstacle from obstacle list without modifying original obstacle_list
-    new_obs_list = list_in[:]
-    new_obs_list.remove(item)
-    return new_obs_list
+# def remove_list_item(item,list_in):
+#     #TODO this function Does not work dont use it
+#     # removes obstacle from obstacle list without modifying original obstacle_list
+#     new_obs_list = list_in[:]
+#     new_obs_list.remove(item)
+#     return new_obs_list
 
-def check_collision(a,b,c,x,y,radius):
-    dist = round((abs(a * x + b * y + c)) / np.sqrt(a * a + b * b),4) # rounding for numerical errors
-    radius = round(radius,4)
-    if radius > dist:
-        collision = True
+def check_collision(start_node,end_node,obstacle):
+    '''checks if line collides with circle, check intersection can see if the line segments are intersecting'''
+    # first check if the entire line defined by start_node,end_node intersects with the obstacle
+    a,b,c = planar_line_form(start_node,end_node)
+    x0 = obstacle.center_x
+    y0 = obstacle.center_y
+    radius = round(obstacle.radius,4)
+    dist = round((abs(a * x0 + b * y0 + c)) / np.sqrt(a * a + b * b),4) # rounding for numerical errors; from https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+    if radius <= dist:
+        return False
     else:
-        collision = False
-    return collision
+        # if the line intersects the obstacle, now check if the intersection occurs in the segment between start_node and end_node
+        x_col = (b*(b*x0-a*y0)-a*c) / (a*a + b*b)
+        y_col = (a*(-b*x0+a*y0)-b*c) / (a*a + b*b)
+        collision_point = point((x_col,y_col))
+        if check_intersection((collision_point,obstacle.center_loc),(start_node,end_node)):
+            collision = True
+        else:
+            collision = False
+        return collision
+
+def check_intersection(seg1,seg2):
+    '''checks if two line segments are intersecting.  Line segment should be tuple of 2 point objects'''
+    dbg = False
+    # based on chapter 4, slide 172 of Lectures on Robotic Planning and Kinematics by Francessco Bullo and Stephen L. Smith available here http://motion.me.ucsb.edu/book-lrpk/
+    x1,y1 = seg1[0].output()
+    x2,y2 = seg1[1].output()
+    x3,y3 = seg2[0].output()
+    x4,y4 = seg2[1].output()
+    tol = 0.00002
+
+    a = y1-y3
+    b = x4-x3
+    c = y4-y3
+    d = x1-x3
+    e = x2-x1
+    f = y2-y1
+
+    Sa = (a*b-c*d)/(c*e-f*b)
+    Sb = (a*e-d*f)/(e*c-f*b)
+    A_in_range = in_range(Sa,(0,1),tol)
+    B_in_range = in_range(Sb,(0,1),tol)
+    if A_in_range and B_in_range:
+        intersects = True
+    else:
+        intersects = False
+    if dbg:
+        print(f'Sa = {Sa}, in_range = {A_in_range}, tol = {tol}')
+        print(f'Sb = {Sb}, in_range = {B_in_range}, tol = {tol}')
+
+    return intersects
+
+def in_range(var,bounds,tol):
+    '''checks if variable is in range specified by tuple bounds(lower,higher), with given tol'''
+    if bounds[0]-tol <= var <= bounds[1]+tol:
+        return True
+    else:
+        return False
 
 def slope_int_form(start_node,end_node):
-    slope = (end_node.y-start_node.y)/(end_node.x-start_node.x)
-    y_int = end_node.y-slope*end_node.x
+    tol = 0.0000002
+    y_diff = end_node.y-start_node.y
+    x_diff = end_node.x-start_node.x
+    if -tol <= x_diff <= tol:
+        if y_diff < 0:
+            slope = float('-inf')
+        elif y_diff > 0:
+            slope = float('inf')
+        else:
+            raise Exception("start_node and end_node are the same point")
+        y_int = None
+    else:
+        slope = (end_node.y-start_node.y)/(end_node.x-start_node.x) 
+        y_int = end_node.y-slope*end_node.x
+ 
     return slope, y_int
 
 def planar_line_form(start_node,end_node):
-    # returns line connecting nodes in planar line form for check_collision
-    slope,y_int = slope_int_form(start_node,end_node) # TODO replace with decorator?
-    # slope = (end_node.y-start_node.y)/(end_node.x-start_node.x)
-    # y_int = end_node.y-slope*end_node.x
-    a = -slope
-    b = 1
-    c = -y_int
+    x1,y1 = start_node.output()
+    x2,y2 = end_node.output()
+    a = y1-y2
+    b = x2-x1
+    c = y1*x1-y1*x2+y2*x1-y1*x1
     return a,b,c
 
 def find_point_angle(node,obstacle):
@@ -1002,7 +1203,7 @@ def init_obs(obs_list,radius_list):
     return obs_obj
 
 def find_test_range(obstacle_list):
-    prop_list = [obs.output_prop() for obs in obstacle_list]
+    prop_list = [obs.output_prop() for obs in obstacle_list] #note for some reason output_prop outputs obstacles in the fromat x,y,r instead of the r, x,y used elsewhere...
     obs_min_x = [prop[0]-prop[2] for prop in prop_list]
     obs_max_x = [prop[0]+prop[2] for prop in prop_list]
     return min(obs_min_x),max(obs_max_x)

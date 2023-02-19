@@ -20,6 +20,7 @@ class line(param_func):
     def __init__(self,m,b,is_pos):
         super().__init__(vge.edge_type.line)
         self.params = {'m': m, 'b': b, 'is_pos': is_pos}
+        # self.params = {'a': a, 'b': b, 'c': c}
 
     def is_slope_pos(self):
         # this function is used to check if label on circle segments should be above or below the circle center

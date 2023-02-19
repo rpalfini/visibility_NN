@@ -1,4 +1,3 @@
-# from visibility_graph import *
 import visibility_graph as vg
 from matplotlib import pyplot as plt
 import os
@@ -15,67 +14,91 @@ args = vg.arg_parse()
 # batch = convert2bool(args["batch"])
 batch = args["batch"]
 
-if batch:
-    osSleep = None
-    if os.name == 'nt':
-        osSleep = wi.WindowsInhibitor()
-        osSleep.inhibit()
-
-
-# start_vals = [(0,3)]
-# end_vals = [(30,15)]
-start_vals = args["start"]
-end_vals = args["end"]
-
+# if batch:
+#     osSleep = None
+#     if os.name == 'nt':
+#         osSleep = wi.WindowsInhibitor()
+#         osSleep.inhibit()
 
 # obs_file_path = args["obs_path"] + args["fname"]
 obs_file_path = args["obs_fpath"]
 obs_courses_dict = vg.read_obstacle_list(obs_file_path)
 obstacle_list = obs_courses_dict[args["course"]]
 
-
-
-# columns = ['start_x','start_y']
-
-# create start/end points
-start_list = vg.init_points(start_vals)
-end_list = vg.init_points(end_vals)
-
 tic = time.perf_counter()
+if batch:
+    # this mode tests multiple courses
+    # npoints = (10,30)
+    # npoints = (5,5)
+    
+    for ii in range(3,len(obs_courses_dict)):
+        print(f'Testing course {ii} out of {len(obs_courses_dict)}')
+        if ii % 2 == 0:
+            npoints = (10,30)
+        elif ii % 3 == 0:
+            npoints = (10,25)
+        else:
+            npoints = (12,32)
 
+        obstacle_list = obs_courses_dict[ii]
+        start_list, end_list = vg.create_start_end(obstacle_list,npoints)
+        vg_gen = vg.visibility_graph_generator(record_on=args["record_on"],is_ion=args["is_ion"])
+        vg_gen.run_test(start_list,end_list,obstacle_list,algorithm=args["solve_option"])
+        
+        #output the results
+        file_title = args["fname"].replace('.txt','')
+        vg_gen.output_csv(f'{file_title}_course_{ii+1}_obs_data')
 
-if args["test_mode"]:
-    vg_gen = vg.visibility_graph_generator(is_ion=args["is_ion"])
-    vg_gen.run_test(start_list,end_list,obstacle_list,algorithm="dijkstra")
-    vg_gen.run_test(start_list,end_list,obstacle_list,algorithm="AStar")
-    if vg.compare_solutions(vg_gen.graphs_memory[0].opt_path,vg_gen.graphs_memory[1].opt_path):
-        print('solution PATH is SAME')
-    else:
-        print('solution PATH is DIFFERENT')
-        print(f'd = {vg_gen.graphs_memory[0].opt_path}')
-        print(f'a = {vg_gen.graphs_memory[1].opt_path}')
-    if vg_gen.graphs_memory[0].opt_path_cost == vg_gen.graphs_memory[1].opt_path_cost:
-        print('solution COST is SAME')
-    else:
-        print('solution COST is DIFFERENT')
-        print(f'd = {vg_gen.graphs_memory[0].opt_path_cost}, a* = {vg_gen.graphs_memory[1].opt_path_cost}')
-    vg_gen.plot_solution(0,"dijkstra")
-    vg_gen.plot_solution(1,"AStar")
 else:
-    vg_gen = vg.visibility_graph_generator(is_ion=args["is_ion"])
-    vg_gen.run_test(start_list,end_list,obstacle_list,algorithm=args["solve_option"])
-    vg_gen.plot_solution(0,"env 3_0")
+    # start_vals = [(0,3)]
+    # end_vals = [(30,15)]
+    start_vals = args["start"]
+    end_vals = args["end"]
+    # create start/end points
+    start_list = vg.init_points(start_vals)
+    end_list = vg.init_points(end_vals)
+
+    if args["test_mode"] and not batch:
+        # this mode solves one course with dijkstra and AStar and compares their solutions
+        vg_gen = vg.visibility_graph_generator(is_ion=args["is_ion"])
+        vg_gen.run_test(start_list,end_list,obstacle_list,algorithm="dijkstra")
+        vg_gen.run_test(start_list,end_list,obstacle_list,algorithm="AStar")
+        if vg.compare_solutions(vg_gen.graphs_memory[0].opt_path,vg_gen.graphs_memory[1].opt_path):
+            print('solution PATH is SAME')
+        else:
+            print('solution PATH is DIFFERENT')
+            print(f'd = {vg_gen.graphs_memory[0].opt_path}')
+            print(f'a = {vg_gen.graphs_memory[1].opt_path}')
+        if vg_gen.graphs_memory[0].opt_path_cost == vg_gen.graphs_memory[1].opt_path_cost:
+            print('solution COST is SAME')
+        else:
+            print('solution COST is DIFFERENT')
+            print(f'd = {vg_gen.graphs_memory[0].opt_path_cost}, a* = {vg_gen.graphs_memory[1].opt_path_cost}')
+        vg_gen.plot_solution(0,"dijkstra")
+        vg_gen.plot_solution(1,"AStar")
+    else:
+        # this mode means we are just testing one course and getting an output
+        vg_gen = vg.visibility_graph_generator(record_on=args["record_on"],is_ion=args["is_ion"])
+        vg_gen.run_test(start_list,end_list,obstacle_list,algorithm=args["solve_option"])
+        g_title = f"course {args['fname']}"
+        vg_gen.plot_solution(0,g_title)
+        
+        #output the results
+        file_title = args["fname"].replace('.txt','')
+        vg_gen.output_csv(f'{file_title}_obs_data')
+        vg_gen.save_plot_image(f'{file_title}_obs_fig')
 
 toc = time.perf_counter()
 print(f"created the data in {toc - tic:0.4f} seconds")
 
-vg_gen.output_csv(f'{args["fname"]}_obs_data')
-vg_gen.save_plot_image(f'{args["fname"]}_obs_fig')
+# file_title = args["fname"].replace('.txt','')
+# vg_gen.output_csv(f'{file_title}_obs_data')
+# vg_gen.save_plot_image(f'{file_title}_obs_fig')
 
 # today = date.today()
 # vg_gen.output_csv(today.strftime("%Y_%m_%d")+'three_obst data_large_1')
 
-if batch:
-    if osSleep:
-        osSleep.uninhibit()
+# if batch:
+#     if osSleep:
+#         osSleep.uninhibit()
 

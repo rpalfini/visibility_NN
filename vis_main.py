@@ -31,7 +31,7 @@ if batch:
     # npoints = (10,30)
     # npoints = (5,5)
     
-    for ii in range(3,len(obs_courses_dict)):
+    for ii in range(len(obs_courses_dict)):
         print(f'Testing course {ii} out of {len(obs_courses_dict)}')
         if ii % 2 == 0:
             npoints = (10,30)

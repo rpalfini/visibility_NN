@@ -159,6 +159,7 @@ if __name__ == "__main__":
     bound_x = args["range"][0]
     bound_y = args["range"][1]
     gen_multi_courses = True
+    divide_by_course = True
 
     if not batch:
         gen_obs(num_obstacles=args["num_obstacles"],show_result=True,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
@@ -167,16 +168,29 @@ if __name__ == "__main__":
         today = date.today()
         formatted_date = today.strftime("%y_%m_%d")
         jj = 0
+        
         for obs_num in range(obstacles):
-            if obs_num % 3 == 0: # every third file after 1st is new_file
-                if args["fname_out"] == "obstacle_locations.txt":
-                    fname = f"{formatted_date}_{courses}_courses_{obs_num+1}_obstacles_normal.txt"
+            
+                if divide_by_course:
+                    for ii in range(courses):
+                        if ii % 5 == 0:
+                            if args["fname_out"] == "obstacle_locations.txt":
+                                fname = f"{formatted_date}_{courses}_courses_{obs_num+1}_obstacles_normal.txt"
+                            else:
+                                fname = f'{args["fname_out"]}_{jj}.txt'
+                                jj += 1
+
+                        gen_obs(num_obstacles=obs_num+1,fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
                 else:
-                    fname = f'{args["fname_out"]}_{jj}.txt'
-                    jj += 1
-                
-                for ii in range(courses):
-                    gen_obs(num_obstacles=obs_num+1,fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
+                    if obs_num % 1 == 0: # every third file after 1st is new_file
+                        if args["fname_out"] == "obstacle_locations.txt":
+                            fname = f"{formatted_date}_{courses}_courses_{obs_num+1}_obstacles_normal.txt"
+                        else:
+                            fname = f'{args["fname_out"]}_{jj}.txt'
+                            jj += 1
+                    
+                    for ii in range(courses):
+                        gen_obs(num_obstacles=obs_num+1,fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
     else:
         courses = args["num_courses"]
         today = date.today()

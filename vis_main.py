@@ -14,11 +14,11 @@ args = vg.arg_parse()
 # batch = convert2bool(args["batch"])
 batch = args["batch"]
 
-if batch:
-    osSleep = None
-    if os.name == 'nt':
-        osSleep = wi.WindowsInhibitor()
-        osSleep.inhibit()
+# if batch:
+#     osSleep = None
+#     if os.name == 'nt':
+#         osSleep = wi.WindowsInhibitor()
+#         osSleep.inhibit()
 
 # obs_file_path = args["obs_path"] + args["fname"]
 obs_file_path = args["obs_fpath"]
@@ -31,12 +31,12 @@ if batch:
     # npoints = (10,30)
     # npoints = (5,5)
     
-    for ii in range(len(obs_courses_dict)):
+    for ii in range(3,len(obs_courses_dict)):
         print(f'Testing course {ii} out of {len(obs_courses_dict)}')
         if ii % 2 == 0:
             npoints = (10,30)
         elif ii % 3 == 0:
-            npoints = (15,40)
+            npoints = (10,25)
         else:
             npoints = (12,32)
 
@@ -98,7 +98,7 @@ print(f"created the data in {toc - tic:0.4f} seconds")
 # today = date.today()
 # vg_gen.output_csv(today.strftime("%Y_%m_%d")+'three_obst data_large_1')
 
-if batch:
-    if osSleep:
-        osSleep.uninhibit()
+# if batch:
+#     if osSleep:
+#         osSleep.uninhibit()
 

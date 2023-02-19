@@ -159,7 +159,7 @@ if __name__ == "__main__":
     bound_x = args["range"][0]
     bound_y = args["range"][1]
     gen_multi_courses = True
-    divide_by_course = True
+    divide_by_course = False
 
     if not batch:
         gen_obs(num_obstacles=args["num_obstacles"],show_result=True,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)

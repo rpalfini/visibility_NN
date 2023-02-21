@@ -182,7 +182,7 @@ if __name__ == "__main__":
 
                         gen_obs(num_obstacles=obs_num+1,fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
                 else:
-                    if obs_num % 1 == 0: # every third file after 1st is new_file
+                    if obs_num % 2 == 0: # every third file after 1st is new_file
                         if args["fname_out"] == "obstacle_locations.txt":
                             fname = f"{formatted_date}_{courses}_courses_{obs_num+1}_obstacles_normal.txt"
                         else:

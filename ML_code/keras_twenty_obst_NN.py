@@ -16,7 +16,9 @@ print(device_lib.list_local_devices())
 
 
 data_folder = 'C:/Users/Robert/git/visibility_NN/results_merge/'
-data_file = '23_02_18_batch2_2_course_18_obs_data.csv'
+# data_file = '23_02_18_batch2_2_course_18_obs_data.csv'
+data_file = '23_02_18_merge.csv'
+# data_file = '23_02_18_and_19_merge.csv'
 dataset = np.loadtxt(data_folder+data_file,delimiter=',')
 
 num_obstacles = 20

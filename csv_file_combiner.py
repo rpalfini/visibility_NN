@@ -63,7 +63,7 @@ biggest_file = "file1.csv"
 biggest_file_path = base_path + biggest_file
 
 
-csv_folder = '22_10_17_one_obstacle_data'
+csv_folder = '23_02_20_aws_batchb'
 # csv_folder = '23_02_19_aws_batch1_0_course_1_obs_data.csv[+13]'
 # '23_02_18_batch2'
 # 
@@ -77,7 +77,7 @@ if dir_mode:
     #     # csv_file_list = ["file1.csv", "file2.csv", "file3.csv"]
     #     # output_file = f"./results_merge/{csv_folder}_merge.csv"
     #     if ".csv" in csv_folder:
-    #         output_file = f"{merge_out_folder}{csv_folder[0:21]}_merge.csv"
+    #         output_file = f"{merge_out_folder}{csv_fol   der[0:21]}_merge.csv"
     #     else:
     #         output_file = f"{merge_out_folder}{csv_folder}_merge.csv"
         # for csv_file_name in csv_file_list:

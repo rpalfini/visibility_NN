@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras as K
 from tensorflow.python.client import device_lib
+import util
 
 print(device_lib.list_local_devices())
 
@@ -15,14 +16,24 @@ print(device_lib.list_local_devices())
 
 
 data_folder = 'C:/Users/Robert/git/visibility_NN/results_merge/'
-data_file = '22_10_17_one_obstacle_data_merge.csv'
+data_file = '23_02_18_batch2_2_course_18_obs_data.csv'
 dataset = np.loadtxt(data_folder+data_file,delimiter=',')
 
-X = dataset[:,0:-1]
-Y = dataset[:,-1]
+model_output_folder = util.init_data_store_folder(data_file.strip('.csv'))
+
+num_obstacles = 20
+features = 3*num_obstacles + 4
+labels = num_obstacles
+
+X = dataset[:,:features]
+Y = dataset[:,features:-1]
+if Y.shape[1] != labels:
+    raise Exception('incorrect number of labels')
+
+opt_costs = dataset[:,-1]
 
 # split data
-train_split = 0.8
+train_split = 0.8 # percentage to use for training
 nrows = X.shape[0]
 split_row = round(train_split*nrows)
 
@@ -32,9 +43,10 @@ X_val = X[split_row:,:]
 Y_val = Y[split_row:]
 
 model = K.Sequential()
-model.add(K.layers.Dense(12, input_shape=(7,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-model.add(K.layers.Dense(8, activation='relu'))
-model.add(K.layers.Dense(1, activation='sigmoid'))
+model.add(K.layers.Dense(100, input_shape=(64,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+model.add(K.layers.Dense(150, activation='relu'))
+model.add(K.layers.Dense(100, activation='relu'))
+model.add(K.layers.Dense(20, activation='sigmoid'))
 
 # compile the keras model
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -47,4 +59,5 @@ _, train_accuracy = model.evaluate(X_train, Y_train)
 _, val_accuracy = model.evaluate(X_val, Y_val)
 print('Train_Accuracy: %.2f' % (train_accuracy*100))
 print('Val_Accuracy: %.2f' % (val_accuracy*100))
-model.save('C:/Users/Robert/git/visibility_NN')
+# model.save('C:/Users/Robert/git/visibility_NN')
+model.save(model_output_folder)

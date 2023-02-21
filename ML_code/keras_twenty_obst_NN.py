@@ -19,8 +19,6 @@ data_folder = 'C:/Users/Robert/git/visibility_NN/results_merge/'
 data_file = '23_02_18_batch2_2_course_18_obs_data.csv'
 dataset = np.loadtxt(data_folder+data_file,delimiter=',')
 
-model_output_folder = util.init_data_store_folder(data_file.strip('.csv'))
-
 num_obstacles = 20
 features = 3*num_obstacles + 4
 labels = num_obstacles
@@ -60,4 +58,5 @@ _, val_accuracy = model.evaluate(X_val, Y_val)
 print('Train_Accuracy: %.2f' % (train_accuracy*100))
 print('Val_Accuracy: %.2f' % (val_accuracy*100))
 # model.save('C:/Users/Robert/git/visibility_NN')
+model_output_folder = util.init_data_store_folder(data_file.strip('.csv'))
 model.save(model_output_folder)

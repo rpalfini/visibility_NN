@@ -19,3 +19,9 @@ def init_data_store_folder(data_file):
         os.mkdir(data_path+data_store_folder)
 
     return data_store_folder
+
+def record_model_results(output_dir,epochs, batch_size, train_acc, val_acc):
+    f = open(output_dir+"results.txt","w")
+    f.write('epochs,batch_size,train_acc,val_acc\n')
+    f.write(f'{epochs},{batch_size},{train_acc},{val_acc}\n')
+    f.close()

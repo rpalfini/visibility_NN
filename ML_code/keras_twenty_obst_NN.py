@@ -50,7 +50,9 @@ model.add(K.layers.Dense(20, activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 # fit the keras model on the dataset
-model.fit(X_train, Y_train, epochs=20, batch_size=10)
+n_epochs = 100
+b_size = 32
+model.fit(X_train, Y_train, epochs=n_epochs, batch_size=b_size)
 
 # evaluate the keras model
 _, train_accuracy = model.evaluate(X_train, Y_train)
@@ -60,3 +62,4 @@ print('Val_Accuracy: %.2f' % (val_accuracy*100))
 # model.save('C:/Users/Robert/git/visibility_NN')
 model_output_folder = util.init_data_store_folder(data_file.strip('.csv'))
 model.save(model_output_folder)
+util.record_model_results(model_output_folder,n_epochs,b_size,train_accuracy*100,val_accuracy*100)

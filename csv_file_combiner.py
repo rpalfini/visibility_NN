@@ -57,13 +57,13 @@ dir_mode = False
 merge_out_folder = "C:/Users/Robert/git/visibility_NN/results_merge/"
 
 make_new_file = True # TODO: this mode doesnt work, and is activated by changing to false... this mode creates a new file for outputting.  Use this if all the files are approx the same size
-base_path = 'C:/Users/Robert/Documents/Vis_network_data/'
-# base_path = 'C:/Users/Robert/git/visibility_NN/results_merge/'
+# base_path = 'C:/Users/Robert/Documents/Vis_network_data/'
+base_path = 'C:/Users/Robert/git/visibility_NN/results_merge/'
 biggest_file = "file1.csv"
 biggest_file_path = base_path + biggest_file
 
 
-csv_folder = '23_02_20_aws_batchb'
+csv_folder = '23_02_18_19_20'
 # csv_folder = '23_02_19_aws_batch1_0_course_1_obs_data.csv[+13]'
 # '23_02_18_batch2'
 # 

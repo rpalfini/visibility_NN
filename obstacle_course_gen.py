@@ -160,6 +160,7 @@ if __name__ == "__main__":
     bound_y = args["range"][1]
     gen_multi_courses = True
     divide_by_course = False
+    output_folder = "./obs_courses/"
 
     if not batch:
         gen_obs(num_obstacles=args["num_obstacles"],show_result=True,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
@@ -180,7 +181,7 @@ if __name__ == "__main__":
                                 fname = f'{args["fname_out"]}_{jj}.txt'
                                 jj += 1
 
-                        gen_obs(num_obstacles=obs_num+1,fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
+                        gen_obs(num_obstacles=obs_num+1,fname=output_folder+fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
                 else:
                     if obs_num % 2 == 0: # every third file after 1st is new_file
                         if args["fname_out"] == "obstacle_locations.txt":
@@ -190,7 +191,7 @@ if __name__ == "__main__":
                             jj += 1
                     
                     for ii in range(courses):
-                        gen_obs(num_obstacles=obs_num+1,fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
+                        gen_obs(num_obstacles=obs_num+1,fname=output_folder+fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
     else:
         courses = args["num_courses"]
         today = date.today()

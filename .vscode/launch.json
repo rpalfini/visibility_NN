@@ -5,6 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: course_gen_output",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args":[
+                "-no",
+                "5",
+                "-nc",
+                "1"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: batch_test",
             "type": "python",
             "request": "launch",

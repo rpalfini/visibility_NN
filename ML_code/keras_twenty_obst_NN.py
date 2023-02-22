@@ -16,8 +16,9 @@ print(device_lib.list_local_devices())
 
 
 data_folder = 'C:/Users/Robert/git/visibility_NN/results_merge/'
+# data_folder = 'H:/My Drive/Visibility_data_generation/Data Backups/23_02_18_and_19/'
 # data_file = '23_02_18_batch2_2_course_18_obs_data.csv'
-data_file = '23_02_18_merge.csv'
+data_file = '23_02_18_merge_fixed.csv'
 # data_file = '23_02_18_and_19_merge.csv'
 dataset = np.loadtxt(data_folder+data_file,delimiter=',')
 
@@ -44,8 +45,10 @@ Y_val = Y[split_row:]
 
 model = K.Sequential()
 model.add(K.layers.Dense(100, input_shape=(64,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-model.add(K.layers.Dense(150, activation='relu'))
-model.add(K.layers.Dense(100, activation='relu'))
+model.add(K.layers.Dense(200, activation='relu'))
+model.add(K.layers.Dense(800, activation='relu'))
+model.add(K.layers.Dense(1300, activation='relu'))
+model.add(K.layers.Dense(400, activation='relu'))
 model.add(K.layers.Dense(20, activation='sigmoid'))
 
 # compile the keras model

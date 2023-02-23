@@ -963,6 +963,7 @@ def arg_parse():
     parser.add_argument("-t", "--path_test", dest='test_mode', action='store_const', const=True, default=False,help='Changes to test mode to compare dijkstra and AStar solutions.  Only works if batch mode if off.')
     parser.add_argument("-i", "--ion_on", dest='is_ion',action='store_const', const=True, default=False,help='initializes graph generator with plt.ion() enabling interactive mode')
     parser.add_argument("-gs","--graph_storage",dest='record_on',action='store_const',const=False,default=True,help="Turns off storage of graph objects in vis_obs generator")
+    parser.add_argument("-f","--output_file", default = None, help="sets the output directory for generated data in batch mode")
     parser.add_argument("fname", help="Obstacle course file to test")
     
     args = parser.parse_args()

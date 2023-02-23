@@ -110,16 +110,20 @@ def combine_csv(csv_folder):
 # User options
 CHUNK_SIZE = 50000
 dir_mode = False
-merge_out_folder = "C:/Users/Robert/git/visibility_NN/results_merge/"
+# merge_out_folder = "C:/Users/Robert/git/visibility_NN/results_merge/"
+merge_out_folder = "./results_merge"
 
 make_new_file = True # TODO: this mode doesnt work, and is activated by changing to false... this mode creates a new file for outputting.  Use this if all the files are approx the same size
 # base_path = 'C:/Users/Robert/Documents/Vis_network_data/'
-base_path = 'C:/Users/Robert/git/visibility_NN/results_merge/'
+# base_path = 'C:/Users/Robert/git/visibility_NN/results_merge/'
+# base_path = 'C:/Users/Robert/git/visibility_NN/'
+base_path = './'
 biggest_file = "file1.csv"
 biggest_file_path = base_path + biggest_file
 
 if __name__ == "__main__":
-    csv_folder = '23_02_18_19_20'
+    # csv_folder = '23_02_18_19_20'
+    csv_folder = '/data_out'
     # csv_folder = '23_02_19_aws_batch1_0_course_1_obs_data.csv[+13]'
     # '23_02_18_batch2'
     # 

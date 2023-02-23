@@ -2,14 +2,16 @@ import pandas as pd
 import os
 import glob
 
-def get_file_list(folder):
+def get_file_list(folder_path):
     '''Only returns names of csv files in folder'''
     # base_path = 'C:/Users/Robert/Documents/Vis_network_data/'
     # # base_path = 'C:/Users/Robert/git/visibility_NN/results_merge/'
-    path = base_path + folder
+    cur_dir = os.getcwd()
+    # path = base_path + folder
     extension = 'csv'
-    os.chdir(path)
+    os.chdir(folder_path)
     result = glob.glob('*.{}'.format(extension))
+    os.chdir(cur_dir)
     return result
 
 def get_dir_list(path):
@@ -80,22 +82,22 @@ def split_fname_path(data_path):
 
 def _name_output(csv_folder):
     if ".csv" in csv_folder:
-        output_file = f"{merge_out_folder}{csv_folder[0:21]}_merge.csv"
+        output_file = f"{merge_out_folder}/{csv_folder[0:21]}_merge.csv"
     else:
-        output_file = f"{merge_out_folder}{csv_folder}_merge.csv"
+        output_file = f"{merge_out_folder}/{csv_folder}_merge.csv"
     return output_file
 
-def _chunk_and_output(csv_file_list,output_file,biggest_file=None,):
+def _chunk_and_output(csv_file_list,csv_folder_path,output_file,biggest_file=None):
     
     for csv_file_name in csv_file_list:
         if csv_file_name == biggest_file:
             print('biggest file encountered')
             continue
         else:
-            chunk_container = pd.read_csv(csv_file_name, chunksize=CHUNK_SIZE)
+            csv_fpath = csv_folder_path + "/" + csv_file_name
+            chunk_container = pd.read_csv(csv_fpath, chunksize=CHUNK_SIZE, header=None)
             for chunk in chunk_container:
                 chunk.to_csv(output_file, mode="a", index=False,header=False)
-
 
 
 # def combin
@@ -109,7 +111,7 @@ def combine_csv(csv_folder):
 
 # User options
 CHUNK_SIZE = 50000
-dir_mode = False
+dir_mode = False # Leave as False
 # merge_out_folder = "C:/Users/Robert/git/visibility_NN/results_merge/"
 merge_out_folder = "./results_merge"
 
@@ -117,13 +119,13 @@ make_new_file = True # TODO: this mode doesnt work, and is activated by changing
 # base_path = 'C:/Users/Robert/Documents/Vis_network_data/'
 # base_path = 'C:/Users/Robert/git/visibility_NN/results_merge/'
 # base_path = 'C:/Users/Robert/git/visibility_NN/'
-base_path = './'
+base_path = './data_out/'
 biggest_file = "file1.csv"
 biggest_file_path = base_path + biggest_file
 
 if __name__ == "__main__":
     # csv_folder = '23_02_18_19_20'
-    csv_folder = '/data_out'
+    csv_folder = 'Test'
     # csv_folder = '23_02_19_aws_batch1_0_course_1_obs_data.csv[+13]'
     # '23_02_18_batch2'
     # 
@@ -134,21 +136,21 @@ if __name__ == "__main__":
     if not dir_exists:
         os.mkdir(merge_out_folder)
 
-
     if dir_mode:
         dir_list = get_dir_list('C:/Users/Robert/Documents/Vis_network_data')
         for csv_folder in dir_list:
             print(csv_folder)
 
             output_file = _name_output(csv_folder)
+            folder_path = base_path + csv_folder
             csv_file_list = get_file_list(csv_folder,output_file)
             _chunk_and_output(csv_file_list)
     else:
         print(csv_folder)
-
         output_file = _name_output(csv_folder)
-        csv_file_list = get_file_list(csv_folder)
-        _chunk_and_output(csv_file_list,output_file)
+        folder_path = base_path + csv_folder
+        csv_file_list = get_file_list(folder_path)
+        _chunk_and_output(csv_file_list,folder_path,output_file)
     # else:
     #     '''This mode appends the other files to the biggest file to save time'''
     #     output_file = biggest_file_path

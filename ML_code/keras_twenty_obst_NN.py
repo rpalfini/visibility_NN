@@ -15,10 +15,11 @@ print(device_lib.list_local_devices())
 # tf.debugging.set_log_device_placement(True)
 
 
-data_folder = './'
+data_folder = './results_merge/'
 # data_folder = 'H:/My Drive/Visibility_data_generation/Data Backups/23_02_18_and_19/'
 # data_file = '23_02_18_batch2_2_course_18_obs_data.csv'
 data_file = '23_02_18_19_20_merge_fixed.csv'
+# data_file = 'test_file_fixed.csv'
 # data_file = '23_02_18_and_19_merge.csv'
 dataset = np.loadtxt(data_folder+data_file,delimiter=',')
 
@@ -34,14 +35,14 @@ if Y.shape[1] != labels:
 opt_costs = dataset[:,-1]
 
 # split data
-train_split = 0.8 # percentage to use for training
+test_split = 0.8 # percentage to use for training
 nrows = X.shape[0]
-split_row = round(train_split*nrows)
+split_row = round(test_split*nrows)
 
 X_train = X[0:split_row,:]
 Y_train = Y[0:split_row]
-X_val = X[split_row:,:]
-Y_val = Y[split_row:]
+X_test = X[split_row:,:]
+Y_test = Y[split_row:]
 
 model = K.Sequential()
 model.add(K.layers.Dense(100, input_shape=(64,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
@@ -57,14 +58,15 @@ model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']
 # fit the keras model on the dataset
 n_epochs = 100
 b_size = 32
-model.fit(X_train, Y_train, epochs=n_epochs, batch_size=b_size)
+results = model.fit(X_train, Y_train, epochs=n_epochs, batch_size=b_size)
 
 # evaluate the keras model
 _, train_accuracy = model.evaluate(X_train, Y_train)
-_, val_accuracy = model.evaluate(X_val, Y_val)
+_, test_accuracy = model.evaluate(X_test, Y_test)
 print('Train_Accuracy: %.2f' % (train_accuracy*100))
-print('Val_Accuracy: %.2f' % (val_accuracy*100))
+print('Test_Accuracy: %.2f' % (test_accuracy*100))
 # model.save('C:/Users/Robert/git/visibility_NN')
 model_output_folder = util.init_data_store_folder(data_file.strip('.csv'))
-model.save(model_output_folder)
-util.record_model_results(model_output_folder,n_epochs,b_size,train_accuracy*100,val_accuracy*100)
+model.save(model_output_folder+"\keras_model")
+util.record_model_results(model_output_folder,n_epochs,b_size,train_accuracy*100,test_accuracy*100)
+util.record_model_fit_results(results,model_output_folder)

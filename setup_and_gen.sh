@@ -1,7 +1,12 @@
 #!/bin/bash
-python3 obstacle_course_gen.py -f 23_02_22_aws_batch6 -nc 5 -no 20
+batch_num=6
+today=$(date '+%y_%m_%d')
+file_name=${today}_aws_batch${batch_num}
 
 for ii in {0..19}
 do
-    python3 vis_main.py 23_02_22_aws_batch6_$ii.txt -b True -gs -f 23_02_22_aws_batch6 &
+    test_file=${file_name}_${ii}.txt
+    log_file=${file_name}.log
+    error_file=${file_name}_error.log
+    python3 vis_main.py test_file -b True -gs -f $file_name > $log_file > $error_file &
 done

@@ -39,6 +39,7 @@ if batch:
 
     for ii in range(len(obs_courses_dict)):
         print(f'Testing course {ii} out of {len(obs_courses_dict)}')
+        
         if ii % 2 == 0:
             npoints = (10,30)
         elif ii % 3 == 0:
@@ -54,7 +55,13 @@ if batch:
         #output the results
         file_title = args["fname"].replace('.txt','')
         
-        vg_gen.output_csv(f'results{file_title}_course_{ii+1}_obs_data')
+        if args["output_file"] != None:
+            fname = f'{file_title}_course_{ii+1}_obs_data'
+            file_name = results_folder + "/" + fname
+        else:
+            file_name = f'{file_title}_course_{ii+1}_obs_data'
+
+        vg_gen.output_csv(file_name)
 
 else:
     # start_vals = [(0,3)]

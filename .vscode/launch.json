@@ -24,10 +24,12 @@
             "request": "launch",
             "program": "${file}",
             "args":[
-                "23_01_20_1_courses_10_obstacles_normal.txt",
+                "23_01_20_1_courses_1_obstacles_normal.txt",
                 "-b",
                 "True",
-                "-gs"
+                "-gs",
+                "-f",
+                "23_02_24_spartan"
             ],
             "console": "integratedTerminal",
             "justMyCode": true

@@ -30,7 +30,12 @@ if batch:
     # this mode tests multiple courses
     # npoints = (10,30)
     # npoints = (5,5)
-    
+    results_folder = "./data_out"
+    dir_exists = os.path.isdir(results_folder)
+    if not dir_exists:
+        os.mkdir(results_folder)
+
+
     for ii in range(len(obs_courses_dict)):
         print(f'Testing course {ii} out of {len(obs_courses_dict)}')
         if ii % 2 == 0:
@@ -47,6 +52,7 @@ if batch:
         
         #output the results
         file_title = args["fname"].replace('.txt','')
+        
         vg_gen.output_csv(f'{file_title}_course_{ii+1}_obs_data')
 
 else:

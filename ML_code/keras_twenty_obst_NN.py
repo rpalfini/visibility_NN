@@ -64,7 +64,8 @@ model.add(K.layers.Dense(200, activation='relu'))
 model.add(K.layers.Dense(20, activation='sigmoid'))
 
 # compile the keras model
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+optimizer = K.optimizers.Adam(lr=0.0001)
+model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
 # fit the keras model on the dataset
 n_epochs = 100

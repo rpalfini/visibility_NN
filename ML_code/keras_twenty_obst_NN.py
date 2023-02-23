@@ -17,8 +17,8 @@ print(device_lib.list_local_devices())
 
 data_folder = './results_merge/'
 # data_folder = 'H:/My Drive/Visibility_data_generation/Data Backups/23_02_18_and_19/'
-data_file = '23_02_18_batch2_2_course_18_obs_data.csv'
-# data_file = '23_02_18_19_20_merge_fixed.csv'
+# data_file = '23_02_18_batch2_2_course_18_obs_data.csv'
+data_file = '23_02_18_19_20_merge_fixed.csv'
 # data_file = 'test_file_fixed.csv'
 # data_file = '23_02_18_and_19_merge.csv'
 dataset = np.loadtxt(data_folder+data_file,delimiter=',')

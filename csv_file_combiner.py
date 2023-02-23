@@ -129,6 +129,12 @@ if __name__ == "__main__":
     # 
     # csv_folder = 'Test'
     # if make_new_file:
+
+    dir_exists = os.path.isdir(merge_out_folder)
+    if not dir_exists:
+        os.mkdir(merge_out_folder)
+
+
     if dir_mode:
         dir_list = get_dir_list('C:/Users/Robert/Documents/Vis_network_data')
         for csv_folder in dir_list:

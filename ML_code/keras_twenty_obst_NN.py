@@ -27,6 +27,8 @@ num_obstacles = 20
 features = 3*num_obstacles + 4
 labels = num_obstacles
 
+np.random.shuffle(dataset)
+
 X = dataset[:,:features]
 Y = dataset[:,features:-1]
 if Y.shape[1] != labels:

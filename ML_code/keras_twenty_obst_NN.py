@@ -39,17 +39,26 @@ test_split = 0.8 # percentage to use for training
 nrows = X.shape[0]
 split_row = round(test_split*nrows)
 
-X_train = X[0:split_row,:]
-Y_train = Y[0:split_row]
+#TODO make splitting a function
+X_tv = X[0:split_row,:] # train and validation data
+Y_tv = Y[0:split_row]
 X_test = X[split_row:,:]
 Y_test = Y[split_row:]
+
+nrows = X_tv.shape[0]
+val_split_row = round(test_split*nrows)
+
+X_train = X_tv[0:val_split_row,:]
+Y_train = X_tv[0:val_split_row]
+X_val = X_tv[val_split_row:,:]
+Y_val = Y_tv[val_split_row:]
 
 model = K.Sequential()
 model.add(K.layers.Dense(100, input_shape=(64,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
 model.add(K.layers.Dense(200, activation='relu'))
-model.add(K.layers.Dense(800, activation='relu'))
-model.add(K.layers.Dense(1300, activation='relu'))
-model.add(K.layers.Dense(400, activation='relu'))
+# model.add(K.layers.Dense(800, activation='relu'))
+# model.add(K.layers.Dense(1300, activation='relu'))
+# model.add(K.layers.Dense(400, activation='relu'))
 model.add(K.layers.Dense(20, activation='sigmoid'))
 
 # compile the keras model
@@ -57,8 +66,8 @@ model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']
 
 # fit the keras model on the dataset
 n_epochs = 100
-b_size = 32
-results = model.fit(X_train, Y_train, epochs=n_epochs, batch_size=b_size)
+b_size = 64
+results = model.fit(X_train, Y_train, validation_data = (X_val,Y_val), epochs=n_epochs, batch_size=b_size)
 
 # evaluate the keras model
 _, train_accuracy = model.evaluate(X_train, Y_train)

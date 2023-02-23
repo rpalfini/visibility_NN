@@ -17,8 +17,8 @@ print(device_lib.list_local_devices())
 
 data_folder = './results_merge/'
 # data_folder = 'H:/My Drive/Visibility_data_generation/Data Backups/23_02_18_and_19/'
-# data_file = '23_02_18_batch2_2_course_18_obs_data.csv'
-data_file = '23_02_18_19_20_merge_fixed.csv'
+data_file = '23_02_18_batch2_2_course_18_obs_data.csv'
+# data_file = '23_02_18_19_20_merge_fixed.csv'
 # data_file = 'test_file_fixed.csv'
 # data_file = '23_02_18_and_19_merge.csv'
 dataset = np.loadtxt(data_folder+data_file,delimiter=',')
@@ -41,17 +41,17 @@ split_row = round(test_split*nrows)
 
 #TODO make splitting a function
 X_tv = X[0:split_row,:] # train and validation data
-Y_tv = Y[0:split_row]
+Y_tv = Y[0:split_row,:]
 X_test = X[split_row:,:]
-Y_test = Y[split_row:]
+Y_test = Y[split_row:,:]
 
 nrows = X_tv.shape[0]
 val_split_row = round(test_split*nrows)
 
 X_train = X_tv[0:val_split_row,:]
-Y_train = X_tv[0:val_split_row]
+Y_train = Y_tv[0:val_split_row,:]
 X_val = X_tv[val_split_row:,:]
-Y_val = Y_tv[val_split_row:]
+Y_val = Y_tv[val_split_row:,:]
 
 model = K.Sequential()
 model.add(K.layers.Dense(100, input_shape=(64,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.

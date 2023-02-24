@@ -61,7 +61,7 @@ if batch:
         else:
             file_name = f'{file_title}_course_{ii+1}_obs_data'
 
-        vg_gen.output_csv(file_name)
+        vg_gen.output_csv(file_name,overwrite=True) # we want to overwrite csv files so that process will continue when done in background
 
 else:
     # start_vals = [(0,3)]

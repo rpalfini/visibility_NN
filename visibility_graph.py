@@ -646,14 +646,17 @@ class visibility_graph_generator:
             results_array = [start.x, start.y, end.x, end.y,*obstacle_att, *label_values, opt_path_cost]# direction label of 1 is up and 0 is down
         self.vis_data[idx,:] = results_array
 
-    def output_csv(self,file_name):
+    def output_csv(self,file_name,overwrite=False):
         # output training data to file
         response_needed = True
         fname = file_name+'.csv'
         # attempt to prevent accidental file overwrites
         if os.path.exists(fname):
             while response_needed:
-                ans = input('file name already exists, overwrite? (y/n)')
+                if overwrite:
+                    ans = 'y'
+                else:
+                    ans = input('file name already exists, overwrite? (y/n)')
                 if ans == 'y':
                     np.savetxt(fname, self.vis_data, delimiter=",")
                     response_needed = False

@@ -9,6 +9,7 @@ import param_func as pf
 import os
 import copy
 import warnings
+import pickle
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 class point:
@@ -186,10 +187,14 @@ class vis_graph:
                     obst_B = obst
                 else:
                     #TODO I don't think this will catch something that the following exception wouldnt have already caught
-                    raise Exception("obstacles have same x and y coordinate: vis_obst_obst()")
+                    msg = "obstacles have same x and y coordinate: vis_obst_obst()"
+                    self.record_exception_data(obst=obst,remaining_obst=remaining_obst,function='vis_obst_obst',exception=msg)
+                    raise Exception(msg)
             
             if id(obst) == id(next_obst): # dont calculate visibility with itself
-                raise Exception('Obstacle not deleted correctly from list')
+                msg = 'Obstacle not deleted correctly from list'
+                self.record_exception_data(obst=obst,remaining_obst=remaining_obst,function='vis_obst_obst',exception=msg)
+                raise Exception(msg)
             
             self.internal_bitangents(obst_A,obst_B)
             self.external_bitangents(obst_A,obst_B)
@@ -395,7 +400,9 @@ class vis_graph:
             
             x_before,_ = self.get_node_xy(node_before)
             if x_before >= x_key:
-                raise Exception("invalid opt path found")
+                msg = "invalid opt path found"
+                self.record_exception_data(function='create_pw_opt_path_func',exception=msg)
+                raise Exception(msg)
 
             if edge_key == edge_type.line:
                 slope,y_int = slope_int_form(self.get_node_obj(node_before),self.get_node_obj(node_id))
@@ -411,7 +418,9 @@ class vis_graph:
                     else:
                         is_pos = decide_zero_slope_sign(node_id)
                 else:
-                    raise Exception(f'invalid slope value: {slope}')
+                    msg = f'invalid slope value: {slope}'
+                    self.record_exception_data(slope = slope,function='create_pw_opt_path_func',exception=msg)
+                    raise Exception(msg)
                 if slope == float("-inf") or slope == float("inf"):
                     is_slope_inf = True
                     inf_slope_sign = is_pos
@@ -425,7 +434,9 @@ class vis_graph:
                 obstacle = self.get_node_obs(node_id)
                 self.pw_opt_func[x_key] = pf.circle(*obstacle.output_prop(),is_slope_pos)
             else:
-                raise Exception(f'invalid Edge key found: {edge_key}')
+                msg = f'invalid Edge key found: {edge_key}'
+                self.record_exception_data(edge_key = edge_key,function='create_pw_opt_path_func',exception=msg)
+                raise Exception(msg)
 
     # functions for working with pw_opt_func
     def gen_obs_labels(self):
@@ -538,6 +549,24 @@ class vis_graph:
         diff = vec_sub(point1,point2)
         if abs(diff.x) < 0.001 or abs(diff.y) < 0.001:
             warnings.warn('Nodes are very close in value')
+
+    def record_exception_data(self,**kwargs):
+        filename = "vis_graph_data.pickle"
+        folder_path = "./"
+        if os.path.exists(os.path.join(folder_path,filename)):
+            # If the file already exists, add a suffix to the filename
+            ii = 1
+            while True:
+                new_filename = f"{os.path.splitext(filename)[0]}_{ii}{os.path.splitext(filename)[1]}"
+                if os.path.exists(os.path.join(folder_path, new_filename)):
+                    ii += 1
+                else:
+                    filename = new_filename
+                    break
+        with open(filename,'wb') as f: #TODO change this to also output data regarding which test the error is
+            kwargs['vis_graph_object'] = self
+            pickle.dump(kwargs,f)
+        f.close()
 
 class visibility_graph_generator:
     #TODO look into pickle for saving vis_graph_gen objects

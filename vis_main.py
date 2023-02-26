@@ -34,7 +34,12 @@ if batch:
         results_folder = "./data_out/" + args["output_file"] 
         dir_exists = os.path.isdir(results_folder)
         if not dir_exists:
-            os.mkdir(results_folder)
+            try:
+                os.mkdir(results_folder)
+            except FileExistsError as e:
+                print("An exception occured:", str(e))
+                print('attempted to make directory that already exists:')
+                print('dir_exists value {dir_exists}, results_folder = {results_folder}')
 
 
     for ii in range(len(obs_courses_dict)):

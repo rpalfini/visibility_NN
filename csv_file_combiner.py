@@ -1,6 +1,17 @@
 import pandas as pd
 import os
 import glob
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+
+def arg_parse():
+    parser = ArgumentParser(description="csv file combiner.  Combines multiple csv data files into one file")
+    parser.add_argument("csv_folder",help="csv folder to combine csv files in")
+    args = parser.parse_args()
+    args = vars(args)
+    return args
+
+def append_file_csv():
+    pass
 
 def get_file_list(folder_path):
     '''Only returns names of csv files in folder'''
@@ -124,8 +135,9 @@ biggest_file = "file1.csv"
 biggest_file_path = base_path + biggest_file
 
 if __name__ == "__main__":
+    args = arg_parse()
     # csv_folder = '23_02_18_19_20'
-    csv_folder = 'Test'
+    csv_folder = args["csv_folder"]
     # csv_folder = '23_02_19_aws_batch1_0_course_1_obs_data.csv[+13]'
     # '23_02_18_batch2'
     # 

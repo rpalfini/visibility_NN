@@ -552,7 +552,8 @@ class vis_graph:
 
     def record_exception_data(self,**kwargs):
         filename = "vis_graph_data.pickle"
-        folder_path = "./"
+        folder_path = "./exception_data"
+        create_directory(folder_path)
         if os.path.exists(os.path.join(folder_path,filename)):
             # If the file already exists, add a suffix to the filename
             ii = 1
@@ -1247,3 +1248,8 @@ def get_list_points(x,y):
     grid = grid.tolist()
     grid = list(zip(*grid))
     return grid
+
+def create_directory(directory_name):
+    if not os.path.exists(directory_name):
+        os.makedirs(directory_name)
+        print(f"Directory '{directory_name}' created successfully.")

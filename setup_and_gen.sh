@@ -10,5 +10,5 @@ do
     test_file=${file_name}_${ii}.txt
     log_file=./run_logs/${file_name}.log
     error_file=./run_logs/${file_name}_error.log
-    python3 vis_main.py $test_file -b True -gs -f $file_name > $log_file > $error_file &
+    python3 vis_main.py $test_file -b True -gs -f $file_name >> $log_file 2>> $error_file &
 done

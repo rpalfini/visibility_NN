@@ -23,6 +23,7 @@ batch = args["batch"]
 # obs_file_path = args["obs_path"] + args["fname"]
 obs_file_path = args["obs_fpath"]
 obs_courses_dict = vg.read_obstacle_list(obs_file_path)
+obs_file = args["fname"]
 obstacle_list = obs_courses_dict[args["course"]]
 
 tic = time.perf_counter()
@@ -39,11 +40,11 @@ if batch:
             except FileExistsError as e:
                 print("An exception occured:", str(e))
                 print('attempted to make directory that already exists:')
-                print('dir_exists value {dir_exists}, results_folder = {results_folder}')
+                print(f'dir_exists value {dir_exists}, results_folder = {results_folder}')
 
 
     for ii in range(len(obs_courses_dict)):
-        print(f'Testing course {ii+1} out of {len(obs_courses_dict)}')
+        print(f'Testing course {ii+1} out of {len(obs_courses_dict)} from {args["fname"]}')
         
         if ii % 2 == 0:
             npoints = (10,30)

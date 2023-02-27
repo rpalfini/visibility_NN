@@ -573,7 +573,7 @@ class visibility_graph_generator:
     #TODO look into pickle for saving vis_graph_gen objects
     debug = False # guess i could have super class to inherit this as well as any debug routines
 
-    def __init__(self,obstacles=None,record_on=True,is_ion=False):
+    def __init__(self,obstacles=None,record_on=True,is_ion=False,obs_file=None):
         # variables for buidling vis graph
         self.record_graph_objects = record_on
         self.graphs_memory = {} # this dictionary stores the graph created start/end, graph created, and a node_point_dictionary, used for plotting
@@ -596,6 +596,8 @@ class visibility_graph_generator:
         else:
             self.obstacles = obstacles #TODO determine if i want to store obstacle list in this object
         # visibility viewer initialization
+
+        self.obs_file = obs_file
 
         if is_ion:
             plt.ion() 
@@ -638,8 +640,8 @@ class visibility_graph_generator:
                 self.record_result(start,end,obs_att,labels,ii,pad_list,num_obs,opt_cost)
                 if self.record_graph_objects == True:
                     self.store_vis_graph(graph)
-                # if self.debug:
-                if ii % 1000 == 0: print(f'completed {ii} out of {len(start_list)*len(end_list)}')
+                if self.debug:
+                    if ii % 1000 == 0: print(f'completed {ii} out of {len(start_list)*len(end_list)}')
                 ii += 1
         print(f'completed {ii} out of {len(start_list)*len(end_list)}')  
 
@@ -984,7 +986,6 @@ class graph_viewer(visibility_graph_generator):
         plt.plot(x_points,y_points,color='red')
         
 # global methods
-# for reading new file list
 def arg_parse():
     parser = ArgumentParser(description="obstacle testing file",formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument("-b", "--batch", type=bool, default = False, help="Creates unique file name and does not display courses")
@@ -1006,6 +1007,7 @@ def arg_parse():
     args["obs_fpath"] = args["base_path"] + args["fname"]
     return args
 
+# for reading new file list
 def read_obstacle_list(fname):
     #TODO move this function to the obstacle_course_gen.py file
     def read_obstacle(obs_string):

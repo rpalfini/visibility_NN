@@ -1,7 +1,16 @@
 #!/bin/bash
-batch_num=6
+
 today=$(date '+%y_%m_%d')
-file_name=${today}_aws_batch${batch_num}
+directory="./data_out"
+file_name_prefix=${today}_aws_batch
+batch_num=1
+
+# check if the folder exists in the directory
+while [ -d "${directory}/${file_name_prefix}_${batch_num}" ]; do
+  # increment the iteration variable and update the folder name
+  ((batch_num++))
+done
+file_name="${file_name_prefix}${batch_num}"
 
 python3 obstacle_course_gen.py -f $file_name -nc 5 -no 20
 

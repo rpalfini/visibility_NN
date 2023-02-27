@@ -10,6 +10,7 @@ while [ -d "${directory}/${file_name_prefix}_${batch_num}" ]; do
   # increment the iteration variable and update the folder name
   ((batch_num++))
 done
+echo "$batch_num"
 file_name="${file_name_prefix}${batch_num}"
 
 python3 obstacle_course_gen.py -f $file_name -nc 5 -no 20

@@ -6,7 +6,7 @@ file_name_prefix=${today}_aws_batch
 batch_num=1
 
 # check if the folder exists in the directory
-while [ -d "${directory}/${file_name_prefix}_${batch_num}" ]; do
+while [ -d "${directory}/${file_name_prefix}${batch_num}" ]; do
   # increment the iteration variable and update the folder name
   ((batch_num++))
 done

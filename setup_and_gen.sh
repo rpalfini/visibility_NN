@@ -10,17 +10,17 @@ while [ -d "${directory}/${file_name_prefix}${batch_num}" ]; do
   # increment the iteration variable and update the folder name
   ((batch_num++))
 done
-echo "$batch_num"
+echo "batch_num: $batch_num"
 file_name="${file_name_prefix}${batch_num}"
 
 python3 obstacle_course_gen.py -f "$file_name" -nc 5 -no 20
 
 # Set the prefix to search for
-dir=$
+dir=./obs_courses
 prefix=$file_name
 
 # Count the number of files that match the prefix
-num_files=$(ls -1 "${dir}/${prefix}"* 2>/dev/null | wc -l)
+num_files=$(ls -1 "${dir}/${prefix}_"* 2>/dev/null | wc -l)
 
 # Run a for loop for each file that matches the prefix
 for (( ii=1; ii<=num_files; ii++ ))
@@ -30,6 +30,8 @@ do
     error_file=./run_logs/${file_name}_error.log
     python3 vis_main.py "$test_file" -b True -gs -f "$file_name" >> "$log_file" 2>> "$error_file" &
 done
+
+echo "num obs files found: $num_files"
 
 
 # for ii in {0..19}

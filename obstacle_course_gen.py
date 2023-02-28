@@ -172,7 +172,7 @@ if __name__ == "__main__":
         courses = args["num_courses"]
         today = date.today()
         formatted_date = today.strftime("%y_%m_%d")
-        jj = 0
+        num_files = 0 # number of files created
         
         for obs_num in range(obstacles):
             
@@ -182,8 +182,8 @@ if __name__ == "__main__":
                             if args["fname_out"] == "obstacle_locations.txt":
                                 fname = f"{formatted_date}_{courses}_courses_{obs_num+1}_obstacles_normal.txt"
                             else:
-                                fname = f'{args["fname_out"]}_{jj}.txt'
-                                jj += 1
+                                fname = f'{args["fname_out"]}_{num_files}.txt'
+                                num_files += 1
 
                         gen_obs(num_obstacles=obs_num+1,fname=output_folder+fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
                 else:
@@ -191,7 +191,7 @@ if __name__ == "__main__":
                         threads = 16
                         obs_per_file = math.floor(obstacles/threads)
                         num_extras = obstacles % threads
-                        if obs_num < num_extras:
+                        if num_files <= num_extras:
                             file_divider = obs_per_file + 1
                         else:
                             file_divider = obs_per_file
@@ -202,8 +202,8 @@ if __name__ == "__main__":
                         if args["fname_out"] == "obstacle_locations.txt":
                             fname = f"{formatted_date}_{courses}_courses_{obs_num+1}_obstacles_normal.txt"
                         else:
-                            fname = f'{args["fname_out"]}_{jj}.txt'
-                            jj += 1
+                            fname = f'{args["fname_out"]}_{num_files}.txt'
+                            num_files += 1
                     
                     for ii in range(courses):
                         gen_obs(num_obstacles=obs_num+1,fname=output_folder+fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)

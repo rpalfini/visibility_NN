@@ -643,7 +643,8 @@ class visibility_graph_generator:
                 if self.debug:
                     if ii % 1000 == 0: print(f'completed {ii} out of {len(start_list)*len(end_list)}')
                 ii += 1
-        print(f'completed {ii} out of {len(start_list)*len(end_list)}')  
+        if self.debug:
+            print(f'completed {ii} out of {len(start_list)*len(end_list)}')  
 
     def run_ginput_test(self,obstacle_list,algorithm="dijkstra"):
         pass

@@ -36,7 +36,7 @@ if batch:
         dir_exists = os.path.isdir(results_folder)
         if not dir_exists:
             try:
-                os.mkdir(results_folder)
+                os.mkdirs(results_folder)
             except FileExistsError as e:
                 print("An exception occured:", str(e))
                 print('attempted to make directory that already exists:')

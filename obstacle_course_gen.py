@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from datetime import date
+import math
+
 
 # This file can be used to generate obstacle courses input info can be obtained by running with -h option
 
@@ -133,6 +135,8 @@ def parse_input():
     parser.add_argument("-no","--num_obstacles", type=int, default = 10, help="Number of obstacles per course")
     parser.add_argument("-nc","--num_courses", type=int, default = 10, help="Number of courses to make")
     parser.add_argument("-f","--fname_out", default = "obstacle_locations.txt", help="argument to specify custom file name")
+    parser.add_argument("-o", "--opt_thread", dest="opt_divide", action='store_const', const=True, default=False, help='Divides files to match number of threads on running.  Assumes 16 threads')
+    
     args = parser.parse_args()
     args = vars(args)
     return args
@@ -170,11 +174,12 @@ if __name__ == "__main__":
         formatted_date = today.strftime("%y_%m_%d")
         jj = 0
         
-        for obs_num in range(obstacles):
+        total_obstacles = range(obstacles)
+        for obs_num in total_obstacles:
             
                 if divide_by_course:
                     for ii in range(courses):
-                        if ii % 5 == 0:
+                        if ii % 5 == 0: 
                             if args["fname_out"] == "obstacle_locations.txt":
                                 fname = f"{formatted_date}_{courses}_courses_{obs_num+1}_obstacles_normal.txt"
                             else:
@@ -183,7 +188,18 @@ if __name__ == "__main__":
 
                         gen_obs(num_obstacles=obs_num+1,fname=output_folder+fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
                 else:
-                    if obs_num % 1 == 0: # every third file after 1st is new_file
+                    if args["opt_divide"]:
+                        threads = 16
+                        obs_per_file = math.floor(total_obstacles/threads)
+                        num_extras = total_obstacles % threads
+                        if obs_num < num_extras:
+                            file_divider = obs_per_file + 1
+                        else:
+                            file_divider = obs_per_file
+                    else:
+                        file_divider = 1
+                    obs_per_file = file_divider
+                    if obs_num % obs_per_file == 0: # every third file after 1st is new_file
                         if args["fname_out"] == "obstacle_locations.txt":
                             fname = f"{formatted_date}_{courses}_courses_{obs_num+1}_obstacles_normal.txt"
                         else:

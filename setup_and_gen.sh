@@ -39,6 +39,9 @@ do
     log_file=${log_dir}/${file_name}.log
     error_file=${log_dir}/${file_name}_error.log
     python3 vis_main.py "$test_file" -b True -gs -f "$file_name" >> "$log_file" 2>> "$error_file" &
+    echo "test_file = $test_file"
+    echo "file_name = $file_name"
+    echo "ii = $ii"
 done
 
 echo "num obs files found: $num_files"

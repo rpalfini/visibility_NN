@@ -174,8 +174,7 @@ if __name__ == "__main__":
         formatted_date = today.strftime("%y_%m_%d")
         jj = 0
         
-        total_obstacles = range(obstacles)
-        for obs_num in total_obstacles:
+        for obs_num in range(obstacles):
             
                 if divide_by_course:
                     for ii in range(courses):
@@ -190,8 +189,8 @@ if __name__ == "__main__":
                 else:
                     if args["opt_divide"]:
                         threads = 16
-                        obs_per_file = math.floor(total_obstacles/threads)
-                        num_extras = total_obstacles % threads
+                        obs_per_file = math.floor(obstacles/threads)
+                        num_extras = obstacles % threads
                         if obs_num < num_extras:
                             file_divider = obs_per_file + 1
                         else:

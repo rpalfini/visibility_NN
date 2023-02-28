@@ -11,9 +11,12 @@
             "program": "${file}",
             "args":[
                 "-no",
-                "5",
+                "20",
                 "-nc",
-                "1"
+                "5",
+                "-f",
+                "testing",
+                "-o"
             ],
             "console": "integratedTerminal",
             "justMyCode": true

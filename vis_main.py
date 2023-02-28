@@ -32,11 +32,20 @@ if batch:
     # npoints = (10,30)
     # npoints = (5,5)
     if args["output_file"] != None:
-        results_folder = "./data_out/" + args["output_file"] 
+        data_dir = "./data_out"
+        # if not os.path.isdir(data_dir):
+        #     try:
+        #         os.mkdir(data_dir)
+        #     except FileExistsError as e:
+        #         print("An exception occured:", str(e))
+        #         print('attempted to make directory that already exists:')
+        #         print(f'data_dir exists value {os.path.isdir(data_dir)}, data_dir = {data_dir}')
+        
+        results_folder = os.path.join(data_dir,args["output_file"])
         dir_exists = os.path.isdir(results_folder)
         if not dir_exists:
             try:
-                os.mkdirs(results_folder)
+                os.makedirs(results_folder)
             except FileExistsError as e:
                 print("An exception occured:", str(e))
                 print('attempted to make directory that already exists:')

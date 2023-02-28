@@ -33,7 +33,7 @@ else
 fi
 
 # Run a for loop for each file that matches the prefix
-for (( ii=1; ii<=num_files; ii++ ))
+for (( ii=0; ii<num_files-1; ii++ ))
 do
     test_file=${file_name}_${ii}.txt
     log_file=${log_dir}/${file_name}.log

@@ -5,6 +5,23 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: 23_02_28_problem",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "23_02_28_problem.txt",
+                "-s",
+                "5.689452230131334",
+                "26.896551724137932",
+                "-e",
+                "24.08766289592739",
+                "0.0",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: course_gen_output",
             "type": "python",
             "request": "launch",

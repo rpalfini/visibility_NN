@@ -13,7 +13,7 @@ import pickle
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 class point:
-    key_precision = 6
+    key_precision = 10
 
     def __init__(self,point_coord):
         self.x = point_coord[0]

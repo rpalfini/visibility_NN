@@ -10,6 +10,7 @@ while [ -d "${directory}/${file_name_prefix}${batch_num}" ]; do
   # increment the iteration variable and update the folder name
   ((batch_num++))
 done
+echo "date: $today"
 echo "batch_num: $batch_num"
 file_name="${file_name_prefix}${batch_num}"
 

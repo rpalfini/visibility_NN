@@ -103,16 +103,16 @@ def gen_obs(num_obstacles = 6,show_result = False, start_x=5, start_y=5, bound_x
                     cand_r = sample_radius(mu,sigma,r_bound)
             
     if output_result:
-        with open(fname,"a") as file:
-            file.write("New Obstacle Set:\n")
-            file.write(f"# obs = {num_obstacles}, ")
-            file.write(f"radius bounds, mu, sigma = ({r_bound[0]}-{r_bound[1]},{mu},{sigma})\n")
-            file.write(f"x bounds, mu, sigma = ({start_x}-{start_x + bound_x},{mu_circle},{sigma_circle})\n")
-            file.write(f"y bounds, mu, sigma = ({start_y}-{start_y + bound_y},{mu_circle},{sigma_circle})\n")
+        with open(fname,"a") as f:
+            f.write("New Obstacle Set:\n")
+            f.write(f"# obs = {num_obstacles},\n")
+            f.write(f"radius bounds, mu, sigma = ({r_bound[0]}-{r_bound[1]},{mu},{sigma})\n")
+            f.write(f"x bounds, mu, sigma = ({start_x}-{start_x + bound_x},{mu_circle},{sigma_circle})\n")
+            f.write(f"y bounds, mu, sigma = ({start_y}-{start_y + bound_y},{mu_circle},{sigma_circle})\n")
             # output file requirement is that radius,x,y is written line before the obstacles
-            file.write("radius,x,y\n")
+            f.write("radius,x,y\n")
             for obs in obstacles:
-                file.write(f"{obs[0]},{obs[1]},{obs[2]}\n")
+                f.write(f"{obs[0]},{obs[1]},{obs[2]}\n")
 
     if show_result:
         fig,axs = plt.subplots()
@@ -140,18 +140,6 @@ def parse_input():
     args = parser.parse_args()
     args = vars(args)
     return args
-
-def convert2bool(var):
-    if var == True:
-        return True
-    if var == False:
-        return False
-    if var == "True" or var == "true":
-        return True
-    elif var == "False" or var == "false":
-        return False
-    else:
-        raise Exception("invalid input")
 
 if __name__ == "__main__":
 

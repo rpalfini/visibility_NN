@@ -118,7 +118,7 @@ else:
         vg_gen.save_plot_image(f'{file_title}_obs_fig')
 
 toc = time.perf_counter()
-print(f"created the data in {toc - tic:0.4f} seconds")
+print(f"created the data in {toc - tic:0.4f} seconds for file {obs_file}")
 
 # file_title = args["fname"].replace('.txt','')
 # vg_gen.output_csv(f'{file_title}_obs_data')

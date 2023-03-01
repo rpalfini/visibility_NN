@@ -401,7 +401,7 @@ class vis_graph:
             x_before,_ = self.get_node_xy(node_before)
             if x_before >= x_key:
                 msg = "invalid opt path found"
-                self.record_exception_data(function='create_pw_opt_path_func',exception=msg)
+                self.record_exception_data(s_before=x_before,x_key=x_key,function='create_pw_opt_path_func',exception=msg)
                 raise Exception(msg)
 
             if edge_key == edge_type.line:
@@ -1042,9 +1042,15 @@ def read_obstacle_list(fname):
     obs_file = obs_file.close()
     return obstacle_courses
 
-def combine_csv_files():
-    #TODO write code that searches for files with matching string and combines into one file
-    pass
+def create_obs_file_from_vgobj(vg_obj: vis_graph, fname: str):
+    obstacle_data = [x.view() for x in vg_obj.obstacles]
+    with open(fname+".txt",'w') as f:
+        f.write("New Obstacle Set:\n")
+        f.write(f"# obs = {len(obstacle_data)},\n")
+        f.write("radius,x,y\n")
+        for line in obstacle_data:
+            f.write(','.join(str(x) for x in line)+'\n')
+
 
 def create_start_end(obstacle_list,npoints):
     '''Creates start and end lists for batch testing'''

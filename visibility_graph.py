@@ -551,7 +551,6 @@ class vis_graph:
             warnings.warn('Nodes are very close in value')
 
     def record_exception_data(self,**kwargs):
-        fname = ""
         filename = "vis_graph_data.pickle"
         folder_path = "./exception_data"
         create_directory(folder_path)

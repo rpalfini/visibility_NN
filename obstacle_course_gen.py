@@ -103,7 +103,7 @@ def gen_obs(num_obstacles = 6,show_result = False, start_x=5, start_y=5, bound_x
                     print(f"x0={cand_obs[1]} lb={start_x+cand_obs[0]} ub={start_x+bound_x-cand_obs[0]}; y0={cand_obs[2]} lb={start_y+cand_obs[0]} ub={start_y+bound_y-cand_obs[0]}")
             else:
                 place_attempts += 1
-                if place_attempts < max_attempts:
+                if place_attempts > max_attempts:
                     place_attempts = 0
                     cand_r = sample_radius(mu,sigma,r_bound)
             
@@ -224,4 +224,4 @@ if __name__ == "__main__":
 
 
 toc = time.perf_counter()
-print(f"created the data in {toc - tic:0.4f} seconds")
+print(f"created the data in {toc - tic:0.4f} seconds for file: {fname}")

@@ -12,13 +12,17 @@ def round_radius(r_vec,r_bound):
     # return [1 if x<r_bound[0] or x>r_bound[1] else x for x in r_vec]
     return 1 if r_vec<r_bound[0] or r_vec>r_bound[1] else r_vec[0]
 
-def sample_radius(mu,sigma,r_bound):
+def sample_radius_normal(mu,sigma,r_bound):
     is_valid = False
     while not is_valid:
         r = np.random.normal(mu,sigma,1)[0]
-        if r > 0 and r <= r_bound:
+        if r > 0.1 and r <= r_bound:
             is_valid = True
         # r = round_radius(r,r_bound)
+    return r
+
+def sample_radius_uniform(r_bound):
+    r = np.random.uniform(0.1,r_bound)
     return r
 
 def sample_point_uniform(radius,bound_x,bound_y,x_start,y_start):
@@ -75,7 +79,7 @@ def make_circle_points(obstacle):
     bound_y = r*np.sin(thetas) + y
     return bound_x, bound_y
 
-def gen_obs(num_obstacles = 6,show_result = False, start_x=5, start_y=5, bound_x=25, bound_y=25, fname="obstacle_locations.txt"):
+def gen_obs(num_obstacles = 6,show_result = False, start_x=5, start_y=5, bound_x=25, bound_y=25, fname="obstacle_locations.txt", mode='normal'):
     ''' main function loop that attempts to place objects in course field'''
     output_result = True
     obstacles = []
@@ -88,36 +92,76 @@ def gen_obs(num_obstacles = 6,show_result = False, start_x=5, start_y=5, bound_x
     max_attempts = 20
 
     for i in range(num_obstacles):
-        cand_r = sample_radius(mu,sigma,r_bound)
+        
         placed = False
         place_attempts = 0
-        while not placed:
-            # cand_x,cand_y = sample_point_uniform(cand_r,bound_x,bound_y,start_x,start_y)
-            cand_x,cand_y = sample_point_normal(cand_r,bound_x,bound_y,mu_circle,sigma_circle,start_x,start_y)
-            cand_obs = format_circle(cand_r,cand_x,cand_y)
-            valid = check_placement(cand_obs,obstacles)
-            if valid:
-                obstacles.append(cand_obs)
-                placed = True
-                if False: #change to True if debugging positions of obstacles w.r.t. bounds
-                    print(f"x0={cand_obs[1]} lb={start_x+cand_obs[0]} ub={start_x+bound_x-cand_obs[0]}; y0={cand_obs[2]} lb={start_y+cand_obs[0]} ub={start_y+bound_y-cand_obs[0]}")
-            else:
-                place_attempts += 1
-                if place_attempts > max_attempts:
-                    place_attempts = 0
-                    cand_r = sample_radius(mu,sigma,r_bound)
+        if mode == 'normal':
+            cand_r = sample_radius_normal(mu,sigma,r_bound)
+            while not placed:
+                # cand_x,cand_y = sample_point_uniform(cand_r,bound_x,bound_y,start_x,start_y)
+                cand_x,cand_y = sample_point_normal(cand_r,bound_x,bound_y,mu_circle,sigma_circle,start_x,start_y)
+                cand_obs = format_circle(cand_r,cand_x,cand_y)
+                valid = check_placement(cand_obs,obstacles)
+                if valid:
+                    obstacles.append(cand_obs)
+                    placed = True
+                    if False: #change to True if debugging positions of obstacles w.r.t. bounds
+                        print(f"x0={cand_obs[1]} lb={start_x+cand_obs[0]} ub={start_x+bound_x-cand_obs[0]}; y0={cand_obs[2]} lb={start_y+cand_obs[0]} ub={start_y+bound_y-cand_obs[0]}")
+                else:
+                    place_attempts += 1
+                    if place_attempts > max_attempts:
+                        place_attempts = 0
+                        cand_r = sample_radius_normal(mu,sigma,r_bound)
             
-    if output_result:
-        with open(fname,"a") as f:
-            f.write("New Obstacle Set:\n")
-            f.write(f"# obs = {num_obstacles},\n")
-            f.write(f"radius bounds, mu, sigma = ({0}-{r_bound},{mu},{sigma})\n")
-            f.write(f"x bounds, mu, sigma = ({start_x}-{start_x + bound_x},{mu_circle},{sigma_circle})\n")
-            f.write(f"y bounds, mu, sigma = ({start_y}-{start_y + bound_y},{mu_circle},{sigma_circle})\n")
-            # output file requirement is that radius,x,y is written line before the obstacles
-            f.write("radius,x,y\n")
-            for obs in obstacles:
-                f.write(f"{obs[0]},{obs[1]},{obs[2]}\n")
+            
+
+        elif mode == 'uniform':
+            max_attempts = 10
+            cand_r = sample_radius_uniform(r_bound)
+            while not placed:
+                # cand_x,cand_y = sample_point_uniform(cand_r,bound_x,bound_y,start_x,start_y)
+                cand_x,cand_y = sample_point_uniform(cand_r,bound_x,bound_y,start_x,start_y)
+                cand_obs = format_circle(cand_r,cand_x,cand_y)
+                valid = check_placement(cand_obs,obstacles)
+                if valid:
+                    obstacles.append(cand_obs)
+                    placed = True
+                    if False: #change to True if debugging positions of obstacles w.r.t. bounds
+                        print(f"x0={cand_obs[1]} lb={start_x+cand_obs[0]} ub={start_x+bound_x-cand_obs[0]}; y0={cand_obs[2]} lb={start_y+cand_obs[0]} ub={start_y+bound_y-cand_obs[0]}")
+                else:
+                    place_attempts += 1
+                    if place_attempts > max_attempts:
+                        place_attempts = 0
+                        cand_r = sample_radius_uniform(r_bound)
+        
+        else:
+            raise Exception(f"invalid mode: {mode} inputted")
+        
+    if mode == 'normal':
+        if output_result:
+            with open(fname,"a") as f:
+                f.write("New Obstacle Set:\n")
+                f.write(f"# obs = {num_obstacles},\n")
+                f.write(f"radius bounds, mu, sigma = ({0}-{r_bound},{mu},{sigma})\n")
+                f.write(f"x bounds, mu, sigma = ({start_x}-{start_x + bound_x},{mu_circle},{sigma_circle})\n")
+                f.write(f"y bounds, mu, sigma = ({start_y}-{start_y + bound_y},{mu_circle},{sigma_circle})\n")
+                # output file requirement is that radius,x,y is written line before the obstacles
+                f.write("radius,x,y\n")
+                for obs in obstacles:
+                    f.write(f"{obs[0]},{obs[1]},{obs[2]}\n")
+    
+    if mode == 'uniform':
+        if output_result:
+            with open(fname,"a") as f:
+                f.write("New Obstacle Set:\n")
+                f.write(f"# obs = {num_obstacles},\n")
+                f.write(f"radius bounds = ({0}-{r_bound})\n")
+                f.write(f"x bounds = ({start_x}-{start_x + bound_x})\n")
+                f.write(f"y bounds, mu, sigma = ({start_y}-{start_y + bound_y},{mu_circle},{sigma_circle})\n")
+                # output file requirement is that radius,x,y is written line before the obstacles
+                f.write("radius,x,y\n")
+                for obs in obstacles:
+                    f.write(f"{obs[0]},{obs[1]},{obs[2]}\n")
 
     if show_result:
         fig,axs = plt.subplots()
@@ -141,6 +185,7 @@ def parse_input():
     parser.add_argument("-nc","--num_courses", type=int, default = 10, help="Number of courses to make")
     parser.add_argument("-f","--fname_out", default = "obstacle_locations.txt", help="argument to specify custom file name")
     parser.add_argument("-o", "--opt_thread", dest="opt_divide", action='store_const', const=True, default=False, help='Divides files to match number of threads on running.  Assumes 16 threads')
+    parser.add_argument("-u","--uniform_mode", dest="mode", action='store_const', const='uniform', default='normal',help='Changes mode placement to be done with uniform distribution instead of normal distribution')
     
     args = parser.parse_args()
     args = vars(args)
@@ -169,7 +214,7 @@ if __name__ == "__main__":
         else:
             fname = args["fname_out"] + '.txt'
         for ii in range(courses):
-            gen_obs(num_obstacles=args["num_obstacles"],fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
+            gen_obs(num_obstacles=args["num_obstacles"],fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y,mode=args["mode"])
         
     elif gen_multi_courses: 
         courses = args["num_courses"]
@@ -188,7 +233,7 @@ if __name__ == "__main__":
                                 fname = f'{args["fname_out"]}_{num_files}.txt'
                                 num_files += 1
 
-                        gen_obs(num_obstacles=obs_num+1,fname=output_folder+fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
+                        gen_obs(num_obstacles=obs_num+1,fname=output_folder+fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y,mode=args["mode"])
                 else:
                     if args["opt_divide"]:
                         threads = 16
@@ -209,9 +254,9 @@ if __name__ == "__main__":
                             num_files += 1
                     
                     for ii in range(courses):
-                        gen_obs(num_obstacles=obs_num+1,fname=output_folder+fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
+                        gen_obs(num_obstacles=obs_num+1,fname=output_folder+fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y,mode=args["mode"])
     else:
-        gen_obs(num_obstacles=args["num_obstacles"],show_result=True,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
+        gen_obs(num_obstacles=args["num_obstacles"],show_result=True,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y,mode=args["mode"])
         # courses = args["num_courses"]
         # today = date.today()
         # formatted_date = today.strftime("%y_%m_%d")

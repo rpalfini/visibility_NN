@@ -32,7 +32,8 @@
                 "-nc",
                 "1",
                 "-f",
-                "testing"
+                "testing",
+                "-u"
             ],
             "console": "integratedTerminal",
             "justMyCode": true

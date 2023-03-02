@@ -268,5 +268,5 @@ if __name__ == "__main__":
         #     gen_obs(num_obstacles=args["num_obstacles"],fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y)
 
 
-toc = time.perf_counter()
-print(f"created the data in {toc - tic:0.4f} seconds for file: {fname}")
+    toc = time.perf_counter()
+    print(f"created the data in {toc - tic:0.4f} seconds for file: {fname}")

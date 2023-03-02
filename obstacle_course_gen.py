@@ -142,7 +142,7 @@ def gen_obs(num_obstacles = 6,show_result = False, start_x=5, start_y=5, bound_x
             with open(fname,"a") as f:
                 f.write("New Obstacle Set:\n")
                 f.write(f"# obs = {num_obstacles},\n")
-                f.write(f"radius bounds, mu, sigma = ({0}-{r_bound},{mu},{sigma})\n")
+                f.write(f"radius bounds, mu, sigma = ({0.1}-{r_bound},{mu},{sigma})\n")
                 f.write(f"x bounds, mu, sigma = ({start_x}-{start_x + bound_x},{mu_circle},{sigma_circle})\n")
                 f.write(f"y bounds, mu, sigma = ({start_y}-{start_y + bound_y},{mu_circle},{sigma_circle})\n")
                 # output file requirement is that radius,x,y is written line before the obstacles
@@ -155,7 +155,7 @@ def gen_obs(num_obstacles = 6,show_result = False, start_x=5, start_y=5, bound_x
             with open(fname,"a") as f:
                 f.write("New Obstacle Set:\n")
                 f.write(f"# obs = {num_obstacles},\n")
-                f.write(f"radius bounds = ({0}-{r_bound})\n")
+                f.write(f"radius bounds = ({0.1}-{r_bound})\n")
                 f.write(f"x bounds = ({start_x}-{start_x + bound_x})\n")
                 f.write(f"y bounds, mu, sigma = ({start_y}-{start_y + bound_y},{mu_circle},{sigma_circle})\n")
                 # output file requirement is that radius,x,y is written line before the obstacles

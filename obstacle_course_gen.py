@@ -21,15 +21,6 @@ def sample_radius_normal(mu,sigma,r_bound):
         # r = round_radius(r,r_bound)
     return r
 
-def sample_radius_uniform(r_bound):
-    r = np.random.uniform(0.1,r_bound)
-    return r
-
-def sample_point_uniform(radius,bound_x,bound_y,x_start,y_start):
-    x = np.random.uniform(x_start+radius,x_start+bound_x-radius,1)
-    y = np.random.uniform(y_start+radius,y_start+bound_y-radius,1)
-    return x[0],y[0]
-
 def sample_point_normal(radius,bound_x,bound_y,mu,sigma,x_start,y_start):
     valid = False
     while not valid:
@@ -40,7 +31,16 @@ def sample_point_normal(radius,bound_x,bound_y,mu,sigma,x_start,y_start):
                 valid = True
     return x[0],y[0]
 
-def circle_intersect(circle1,circle2,gap=2):
+def sample_radius_uniform(r_bound):
+    r = np.random.uniform(0.5,r_bound)
+    return r
+
+def sample_point_uniform(radius,bound_x,bound_y,x_start,y_start):
+    x = np.random.uniform(x_start+radius,x_start+bound_x-radius,1)
+    y = np.random.uniform(y_start+radius,y_start+bound_y-radius,1)
+    return x[0],y[0]
+
+def circle_intersect(circle1,circle2,gap=0.5):
     d = np.sqrt((circle1[1]-circle2[1])**2 + (circle1[2]-circle2[2])**2)
     if d <= abs(circle1[0]-circle2[0]) or d <= circle1[0] + circle2[0] + gap:
         circles_intersect = True

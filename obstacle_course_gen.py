@@ -40,7 +40,7 @@ def sample_point_uniform(radius,bound_x,bound_y,x_start,y_start):
     y = np.random.uniform(y_start+radius,y_start+bound_y-radius,1)
     return x[0],y[0]
 
-def circle_intersect(circle1,circle2,gap=0.5):
+def circle_intersect(circle1,circle2,gap=2):
     d = np.sqrt((circle1[1]-circle2[1])**2 + (circle1[2]-circle2[2])**2)
     if d <= abs(circle1[0]-circle2[0]) or d <= circle1[0] + circle2[0] + gap:
         circles_intersect = True

@@ -23,12 +23,14 @@ Meaning for the labels values is defined in vis_graph_enum.py but a down label c
 2. Random obstacle courses can be generated with obstacle_course_gen.py. -h option explains how to use
 3. obstacle_viewer.py allows preview of obstacle course generated.  -h option has not been added yet, so just open file and change var to path to obstacle
 
+### Sample Usage
+python vis_main.py 1_courses_10_obstacles_normal.txt
 ### Open Items
 
 (person working on task)
 1. Update code to work with multiple obstacles by implementing vis_graph.vis_obst_obst() (Robby)
 2. Remove obstacles from vis_graph_generator attributes
-3. Update dijkstra and priodict to pop keys based on cost + euclidean distance heuristic (i.e. A*) (Omar)
+3. ~~Update dijkstra and priodict to pop keys based on cost + euclidean distance heuristic (i.e. A*)~~
 4. Delayed edge generation based on A* _stretch goal_
 5. Many #TODOS
 6. Implement NN for navigation prediction for one obstacle (Robby)

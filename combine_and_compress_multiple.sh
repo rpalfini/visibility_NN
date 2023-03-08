@@ -1,27 +1,25 @@
 #!/bin/bash
 
-# Array of input filenames
-# INPUT_FILES=(file1.csv file2.csv file3.csv)
+# Accept input directory names from the command line
+INPUT_DIRS=("$@")
 
-# Accept input filenames from the command line
-INPUT_FILES=("$@")
-
-
-# Loop over input filenames and run the script in parallel
-for FILENAME in "${INPUT_FILES[@]}"
+# Loop over input directory names and run the script in parallel
+for DIRNAME in "${INPUT_DIRS[@]}"
 do
-  # Run the Python command with the argument
-  python script.py "$FILENAME"
+  # Run the Python command with the directory name as argument
+  python csv_file_combiner.py "$DIRNAME"
 
-  # Set the output filename using string concatenation
-  OUTPUT_FILENAME="${FILENAME%.*}_merge.csv"
+  # Set the output filename to the input directory name
+  OUTPUT_FILENAME="${DIRNAME}_merge.csv"
 
-  # Compress the output file using 7z with desired filename
-  7z a "$OUTPUT_FILENAME.7z" "$OUTPUT_FILENAME" &
+  ZIP_NAME=$(basename "$DIRNAME" _merge.csv)
+
+  # Compress the output directory using 7z with desired filename
+  7z a "$ZIP_NAME.7z" "$OUTPUT_FILENAME" &
 done
 
 # Wait for all parallel processes to complete
 wait
 
-# Notify user that all files have been zipped
-echo "All files have been zipped."
+# Notify user that all directories have been zipped
+echo "All directories have been zipped."

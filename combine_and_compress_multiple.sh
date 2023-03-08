@@ -7,7 +7,7 @@ INPUT_DIRS=("$@")
 for DIRNAME in "${INPUT_DIRS[@]}"
 do
   # Run the Python command with the directory name as argument
-  python csv_file_combiner.py "$DIRNAME"
+  python3 csv_file_combiner.py "$DIRNAME"
 
   # Set the output filename to the input directory name
   OUTPUT_FILENAME="${DIRNAME}_merge.csv"
@@ -15,7 +15,7 @@ do
   ZIP_NAME=$(basename "$DIRNAME" _merge.csv)
 
   # Compress the output directory using 7z with desired filename
-  7z a "$ZIP_NAME.7z" "$OUTPUT_FILENAME" &
+  7z a "./results_merge/$ZIP_NAME.7z" "./results_merge/$OUTPUT_FILENAME" &
 done
 
 # Wait for all parallel processes to complete

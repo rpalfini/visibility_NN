@@ -1,7 +1,11 @@
 #!/bin/bash
 
 # Array of input filenames
-INPUT_FILES=(file1.csv file2.csv file3.csv)
+# INPUT_FILES=(file1.csv file2.csv file3.csv)
+
+# Accept input filenames from the command line
+INPUT_FILES=("$@")
+
 
 # Loop over input filenames and run the script in parallel
 for FILENAME in "${INPUT_FILES[@]}"

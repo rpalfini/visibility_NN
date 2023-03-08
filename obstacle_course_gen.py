@@ -236,7 +236,7 @@ if __name__ == "__main__":
                         gen_obs(num_obstacles=obs_num+1,fname=output_folder+fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y,mode=args["mode"])
                 else:
                     if args["opt_divide"]:
-                        threads = 16
+                        threads = 4
                         obs_per_file = math.floor(obstacles/threads)
                         num_extras = obstacles % threads
                         if num_files <= num_extras:

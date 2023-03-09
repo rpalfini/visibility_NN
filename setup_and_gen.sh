@@ -39,7 +39,13 @@ do
     test_file=${file_name}_${ii}.txt
     log_file=${log_dir}/${file_name}.log
     error_file=${log_dir}/${file_name}_error.log
-    python3 vis_main.py "$test_file" -b True -gs -f "$file_name" >> "$log_file" 2>> "$error_file" &
+    if [ $ii -eq $((num_files-2)) ]; then
+    # Run the Python command with different arguments
+        python3 vis_main.py "$test_file" -b True -gs -f "$file_name" -a >> "$log_file" 2>> "$error_file" &
+    else
+    # Run the Python command with default arguments
+        python3 vis_main.py "$test_file" -b True -gs -f "$file_name" >> "$log_file" 2>> "$error_file" &
+    fi
     echo "test_file = $test_file"
     echo "file_name = $file_name"
     echo "ii = $ii"

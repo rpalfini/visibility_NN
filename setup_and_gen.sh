@@ -1,5 +1,7 @@
 #!/bin/bash
 
+start_time=$(date +%s)
+
 today=$(date '+%y_%m_%d')
 directory="./data_out"
 file_name_prefix=${today}_aws_batch
@@ -52,3 +54,8 @@ do
 done
 
 echo "num obs files found: $num_files"
+wait
+end_time=$(date +%s)
+duration=$(echo "scale=2; $end_time - $start_time" | bc)
+
+echo "Execution time for $file_name: $duration seconds" | mail -s "$file_name Execution Time" robert.palfini@gmail.com

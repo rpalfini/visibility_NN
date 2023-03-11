@@ -68,7 +68,7 @@ if __name__ == "__main__":
     fname_no_extension = os.path.splitext(fname)[0]
     # create a dictionary of file handles for the 20 output files
     output_files = {}
-    for i in range(1, 21):
+    for i in range(1,max_num_obs+1):
         filename = f"{fname_no_extension}_courses{i}.csv"
         output_files[i] = open(filename, "a")
 

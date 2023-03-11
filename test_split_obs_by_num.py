@@ -53,7 +53,7 @@ def resize_line(line,num_obs,max_num_obstacles,null_obs_idx,null_label_idx):
         actual_num_tokens = len(tokens)
         if actual_num_tokens != expected_num_tokens:
             raise Exception('new line has incorrect number of tokens')
-        new_line = ','.join(str(x) for x in tokens)
+        new_line = ','.join(str(x) for x in tokens) + "\n"
     elif num_obs == max_num_obstacles:
         new_line = line
     else:

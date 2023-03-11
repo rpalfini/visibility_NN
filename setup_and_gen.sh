@@ -4,7 +4,7 @@ start_time=$(date +%s)
 
 today=$(date '+%y_%m_%d')
 directory="./data_out"
-file_name_prefix=${today}_aws_batch
+file_name_prefix=${today}_google_batch
 batch_num=1
 
 # check if the folder exists in the directory

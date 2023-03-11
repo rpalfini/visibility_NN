@@ -601,10 +601,12 @@ class visibility_graph_generator:
 
         if is_ion:
             plt.ion() 
-        self.fig = plt.figure()
+        if record_on:
+            self.fig = plt.figure()
         if is_ion:
             self.place_figure() #sets location of plot window to second monitor on the left
-        self._init_graph_props()        
+        if record_on:
+            self._init_graph_props()        
 
     #vis graph methods
     def run_test(self,start_list,end_list,obstacle_list,algorithm="dijkstra",pad_list=True):
@@ -660,7 +662,7 @@ class visibility_graph_generator:
         nend = len(end_list)
         ndata = nstart*nend
         # self.vis_data = np.array([],dtype = np.double).reshape(ndata,self.num_col)
-        self.num_col = 4*num_obs + 5
+        self.num_col = calc_ndata_col(num_obs)
         self.vis_data = np.empty((ndata,self.num_col),dtype = np.double)
         self.is_memory_init = True
 
@@ -1050,6 +1052,8 @@ def create_obs_file_from_vgobj(vg_obj: vis_graph, fname: str):
         for line in obstacle_data:
             f.write(','.join(str(x) for x in line)+'\n')
 
+def calc_ndata_col(num_obs):
+    return 4*num_obs + 5
 
 def create_start_end(obstacle_list,npoints):
     '''Creates start and end lists for batch testing'''

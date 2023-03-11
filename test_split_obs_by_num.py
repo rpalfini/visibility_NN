@@ -64,7 +64,7 @@ if __name__ == "__main__":
     resize = True # makes outputted files not have the padded obstacles and labels to make the data fit the 20 size framework
     max_num_obs = 20
     first_obstacle_idx = 4
-    fname = "single_course_set_merge.csv"
+    fname = "3_11_main_data_file.csv"
     fname_no_extension = os.path.splitext(fname)[0]
     # create a dictionary of file handles for the 20 output files
     output_files = {}

@@ -55,7 +55,10 @@ done
 
 echo "num obs files found: $num_files"
 wait
+echo "all files proccessed"
 end_time=$(date +%s)
 duration=$(echo "scale=2; $end_time - $start_time" | bc)
+bigduration=$(( end_time - start_time ))
 
-echo "Execution time for $file_name: $duration seconds" | mail -s "$file_name Execution Time" robert.palfini@gmail.com
+
+echo "Execution time for $file_name: $duration seconds or $bigduration seconds" | mail -s "$file_name Execution Time" robert.palfini@gmail.com

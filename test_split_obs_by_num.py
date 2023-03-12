@@ -3,6 +3,8 @@ import os
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import math
 
+debug = True
+
 def divide_line_by_entries(line):
     '''divides comma separated file and converts entries from string to float'''
     tokens = line.split(',')
@@ -18,6 +20,7 @@ def determine_num_obs(line,max_num_obs,end_idx):
     tokens = divide_line_by_entries(line)
     start_idx = find_first_label_idx(max_num_obs,end_idx)-1
     zero_counter = 0
+    null_obs_idx = (None,None)
     for ii in range(start_idx,end_idx,-1):
         if tokens[ii] == 0:
             zero_counter += 1
@@ -30,9 +33,8 @@ def determine_num_obs(line,max_num_obs,end_idx):
     
     num_empty_obs = math.floor(zero_counter/3)
     num_obs = max_num_obs - num_empty_obs
-    print(f'num_empty_obs = {num_empty_obs}')
-    print(f'zero_counter % 3 = {zero_counter%3}')
-    print(f'num_obs = {num_obs}')
+    if debug:
+        print(f'num_empty_obs={num_empty_obs}, zero_counter % 3 = {zero_counter%3}, num_obs = {num_obs}')
     return num_obs, null_obs_idx
 
 def find_null_label_idx(num_obs,max_num_obstacles,end_idx):
@@ -68,21 +70,31 @@ if __name__ == "__main__":
     fname_no_extension = os.path.splitext(fname)[0]
     # create a dictionary of file handles for the 20 output files
     output_files = {}
+    num_lines_file = {}
+    total_lines_processed = 0
     for i in range(1,max_num_obs+1):
         filename = f"{fname_no_extension}_courses{i}.csv"
         output_files[i] = open(filename, "a")
+        num_lines_file[i] = 0
 
     # read lines from the input file
     file_path = os.path.join("./results_merge",fname)
     data_gen = cfc.csv_reader(file_path)
     for row in data_gen:
         num_obs, null_obs_idx = determine_num_obs(row,max_num_obs,first_obstacle_idx-1)
+        if num_obs == 0:
+            print(f'found zero line at {total_lines_processed}')
+            continue
+        
         if resize:
             null_label_idx = find_null_label_idx(num_obs,max_num_obs,first_obstacle_idx-1)
             new_row = resize_line(row,num_obs,max_num_obs,null_obs_idx,null_label_idx)
             output_files[num_obs].write(new_row)
+            num_lines_file[num_obs] += 1
         else:
             output_files[num_obs].write(row)
+            num_lines_file[num_obs] += 1
+        total_lines_processed += 1
 
     # close all output files
     for file_handle in output_files.values():

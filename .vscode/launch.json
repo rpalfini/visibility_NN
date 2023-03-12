@@ -5,6 +5,42 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: split_obs_output",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                ">",
+                "output_test_split.txt"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: data_validator_validate",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "./data_out/all_data_to3_10"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: csv_file_combiner_append_mode",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "all_data_to3_10",
+                "-a",
+                "./results_merge/3_10_main_data_file.csv"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: 23_02_28_problem",
             "type": "python",
             "request": "launch",

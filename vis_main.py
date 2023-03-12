@@ -64,6 +64,11 @@ if batch:
 
         obstacle_list = obs_courses_dict[ii]
         start_list, end_list = vg.create_start_end(obstacle_list,npoints)
+        # start_vals = args["start"]
+        # end_vals = args["end"]
+        # # create start/end points
+        # start_list = vg.init_points(start_vals)
+        # end_list = vg.init_points(end_vals)
         vg_gen = vg.visibility_graph_generator(record_on=args["record_on"],is_ion=args["is_ion"])
         vg_gen.run_test(start_list,end_list,obstacle_list,algorithm=args["solve_option"])
         

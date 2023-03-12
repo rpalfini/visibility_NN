@@ -37,6 +37,7 @@ def record_model_fit_results(results, output_folder):
     Temp.close()
 
 def split_fname_path(data_path):
+    '''splits a file name from its path and returns both'''
     tokens = data_path.split('/')
     fname = tokens[-1]
     fpath = "/".join(tokens[:-1])

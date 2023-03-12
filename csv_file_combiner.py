@@ -3,13 +3,6 @@ import os
 import glob
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
-def arg_parse():
-    parser = ArgumentParser(description="csv file combiner.  Combines multiple csv data files into one file")
-    parser.add_argument("csv_folder",help="csv folder to combine csv files in")
-    args = parser.parse_args()
-    args = vars(args)
-    return args
-
 def append_file_csv():
     pass
 
@@ -50,7 +43,7 @@ def data_check(file_path,ncolumns):
                 # print(f'row {ii} is invalid')
                 n_invalid_rows+=1
                 break
-    print(f'nrows = {ii}')
+    # print(f'nrows = {ii}')
     return valid_file,n_invalid_rows
 
 def remove_invalid_data(data_file_path):
@@ -91,11 +84,11 @@ def split_fname_path(data_path):
     fpath += "/"
     return fname,fpath
 
-def _name_output(csv_folder):
-    if ".csv" in csv_folder:
-        output_file = f"{merge_out_folder}/{csv_folder[0:21]}_merge.csv"
-    else:
-        output_file = f"{merge_out_folder}/{csv_folder}_merge.csv"
+def _name_output(csv_folder,merge_out_folder):
+    # if ".csv" in csv_folder:
+    #     output_file = f"{merge_out_folder}/{csv_folder[0:21]}_merge.csv" # I dont remember why i have this code
+    # else:
+    output_file = f"{merge_out_folder}/{csv_folder}_merge.csv"
     return output_file
 
 def _chunk_and_output(csv_file_list,csv_folder_path,output_file,biggest_file=None):
@@ -119,31 +112,36 @@ def combine_csv(csv_folder):
     csv_file_list = get_file_list(csv_folder)
     _chunk_and_output(csv_file_list,output_file)
 
+def arg_parse():
+    parser = ArgumentParser(description="csv file combiner.  Combines multiple csv data files into one file")
+    parser.add_argument("csv_folder",help="csv folder to combine csv files in")
+    parser.add_argument("-a","--append", default=None,help="specifies a file to append csv_folder data to instead of make a new folder")
+    args = parser.parse_args()
+    args = vars(args)
+    return args
 
-# User options
-CHUNK_SIZE = 50000
-dir_mode = False # Leave as False
-# merge_out_folder = "C:/Users/Robert/git/visibility_NN/results_merge/"
-merge_out_folder = "./results_merge"
-
-make_new_file = True # TODO: this mode doesnt work, and is activated by changing to false... this mode creates a new file for outputting.  Use this if all the files are approx the same size
-# base_path = 'C:/Users/Robert/Documents/Vis_network_data/'
-# base_path = 'C:/Users/Robert/git/visibility_NN/results_merge/'
-# base_path = 'C:/Users/Robert/git/visibility_NN/'
-base_path = './data_out/'
-biggest_file = "file1.csv"
-biggest_file_path = base_path + biggest_file
 
 if __name__ == "__main__":
+    # User options
+    CHUNK_SIZE = 50000
+    dir_mode = False # Leave as False
+    # merge_out_folder = "C:/Users/Robert/git/visibility_NN/results_merge/"
+    merge_out_folder = "./results_merge"
+
+    # make_new_file = True # TODO: this mode doesnt work, and is activated by changing to false... this mode creates a new file for outputting.  Use this if all the files are approx the same size
+    # base_path = 'C:/Users/Robert/Documents/Vis_network_data/'
+    # base_path = 'C:/Users/Robert/git/visibility_NN/results_merge/'
+    # base_path = 'C:/Users/Robert/git/visibility_NN/'
+    base_path = './data_out/'
+
     args = arg_parse()
     # csv_folder = '23_02_18_19_20'
     csv_folder = args["csv_folder"]
-    # csv_folder = '23_02_19_aws_batch1_0_course_1_obs_data.csv[+13]'
-    # '23_02_18_batch2'
-    # 
-    # csv_folder = 'Test'
-    # if make_new_file:
-
+    if args["append"] != None:
+        append_mode = True
+    else:
+        append_mode = False
+ 
     dir_exists = os.path.isdir(merge_out_folder)
     if not dir_exists:
         os.mkdir(merge_out_folder)
@@ -157,17 +155,20 @@ if __name__ == "__main__":
             folder_path = base_path + csv_folder
             csv_file_list = get_file_list(csv_folder,output_file)
             _chunk_and_output(csv_file_list)
+    
+    elif append_mode:
+        print(csv_folder)
+        output_file = args["append"]
+        folder_path = base_path + csv_folder
+        csv_file_list = get_file_list(folder_path)
+        _chunk_and_output(csv_file_list,folder_path,output_file)
+    
     else:
         print(csv_folder)
         output_file = _name_output(csv_folder)
         folder_path = base_path + csv_folder
         csv_file_list = get_file_list(folder_path)
         _chunk_and_output(csv_file_list,folder_path,output_file)
-    # else:
-    #     '''This mode appends the other files to the biggest file to save time'''
-    #     output_file = biggest_file_path
-    #     csv_file_list = get_file_list(csv_folder)
-    #     _chunk_and_output(csv_file_list,biggest_file)
-        
+
         
 

@@ -251,6 +251,7 @@ if __name__ == "__main__":
                             fname = f"{formatted_date}_{courses}_courses_{obs_num+1}_obstacles_normal.txt"
                         else:
                             fname = f'{args["fname_out"]}_{num_files}.txt'
+                            # fname = f'{args["fname_out"]}' #if you want all the courses added to the same file
                             num_files += 1
                     
                     for ii in range(courses):

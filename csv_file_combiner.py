@@ -44,7 +44,7 @@ def data_check(file_path,ncolumns):
                 n_invalid_rows+=1
                 break
     # print(f'nrows = {ii}')
-    return valid_file,n_invalid_rows
+    return valid_file,n_invalid_rows,ii
 
 def remove_invalid_data(data_file_path):
     '''input should be absolute or relative path to the data file including the data file i.e. C:/Users/dog.csv'''
@@ -71,7 +71,7 @@ def remove_invalid_data(data_file_path):
     f.close()
     print(f'outputted corrected data file at {output_file}')
     print(f'{n_invalid_rows} invalid rows at rows: {invalid_rows}')
-    is_valid,n_invalid_rows = data_check(output_file,85)
+    is_valid,n_invalid_rows,total_rows = data_check(output_file,85)
     if not is_valid:
         raise Exception("Fixed file is invalid/has errors")
     else:
@@ -114,8 +114,9 @@ def combine_csv(csv_folder):
 
 def arg_parse():
     parser = ArgumentParser(description="csv file combiner.  Combines multiple csv data files into one file")
-    parser.add_argument("csv_folder",help="csv folder to combine csv files in")
+    parser.add_argument("csv_folder",help="path to csv folder to combine csv files in")
     parser.add_argument("-a","--append", default=None,help="specifies a file to append csv_folder data to instead of make a new folder")
+    parser.add_argument("-o","--outputfolder", default="./results_merge",help="sets the folder for merged file to be outputted to")
     args = parser.parse_args()
     args = vars(args)
     return args
@@ -123,20 +124,20 @@ def arg_parse():
 
 if __name__ == "__main__":
     # User options
+    args = arg_parse()
     CHUNK_SIZE = 50000
     dir_mode = False # Leave as False
     # merge_out_folder = "C:/Users/Robert/git/visibility_NN/results_merge/"
-    merge_out_folder = "./results_merge"
+    merge_out_folder = args["outputfolder"]
 
     # make_new_file = True # TODO: this mode doesnt work, and is activated by changing to false... this mode creates a new file for outputting.  Use this if all the files are approx the same size
     # base_path = 'C:/Users/Robert/Documents/Vis_network_data/'
     # base_path = 'C:/Users/Robert/git/visibility_NN/results_merge/'
     # base_path = 'C:/Users/Robert/git/visibility_NN/'
-    base_path = './data_out/'
+    # base_path = './data_out/'
 
-    args = arg_parse()
     # csv_folder = '23_02_18_19_20'
-    csv_folder = args["csv_folder"]
+    csv_folder = os.path.basename(os.path.normpath(args["csv_folder"])) #gets the name of the csv_folder
     if args["append"] != None:
         append_mode = True
     else:
@@ -152,21 +153,21 @@ if __name__ == "__main__":
             print(csv_folder)
 
             output_file = _name_output(csv_folder,merge_out_folder)
-            folder_path = base_path + csv_folder
+            folder_path = args["csv_folder"]
             csv_file_list = get_file_list(csv_folder,output_file)
             _chunk_and_output(csv_file_list)
     
     elif append_mode:
         print(csv_folder)
         output_file = args["append"]
-        folder_path = base_path + csv_folder
+        folder_path = args["csv_folder"]
         csv_file_list = get_file_list(folder_path)
         _chunk_and_output(csv_file_list,folder_path,output_file)
     
     else:
         print(csv_folder)
         output_file = _name_output(csv_folder,merge_out_folder)
-        folder_path = base_path + csv_folder
+        folder_path = args["csv_folder"]
         csv_file_list = get_file_list(folder_path)
         _chunk_and_output(csv_file_list,folder_path,output_file)
 

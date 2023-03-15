@@ -151,7 +151,7 @@ if __name__ == "__main__":
         for csv_folder in dir_list:
             print(csv_folder)
 
-            output_file = _name_output(csv_folder)
+            output_file = _name_output(csv_folder,merge_out_folder)
             folder_path = base_path + csv_folder
             csv_file_list = get_file_list(csv_folder,output_file)
             _chunk_and_output(csv_file_list)
@@ -165,7 +165,7 @@ if __name__ == "__main__":
     
     else:
         print(csv_folder)
-        output_file = _name_output(csv_folder)
+        output_file = _name_output(csv_folder,merge_out_folder)
         folder_path = base_path + csv_folder
         csv_file_list = get_file_list(folder_path)
         _chunk_and_output(csv_file_list,folder_path,output_file)

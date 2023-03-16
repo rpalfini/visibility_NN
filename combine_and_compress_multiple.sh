@@ -10,7 +10,9 @@ do
   python3 csv_file_combiner.py "$DIRNAME"
 
   # Set the output filename to the input directory name
-  OUTPUT_FILENAME="${DIRNAME}_merge.csv"
+
+  FOLDER_NAME=$(basename "$DIRNAME")
+  OUTPUT_FILENAME="${FOLDER_NAME}_merge.csv"
 
   ZIP_NAME=$(basename "$DIRNAME" _merge.csv)
 

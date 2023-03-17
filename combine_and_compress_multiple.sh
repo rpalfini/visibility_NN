@@ -17,7 +17,7 @@ do
   ZIP_NAME=$(basename "$DIRNAME" _merge.csv)
 
   # Compress the output directory using 7z with desired filename
-  7z a "./results_merge/$ZIP_NAME.7z" "./results_merge/$OUTPUT_FILENAME" &
+  7z a "./results_merge/$ZIP_NAME.7z" "./results_merge/$OUTPUT_FILENAME"
 done
 
 # Wait for all parallel processes to complete

@@ -13,8 +13,9 @@ def arg_parse():
     return args
 
 if __name__ == "__main__":
-    num_obs = 20
+    '''Use this to verify data file is valid and doesnt have any misformatted data'''
     args = arg_parse()
+    num_obs = args["num_obs"]
     csv_folder_path = args["csv_folder_path"]
 
     csv_file_list = cfc.get_file_list(csv_folder_path)

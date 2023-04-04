@@ -116,7 +116,7 @@ def arg_parse():
     parser = ArgumentParser(description="csv file combiner.  Combines multiple csv data files into one file")
     parser.add_argument("csv_folder",help="path to csv folder to combine csv files in")
     parser.add_argument("-a","--append", default=None,help="specifies a file to append csv_folder data to instead of make a new folder")
-    parser.add_argument("-o","--outputfolder", default="./results_merge",help="sets the folder for merged file to be outputted to")
+    parser.add_argument("-o","--outputfolder", default="./results_merge",help="sets the folder for merged file to be outputted to.  This is not used if append mode is selected.")
     args = parser.parse_args()
     args = vars(args)
     return args

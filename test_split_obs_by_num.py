@@ -3,7 +3,7 @@ import os
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import math
 
-debug = True
+debug = False
 
 def divide_line_by_entries(line):
     '''divides comma separated file and converts entries from string to float'''
@@ -66,23 +66,28 @@ if __name__ == "__main__":
     resize = True # makes outputted files not have the padded obstacles and labels to make the data fit the 20 size framework
     max_num_obs = 20
     first_obstacle_idx = 4
-    fname = "3_11_main_data_file.csv"
-    fname_no_extension = os.path.splitext(fname)[0]
+    fpath = "D:/Vis_network_data/data_file_by_course"
+    fname = "main_data_file.csv"
+    # fname_no_extension = os.path.splitext(fname)[0] # want to append to our existing data file
+    fname_no_extension = "main_data_file"
     # create a dictionary of file handles for the 20 output files
     output_files = {}
     num_lines_file = {}
     total_lines_processed = 0
+    total_zero_lines = 0
     for i in range(1,max_num_obs+1):
         filename = f"{fname_no_extension}_courses{i}.csv"
-        output_files[i] = open(filename, "a")
+        output_files[i] = open(os.path.join(fpath,filename), "a")
         num_lines_file[i] = 0
 
     # read lines from the input file
-    file_path = os.path.join("./results_merge",fname)
+    # file_path = os.path.join("./results_merge",fname)
+    file_path = "D:/Vis_network_data/to_be_added_to_main_file/23_03_11_merge/23_03_11-03_14_merge.csv"
     data_gen = cfc.csv_reader(file_path)
     for row in data_gen:
         num_obs, null_obs_idx = determine_num_obs(row,max_num_obs,first_obstacle_idx-1)
         if num_obs == 0:
+            total_zero_lines += 1
             print(f'found zero line at {total_lines_processed}')
             continue
         
@@ -97,5 +102,8 @@ if __name__ == "__main__":
         total_lines_processed += 1
 
     # close all output files
+    print(f'Total Lines Processed = {total_lines_processed}')
+    print(f'Zero Lines Found = {total_zero_lines}')
     for file_handle in output_files.values():
         file_handle.close()
+        

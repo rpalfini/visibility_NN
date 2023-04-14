@@ -1,5 +1,6 @@
 import os
 import pickle
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 # place to store functions in project
 def get_dir_list(path):
@@ -42,3 +43,8 @@ def split_fname_path(data_path):
     fpath = "/".join(tokens[:-1])
     fpath += "/"
     return fname,fpath
+
+def arg_parse():
+    parser = ArgumentParser(description="Keras Model Training.  Used for script that is training model based on data file",formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-n", "--num_obs", type=int, default = 1, help="Specify number of obstacles in selected data set")
+    parser.add_argument("-f", "--file_path", type=str, default = "./ML_code/Data/main_data_file_courses1.csv")

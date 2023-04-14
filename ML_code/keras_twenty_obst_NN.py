@@ -58,15 +58,22 @@ X_val = X_tv[val_split_row:,:]
 Y_val = Y_tv[val_split_row:,:]
 
 model = K.Sequential()
-model.add(K.layers.Dense(100, input_shape=(64,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-model.add(K.layers.Dense(200, activation='relu'))
-# model.add(K.layers.Dense(800, activation='relu'))
-# model.add(K.layers.Dense(1300, activation='relu'))
-# model.add(K.layers.Dense(400, activation='relu'))
-model.add(K.layers.Dense(20, activation='sigmoid'))
+# attempt for 20 layer model
+# model.add(K.layers.Dense(100, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+# model.add(K.layers.Dense(200, activation='relu'))
+# # model.add(K.layers.Dense(800, activation='relu'))
+# # model.add(K.layers.Dense(1300, activation='relu'))
+# # model.add(K.layers.Dense(400, activation='relu'))
+# model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+# attempt for 1 layer model
+model.add(K.layers.Dense(12, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+model.add(K.layers.Dense(8, activation='relu'))
+model.add(K.layers.Dense(labels, activation='sigmoid'))
 
 # compile the keras model
-optimizer = K.optimizers.Adam(lr=0.0001)
+# optimizer = K.optimizers.Adam(learning_rate=0.0001)
+optimizer = K.optimizers.Adam()
 model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
 # fit the keras model on the dataset

@@ -23,7 +23,7 @@ data_folder = 'D:\Vis_network_data\data_file_by_course'
 # data_folder = 'H:/My Drive/Visibility_data_generation/Data Backups/23_02_18_and_19/'
 # data_file = '23_02_18_batch2_2_course_18_obs_data.csv'
 # data_file = '23_02_18_19_20_merge_fixed.csv'
-data_file = 'main_data_file_courses3.csv'
+data_file = 'main_data_file_courses1.csv'
 # data_file = 'test_file_fixed.csv'
 # data_file = '23_02_18_and_19_merge.csv'
 # file_path = os.path.join(data_folder,data_file)
@@ -73,15 +73,15 @@ model = K.Sequential()
 # model.add(K.layers.Dense(labels, activation='sigmoid'))
 
 # attempt for 1 and 2 layer model
-model.add(K.layers.Dense(12, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-model.add(K.layers.Dense(8, activation='relu'))
-model.add(K.layers.Dense(labels, activation='sigmoid'))
+# model.add(K.layers.Dense(12, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+# model.add(K.layers.Dense(8, activation='relu'))
+# model.add(K.layers.Dense(labels, activation='sigmoid'))
 
 # attempt for 3 layer model
-# model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-# model.add(K.layers.Dense(20, activation='relu'))
-# model.add(K.layers.Dense(20, activation='relu'))
-# model.add(K.layers.Dense(labels, activation='sigmoid'))
+model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+model.add(K.layers.Dense(20, activation='relu'))
+model.add(K.layers.Dense(20, activation='relu'))
+model.add(K.layers.Dense(labels, activation='sigmoid'))
 
 # compile the keras model
 # optimizer = K.optimizers.Adam(learning_rate=0.0001)
@@ -89,7 +89,7 @@ optimizer = K.optimizers.Adam()
 model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
 # fit the keras model on the dataset
-n_epochs = 100
+n_epochs = 120
 b_size = 64
 results = model.fit(X_train, Y_train, validation_data = (X_val,Y_val), epochs=n_epochs, batch_size=b_size)
 

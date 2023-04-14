@@ -2,7 +2,6 @@ import os
 import pickle
 
 # place to store functions in project
-
 def get_dir_list(path):
     result = [name for name in os.listdir(path) if os.path.isdir(os.path.join(path,name))]
     return result

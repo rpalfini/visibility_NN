@@ -3,6 +3,7 @@ import tensorflow as tf
 from tensorflow import keras as K
 from tensorflow.python.client import device_lib
 import util
+import os
 
 print(device_lib.list_local_devices())
 
@@ -14,16 +15,17 @@ print(device_lib.list_local_devices())
 # dataset = np.loadtxt(data_folder+'/2022_10_17one_obst data_large.csv',delimiter=',')
 # tf.debugging.set_log_device_placement(True)
 
-
-data_folder = './results_merge/'
+data_folder = './ML_code/Data'
+# data_folder = './results_merge/'
 # data_folder = 'H:/My Drive/Visibility_data_generation/Data Backups/23_02_18_and_19/'
 # data_file = '23_02_18_batch2_2_course_18_obs_data.csv'
-data_file = '23_02_18_19_20_merge_fixed.csv'
+# data_file = '23_02_18_19_20_merge_fixed.csv'
+data_file = 'main_data_file_courses1.csv'
 # data_file = 'test_file_fixed.csv'
 # data_file = '23_02_18_and_19_merge.csv'
-dataset = np.loadtxt(data_folder+data_file,delimiter=',')
+dataset = np.loadtxt(os.path.join(data_folder,data_file),delimiter=',')
 
-num_obstacles = 20
+num_obstacles = 1
 features = 3*num_obstacles + 4
 labels = num_obstacles
 

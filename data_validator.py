@@ -22,6 +22,7 @@ if __name__ == "__main__":
 
     is_all_valid = True
     ii = 0
+    num_data = 0
     if not args["fix_data"]: #TODO implement fix_data mode
         for csv_file in csv_file_list:
             file_path = os.path.join(csv_folder_path,csv_file)
@@ -30,6 +31,8 @@ if __name__ == "__main__":
                 print(f'file {file_path} has {nrows} rows of invalid data')
                 is_all_valid = False
             print(f"{csv_file} has {total_rows} rows of data")
+            num_data += total_rows
     print(f'{csv_folder_path} data is_all_valid = {is_all_valid}')
+    print(f'{csv_folder_path} has {num_data} rows of data')
 
 

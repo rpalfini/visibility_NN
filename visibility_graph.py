@@ -401,7 +401,7 @@ class vis_graph:
             x_before,_ = self.get_node_xy(node_before)
             if x_before >= x_key:
                 msg = "invalid opt path found"
-                self.record_exception_data(s_before=x_before,x_key=x_key,function='create_pw_opt_path_func',exception=msg)
+                self.record_exception_data(x_before=x_before,x_key=x_key,function='create_pw_opt_path_func',exception=msg)
                 raise Exception(msg)
 
             if edge_key == edge_type.line:

@@ -46,10 +46,10 @@ def split_fname_path(data_path):
 
 def arg_parse():
     parser = ArgumentParser(description="Keras Model Training.  Used for script that is training model based on data file",formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-n", "--num_obs", type=int, default = 1, help="Specify number of obstacles in selected data set")
-    parser.add_argument("-f", "--file_path", type=str, default = "./ML_code/Data/main_data_file_courses1.csv")
+    parser.add_argument("-n", "--num_obs", type=int, default = 3, help="Specify number of obstacles in selected data set")
+    parser.add_argument("-f", "--file_path", type=str, default = "./ML_code/Data/main_data_file_courses3.csv")
     parser.add_argument("-b","--batch_size", type=int, default=64, help="set batch size for training")
-    parser.add_argument("-e","--n_epochs", type=int, default=100, help="sets number of epochs for the data")
+    parser.add_argument("-e","--n_epochs", type=int, default=200, help="sets number of epochs for the data")
     args = parser.parse_args()
-    args = vars(args)
     return args
+

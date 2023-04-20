@@ -14,7 +14,8 @@ print(device_lib.list_local_devices())
 # tf.debugging.set_log_device_placement(True)
 
 
-data_folder = 'C:/Users/Robert/git/visibility_NN/results_merge/'
+# data_folder = 'C:/Users/Robert/git/visibility_NN/results_merge/'
+data_folder = './ML_code/Data'
 data_file = '22_10_17_one_obstacle_data_merge.csv'
 dataset = np.loadtxt(data_folder+data_file,delimiter=',')
 

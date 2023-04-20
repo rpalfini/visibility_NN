@@ -730,6 +730,7 @@ class visibility_graph_generator:
 
     def plot_just_obstacles(self,test_num,title=None):
         #TODO update axis limits so that all obstacles can be seen
+        self.update_axis_lim(test_num)
         self.plot_obstacles(test_num)
         self.finish_plot(title)
 
@@ -1001,6 +1002,7 @@ def arg_parse():
     parser.add_argument("-i", "--ion_on", dest='is_ion',action='store_const', const=True, default=False,help='initializes graph generator with plt.ion() enabling interactive mode')
     parser.add_argument("-gs","--graph_storage",dest='record_on',action='store_const',const=False,default=True,help="Turns off storage of graph objects in vis_obs generator")
     parser.add_argument("-f","--output_file", default = None, help="sets the output directory for generated data in batch mode")
+    parser.add_argument("-nt","--no_title", dest='no_title',action='store_const', const=True, default=False,help='Turns off title for graphs outputted by function')
     parser.add_argument("fname", help="Obstacle course file to test")
     
     args = parser.parse_args()

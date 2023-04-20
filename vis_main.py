@@ -47,9 +47,10 @@ if batch:
             try:
                 os.makedirs(results_folder)
             except FileExistsError as e:
-                print("An exception occured:", str(e))
-                print('attempted to make directory that already exists:')
+                print("Warning, an exception occurred:", str(e))
+                print('Attempted to make directory that already exists:')
                 print(f'dir_exists value {dir_exists}, results_folder = {results_folder}')
+                print('exception handled')
 
 
     for ii in range(len(obs_courses_dict)):

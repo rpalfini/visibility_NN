@@ -598,6 +598,7 @@ class visibility_graph_generator:
         # visibility viewer initialization
 
         self.obs_file = obs_file
+        self.is_plot_self = True # used by subplots function for writing methods on new plot
 
         if is_ion:
             plt.ion() 
@@ -606,7 +607,8 @@ class visibility_graph_generator:
         if is_ion:
             self.place_figure() #sets location of plot window to second monitor on the left
         if record_on:
-            self._init_graph_props()        
+            self._init_graph_props()    
+        
 
     #vis graph methods
     def run_test(self,start_list,end_list,obstacle_list,algorithm="dijkstra",pad_list=True):
@@ -870,8 +872,8 @@ class visibility_graph_generator:
 
     def finish_plot(self,title=None):
         self._act_fig()
-        plt.legend()
-        plt.title(title)
+        plt.legend(fontsize='small')
+        plt.title(title, wrap=True)
 
     def plot_shortest_path(self,test_num):
         graph = self.graphs_memory[test_num]
@@ -928,6 +930,24 @@ class visibility_graph_generator:
             else:
                 raise Exception('invalid label type')
 
+    def plot_sub_plot(self,plot_name):
+        fig, axs = plt.subplots(1,3, sharey=True, figsize=(10,4))
+        self.is_plot_self = False #turn off plotting on self to make subplot
+        plt.sca(axs[0])
+        self._init_graph_props()
+        self.plot_env(0,title='Initial env')
+        plt.sca(axs[1])
+        self._init_graph_props()
+        self.plot_env(0)
+        axs[1].set_title("Initial conditions predicted \n by classifier",wrap=True)
+        self.plot_labels(0)
+        plt.sca(axs[2])
+        self._init_graph_props()
+        self.plot_solution(0,title="Shortest path \n from minimization")
+        self.plot_labels(0)
+        fig.savefig(plot_name + '.png')
+        self.is_plot_self = True
+
     def clear_plot(self):
         plt.cla()
         self._init_graph_props()
@@ -949,7 +969,8 @@ class visibility_graph_generator:
 
     def _act_fig(self):
         '''This method makes sure correct figure is being plotted on'''
-        plt.figure(self.fig.number)
+        if self.is_plot_self:
+            plt.figure(self.fig.number)
 
 class graph_viewer(visibility_graph_generator):
     # This class allows us to look at the vis graph before it is finished

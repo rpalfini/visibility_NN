@@ -10,6 +10,7 @@ import os
 import copy
 import warnings
 import pickle
+import scipy.io as sio
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 class point:
@@ -712,29 +713,29 @@ class visibility_graph_generator:
             np.savetxt(fname, self.vis_data, delimiter=",")
 
     ## plot viewer methods    
-    def plot_env(self,test_num,title=None):
+    def plot_env(self,test_num,title=None,loc='best'):
         self.plot_start_end(test_num)
         self.plot_obstacles(test_num)
-        self.finish_plot(title)
+        self.finish_plot(title=title,loc=loc)
 
-    def plot_solution(self,test_num,title=None):
+    def plot_solution(self,test_num,title=None,loc='best'):
         # plots obstacles and solution
         self.plot_start_end(test_num)
         self.plot_obstacles(test_num)
         self.plot_shortest_path(test_num) 
-        self.finish_plot(title)
+        self.finish_plot(title=title,loc=loc)
 
-    def plot_full_vis_graph(self,test_num,title=None):
+    def plot_full_vis_graph(self,test_num,title=None,loc='best'):
         self.plot_start_end(test_num)
         self.plot_obstacles(test_num)
         self.plot_vis_graph(test_num) #TODO add test_num to be plotted
-        self.finish_plot(title)
+        self.finish_plot(title=title,loc=loc)
 
-    def plot_just_obstacles(self,test_num,title=None):
+    def plot_just_obstacles(self,test_num,title=None,loc='best'):
         #TODO update axis limits so that all obstacles can be seen
         self.update_axis_lim(test_num)
         self.plot_obstacles(test_num)
-        self.finish_plot(title)
+        self.finish_plot(title=title,loc=loc)
 
     def plot_network(self,test_num):
         #TODO decide if i want it to be called plot_network or plot_full_vis_graph
@@ -870,9 +871,9 @@ class visibility_graph_generator:
         self._act_fig()
         plt.title(title)
 
-    def finish_plot(self,title=None):
+    def finish_plot(self,title=None,loc='best'):
         self._act_fig()
-        plt.legend(fontsize='small')
+        plt.legend(fontsize='small',loc=loc)
         plt.title(title, wrap=True)
 
     def plot_shortest_path(self,test_num):
@@ -929,17 +930,17 @@ class visibility_graph_generator:
                 plt.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=7) # marker 7 is a down arrow
             else:
                 raise Exception('invalid label type')
-
+            
+    #these two methods were for generating plots for report, dont call them
     def plot_sub_plot(self,plot_name):
-        fig, axs = plt.subplots(1,3, sharey=True, figsize=(10,4))
+        fig, axs = plt.subplots(1,3,sharex=True, sharey=True, figsize=(10,4))
         self.is_plot_self = False #turn off plotting on self to make subplot
         plt.sca(axs[0])
         self._init_graph_props()
         self.plot_env(0,title='Initial env')
         plt.sca(axs[1])
         self._init_graph_props()
-        self.plot_env(0)
-        axs[1].set_title("Initial conditions predicted \n by classifier",wrap=True)
+        self.plot_env(0,title="Initial conditions predicted \n by classifier")
         self.plot_labels(0)
         plt.sca(axs[2])
         self._init_graph_props()
@@ -947,6 +948,45 @@ class visibility_graph_generator:
         self.plot_labels(0)
         fig.savefig(plot_name + '.png')
         self.is_plot_self = True
+
+    def _plot_4_pane_sub_plot(self,plot_name):
+        def plot_guess(x,y):
+            plt.plot(x,y,linestyle='-.',color=(0.3010, 0.7450, 0.9330),label="guess")
+        def plot_solution(x,y):
+            plt.plot(x,y,color='purple',linewidth=self.line_width,label='solution')
+        
+        #loading data from matlab for making a specific plot
+        data = sio.loadmat('for_graphic.mat')
+        x_out = data['x_out'][0]
+        y_span_guess = data['y_span_guess'][0]
+        y_out = data['y_out'][0]
+    
+        fig, axs = plt.subplots(2,2,sharex=True, sharey=True, figsize=(10,10))
+        self.is_plot_self = False #turn off plotting on self to make subplot
+        plt.sca(axs[0,0])
+        self._init_graph_props()
+        self.plot_env(0,title='1. Environment',loc='upper left')
+        plt.sca(axs[0,1])
+        self._init_graph_props()
+        self.plot_env(0,title="2. Initial conditions (ICs) \npredicted by classifier",loc='upper left')
+        self.plot_labels(0)
+        plt.sca(axs[1,0])
+        self._init_graph_props()
+        self.plot_env(0)
+        self.plot_labels(0)
+        plot_guess(x_out,y_span_guess)
+        self.finish_plot(title="3. Guess based on ICs")
+        plt.sca(axs[1,1])
+        self._init_graph_props()
+        # self.plot_solution(0,title="Shortest path \n from minimization")
+        self.plot_env(0)
+        self.plot_labels(0)
+        plot_guess(x_out,y_span_guess)
+        plot_solution(x_out,y_out)
+        self.finish_plot(title="4. Shortest path \n from minimization")
+        fig.savefig(plot_name + '.png')
+        self.is_plot_self = True
+
 
     def clear_plot(self):
         plt.cla()

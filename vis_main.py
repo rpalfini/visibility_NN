@@ -33,13 +33,6 @@ if batch:
     # npoints = (5,5)
     if args["output_file"] != None:
         data_dir = "./data_out"
-        # if not os.path.isdir(data_dir):
-        #     try:
-        #         os.mkdir(data_dir)
-        #     except FileExistsError as e:
-        #         print("An exception occured:", str(e))
-        #         print('attempted to make directory that already exists:')
-        #         print(f'data_dir exists value {os.path.isdir(data_dir)}, data_dir = {data_dir}')
         
         results_folder = os.path.join(data_dir,args["output_file"])
         dir_exists = os.path.isdir(results_folder)
@@ -116,18 +109,19 @@ else:
         vg_gen = vg.visibility_graph_generator(record_on=args["record_on"],is_ion=args["is_ion"])
         vg_gen.run_test(start_list,end_list,obstacle_list,algorithm=args["solve_option"])
         g_title = f"course {args['fname']}"
-        # if args["no_title"]:
-        #     vg_gen.plot_solution(0)
-        # else:
-        #     vg_gen.plot_solution(0,g_title)
+        if args["no_title"]:
+            vg_gen.plot_solution(0)
+        else:
+            vg_gen.plot_solution(0,g_title)
         
         # # vg_gen.plot_env(0)
         # vg_gen.plot_labels(0)
-        vg_gen.plot_sub_plot('test_subplot')
+        # vg_gen.plot_sub_plot('test_subplot')
+        # vg_gen._plot_4_pane_sub_plot('test_4_subplot')
         #output the results
         file_title = args["fname"].replace('.txt','')
-        vg_gen.output_csv(f'{file_title}_obs_data')
-        vg_gen.save_plot_image(f'{file_title}_obs_fig')
+        # vg_gen.output_csv(f'{file_title}_obs_data')
+        # vg_gen.save_plot_image(f'{file_title}_obs_fig')
 
 toc = time.perf_counter()
 print(f"created the data in {toc - tic:0.4f} seconds for file {obs_file}")

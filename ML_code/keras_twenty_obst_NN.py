@@ -79,8 +79,8 @@ model = K.Sequential()
 
 # attempt for 3 layer model
 model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-model.add(K.layers.Dense(10, activation='relu'))
-model.add(K.layers.Dense(10, activation='relu'))
+model.add(K.layers.Dense(20, activation='relu'))
+model.add(K.layers.Dense(20, activation='relu'))
 model.add(K.layers.Dense(labels, activation='sigmoid'))
 
 # compile the keras model
@@ -102,5 +102,5 @@ print('Test_Accuracy: %.2f' % (test_accuracy*100))
 data_file = os.path.basename(file_path)
 model_output_folder = util.init_data_store_folder(data_file.strip('.csv'))
 model.save(model_output_folder+"\keras_model")
-util.record_model_results(model_output_folder,n_epochs,b_size,train_accuracy*100,test_accuracy*100)
+util.record_model_results(model_output_folder,n_epochs,b_size,train_accuracy*100,test_accuracy*100,model)
 util.record_model_fit_results(results,model_output_folder)

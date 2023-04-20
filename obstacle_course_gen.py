@@ -196,7 +196,7 @@ if __name__ == "__main__":
     args = parse_input()
     batch = args["batch"]
     obstacles = args["num_obstacles"]
-    start_x = args["start"][0] #TODO update this to not use int conversion
+    start_x = args["start"][0]
     start_y = args["start"][1]
     bound_x = args["range"][0]
     bound_y = args["range"][1]

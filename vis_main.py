@@ -115,8 +115,14 @@ else:
         vg_gen = vg.visibility_graph_generator(record_on=args["record_on"],is_ion=args["is_ion"])
         vg_gen.run_test(start_list,end_list,obstacle_list,algorithm=args["solve_option"])
         g_title = f"course {args['fname']}"
-        vg_gen.plot_solution(0,g_title)
+        # if args["no_title"]:
+        #     vg_gen.plot_solution(0)
+        # else:
+        #     vg_gen.plot_solution(0,g_title)
         
+        # # vg_gen.plot_env(0)
+        # vg_gen.plot_labels(0)
+        vg_gen.plot_sub_plot('test_subplot')
         #output the results
         file_title = args["fname"].replace('.txt','')
         vg_gen.output_csv(f'{file_title}_obs_data')

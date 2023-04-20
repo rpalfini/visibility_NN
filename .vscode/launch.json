@@ -5,6 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: obstacle_viewer_debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "test_10_obstacle.txt"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: split_obs_output",
             "type": "python",
             "request": "launch",
@@ -62,7 +73,7 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args":[
+            "args": [
                 "-no",
                 "20",
                 "-nc",
@@ -79,7 +90,7 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args":[
+            "args": [
                 "23_01_20_1_courses_1_obstacles_normal.txt",
                 "-b",
                 "True",
@@ -95,7 +106,7 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args":[
+            "args": [
                 "problem_course.txt",
                 "-s",
                 "8.125237433295657",
@@ -112,7 +123,7 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args":[
+            "args": [
                 "check_intersection_test.txt",
                 "-i",
                 "-s",
@@ -132,7 +143,7 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args":[
+            "args": [
                 "obs_same_x_axis_test.txt",
                 "-i",
                 "-s",
@@ -152,7 +163,7 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args":[
+            "args": [
                 "vertical_inf_label_test.txt",
                 "-i",
                 "-s",
@@ -172,7 +183,7 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args":[
+            "args": [
                 "vertical_vis_test.txt",
                 "-i",
                 "-s",
@@ -192,7 +203,7 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args":[
+            "args": [
                 "vertical_wide_test.txt",
                 "-i",
                 "-s",
@@ -212,7 +223,7 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args":[
+            "args": [
                 "vertical_vis_test.txt",
                 "-i",
                 "-s",
@@ -241,14 +252,15 @@
             "request": "launch",
             "program": "${file}",
             "args": [
-                "1_courses_10_obstacles_normal.txt",
+                "test_10_obstacle.txt",
                 "-s",
-                "5",
-                "0",
+                "3",
+                "17",
                 "-e",
-                "25",
-                "20",
-                "-i"
+                "28",
+                "2",
+                "-i",
+                "-nt"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -292,7 +304,7 @@
             "justMyCode": true
         },
         {
-            "name": "Python: vis_main2",
+            "name": "Python: vis_main5",
             "type": "python",
             "request": "launch",
             "program": "${file}",

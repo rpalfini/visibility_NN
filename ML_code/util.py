@@ -22,10 +22,11 @@ def init_data_store_folder(data_file):
         os.mkdir(data_store_folder)
     return data_store_folder
 
-def record_model_results(output_dir,epochs, batch_size, train_acc, val_acc):
+def record_model_results(output_dir,epochs, batch_size, train_acc, val_acc, model):
     f = open(output_dir+"/results.txt","w")
     f.write('epochs,batch_size,train_acc,val_acc\n')
     f.write(f'{epochs},{batch_size},{train_acc},{val_acc}\n')
+    print(model.summary(), file=f)
     f.close()
 
 def record_model_fit_results(results, output_folder):
@@ -49,7 +50,7 @@ def arg_parse():
     parser.add_argument("-n", "--num_obs", type=int, default = 3, help="Specify number of obstacles in selected data set")
     parser.add_argument("-f", "--file_path", type=str, default = "./ML_code/Data/main_data_file_courses3.csv")
     parser.add_argument("-b","--batch_size", type=int, default=64, help="set batch size for training")
-    parser.add_argument("-e","--n_epochs", type=int, default=200, help="sets number of epochs for the data")
+    parser.add_argument("-e","--n_epochs", type=int, default=100, help="sets number of epochs for the data")
     args = parser.parse_args()
     return args
 

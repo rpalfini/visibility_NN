@@ -804,8 +804,8 @@ class visibility_graph_generator:
         self._act_fig()
         self.update_axis_lim(test_num)
         start,end = self.get_start_end_data(test_num)
-        plt.scatter(start[0],start[1],color='red',marker="^",linewidth=self.line_width,label="start")
-        plt.scatter(end[0],end[1],color='green',marker="o",linewidth=self.line_width,label="end")
+        plt.scatter(start[0],start[1],color='green',marker="o",linewidth=self.line_width,label="start")
+        plt.scatter(end[0],end[1],color='red',marker="o",linewidth=self.line_width,label="end")
 
     def plot_obstacles(self,test_num):
         # plots obstacles
@@ -814,7 +814,7 @@ class visibility_graph_generator:
         for obstacle in graph.obstacles:
             obst_x, obst_y = self.make_circle_points(obstacle)
             # plt.plot(obst_x, obst_y,color='blue',linewidth=self.line_width,label="obstacle")
-            plt.plot(obst_x, obst_y,color='blue',linewidth=self.line_width)
+            plt.plot(obst_x, obst_y,color='black',linewidth=2)
 
     def make_circle_points(self,obstacle):
         #TODO could remove this function and use make_arc_points instead
@@ -923,11 +923,25 @@ class visibility_graph_generator:
         '''plots up down labels for obstacles'''
         self._act_fig()
         graph = self.graphs_memory[test_num]
+        is_first_up = True
+        is_first_down = True
+        label_width = 3
         for label,obstacle in zip(graph.obstacle_labels,graph.obstacles):
+            
             if label == dir_label.up:
-                plt.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=6) # marker 6 is an up arrow
+                # plt.scatter(obstacle.center_x,obstacle.center_y,color='coral',marker=6,linewidth=4) # marker 6 is an up arrow
+                if is_first_up:
+                    plt.scatter(obstacle.center_x,obstacle.center_y,color='coral',marker="^",linewidth=label_width,label="above") 
+                    is_first_up = False
+                else:
+                    plt.scatter(obstacle.center_x,obstacle.center_y,color='coral',marker="^",linewidth=label_width)
+
             elif label == dir_label.down:
-                plt.scatter(obstacle.center_x,obstacle.center_y,color='purple',marker=7) # marker 7 is a down arrow
+                if is_first_down:
+                    plt.scatter(obstacle.center_x,obstacle.center_y,color='royalblue',marker="v",linewidth=label_width,label="below")
+                    is_first_down = False # marker 7 is a down arrow
+                else:
+                    plt.scatter(obstacle.center_x,obstacle.center_y,color='royalblue',marker="v",linewidth=label_width)
             else:
                 raise Exception('invalid label type')
             
@@ -950,8 +964,10 @@ class visibility_graph_generator:
         self.is_plot_self = True
 
     def _plot_4_pane_sub_plot(self,plot_name):
+        # this is used to generate 4 pane image for reports
         def plot_guess(x,y):
-            plt.plot(x,y,linestyle='-.',color=(0.3010, 0.7450, 0.9330),label="guess")
+            # plt.plot(x,y,linestyle='-.',color=(0.3010, 0.7450, 0.9330),label="guess")
+            plt.plot(x,y,color=(0.3010, 0.7450, 0.9330),linewidth=self.line_width,label="guess")
         def plot_solution(x,y):
             plt.plot(x,y,color='purple',linewidth=self.line_width,label='solution')
         
@@ -965,17 +981,26 @@ class visibility_graph_generator:
         self.is_plot_self = False #turn off plotting on self to make subplot
         plt.sca(axs[0,0])
         self._init_graph_props()
-        self.plot_env(0,title='1. Environment',loc='upper left')
+        self.plot_start_end(0)
+        self.plot_obstacles(0)
+        plt.title('1. Example Problem Formulation')
+        # self.plot_env(0,title='1. Environment',loc='upper left')
         plt.sca(axs[0,1])
         self._init_graph_props()
-        self.plot_env(0,title="2. Initial conditions (ICs) \npredicted by classifier",loc='upper left')
+        self.plot_start_end(0)
+        self.plot_obstacles(0)
+        plt.title('2. Direction labels predicted by classifier')
+        # self.plot_env(0,title="2. Initial conditions (ICs) \npredicted by classifier",loc='upper left')
         self.plot_labels(0)
         plt.sca(axs[1,0])
         self._init_graph_props()
-        self.plot_env(0)
+        # self.plot_env(0)
+        self.plot_start_end(0)
+        self.plot_obstacles(0)
+        plt.title('3. Initial guess for optimizer \nbased on direction labels')
         self.plot_labels(0)
         plot_guess(x_out,y_span_guess)
-        self.finish_plot(title="3. Guess based on ICs")
+        # self.finish_plot(title="3. Guess based on ICs",loc='upper left')
         plt.sca(axs[1,1])
         self._init_graph_props()
         # self.plot_solution(0,title="Shortest path \n from minimization")
@@ -983,7 +1008,8 @@ class visibility_graph_generator:
         self.plot_labels(0)
         plot_guess(x_out,y_span_guess)
         plot_solution(x_out,y_out)
-        self.finish_plot(title="4. Shortest path \n from minimization")
+        self.finish_plot(title="4. Global, shortest path found \nfrom minimization",loc='upper left')
+        axs[1,1].legend(loc='lower center', bbox_to_anchor=(-0.2,-0.25), ncol=3)
         fig.savefig(plot_name + '.png')
         self.is_plot_self = True
 

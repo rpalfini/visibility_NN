@@ -6,8 +6,8 @@ from argparse import ArgumentParser
 def arg_parse():
     parser = ArgumentParser(description="script checks files in a folder to either verify they are valid or fix based on option selected.  Combines multiple csv data files into one file")
     parser.add_argument("csv_folder_path",help="csv folder to check csv files in")
+    parser.add_argument("-n","--num_obs", type=int, default=20, help="set the max number of obstacles expected in the data set")
     parser.add_argument("-f", "--fix", dest='fix_data', action='store_const', const=True, default=False,help="changes validator to fix data files in folder")
-    parser.add_argument("-n","--num_obs", type=int, default=20,help="set the max number of obstacles expected in the data set")
     args = parser.parse_args()
     args = vars(args)
     return args

@@ -5,7 +5,7 @@ import scipy.io as sp
 import min_utils as utils
 import plotting
 import sys
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatters
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../visibility_NN")
 import visibility_graph as vg
@@ -24,13 +24,48 @@ def create_guess(obs_file,start,end,out_fname="initial_guess"):
     np.save(out_fname,guess)
     pass
 
-def import_guess(guess_file):
-    guess = np.load(guess_file)
-    return guess
+def distance_objective(y0,yf,y,dx,N):
+    # defines distance based objective for minimization
+    result = np.sqrt(dx ** 2 + (y[0] - y0) ** 2)
+    for ii in range(0, N - 2):
+        result += np.sqrt(dx ** 2 + (y[ii + 1] - y[ii]) ** 2)
+    result += np.sqrt(dx ** 2 + (yf - y[N - 2]) ** 2)
+    return result
+
+def circle_constraint(y_vals, x, obstacles):
+    # defines constraints for minimization
+    num_obst = obstacles.shape[0]
+    num_steps = len(y_vals)-2
+
+    c = np.array([])
+    for jj in range(num_obst):
+        c_inter = np.zeros(num_steps)
+        for ii in range(num_steps):
+            c_inter[ii] = -(x[ii+1]-obstacles[jj,1])**2 - (y_vals[ii]-obstacles[jj,2])**2 + obstacles[jj,0]**2
+        c = np.concatenate((c, c_inter))
+    ceq = np.array([])
+    return c, ceq
+
+def find_path_cost(points):
+    """
+    Calculates the cost of the given path represented by a sequence of points.
+    
+    Args:
+    - points: a 2D NumPy array of shape (n, 2) representing the coordinates of the n points
+    
+    Returns:
+    - cost: a float representing the total cost of the path
+    """
+    n = points.shape[0]
+    distances = np.zeros(n)
+    for i in range(n-1):
+        distances[i] = np.linalg.norm(points[i,:] - points[i+1,:])
+    cost = np.sum(distances)
+    return cost
 
 def short_dist_multi_obs(obs_file,guess_file):
     obstacles = vg.read_obstacle_list(obs_file)
-    guess = import_guess(guess_file) # guess is 2xN array with x values in first row and y values in second row of guess
+    guess = utils.import_guess(guess_file) # guess is 2xN array with x values in first row and y values in second row of guess
 
     x0 = guess[0,0]
     xf = guess[0,-1]
@@ -44,7 +79,7 @@ def short_dist_multi_obs(obs_file,guess_file):
     y_span_guess = guess[1,1:-1]
     
     input_point_idx = np.zeros(1,)
-
+    distance_objective(y0,yf,y_span_guess,dx,N)
 
 def arg_parse():
     parser = ArgumentParser(description="Discrete Path Minimization.")

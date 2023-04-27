@@ -10,7 +10,7 @@ import os
 import copy
 import warnings
 import pickle
-import scipy.io as sio
+import scipy.io as sp
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 class point:
@@ -964,7 +964,7 @@ class visibility_graph_generator:
             plt.plot(x,y,color='purple',linewidth=self.line_width,label='solution')
         
         #loading data from matlab for making a specific plot
-        data = sio.loadmat('for_graphic.mat')
+        data = sp.loadmat('for_graphic.mat')
         x_out = data['x_out'][0]
         y_span_guess = data['y_span_guess'][0]
         y_out = data['y_out'][0]

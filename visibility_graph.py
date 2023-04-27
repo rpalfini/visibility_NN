@@ -812,18 +812,11 @@ class visibility_graph_generator:
         self._act_fig()
         graph = self.graphs_memory[test_num]
         for obstacle in graph.obstacles:
-            obst_x, obst_y = self.make_circle_points(obstacle)
+            obst_x, obst_y = make_circle_points(obstacle)
             # plt.plot(obst_x, obst_y,color='blue',linewidth=self.line_width,label="obstacle")
             plt.plot(obst_x, obst_y,color='black',linewidth=2)
 
-    def make_circle_points(self,obstacle):
-        #TODO could remove this function and use make_arc_points instead
-        thetas = np.linspace(0,2*np.pi,100)
-        radius = obstacle.radius
-        #TODO replace this with direction_step()
-        bound_x = radius*np.cos(thetas) + obstacle.center_x
-        bound_y = radius*np.sin(thetas) + obstacle.center_y
-        return bound_x, bound_y
+    
 
     def make_arc_points(self,start_id,end_id,graph):
         start_point = graph.get_node_obj(start_id) #TODO this could also be point(graph.get_node_xy(start_id) so we dont have to store the points in the node data dict)
@@ -966,7 +959,6 @@ class visibility_graph_generator:
     def _plot_4_pane_sub_plot(self,plot_name):
         # this is used to generate 4 pane image for reports
         def plot_guess(x,y):
-            # plt.plot(x,y,linestyle='-.',color=(0.3010, 0.7450, 0.9330),label="guess")
             plt.plot(x,y,color=(0.3010, 0.7450, 0.9330),linewidth=self.line_width,label="guess")
         def plot_solution(x,y):
             plt.plot(x,y,color='purple',linewidth=self.line_width,label='solution')
@@ -1174,6 +1166,15 @@ def create_start_end(obstacle_list,npoints):
     end_list = init_points(end_vals)
 
     return start_list, end_list
+
+def make_circle_points(obstacle,npoints=100):
+        #TODO could remove this function and use make_arc_points instead
+        thetas = np.linspace(0,2*np.pi,npoints)
+        radius = obstacle.radius
+        #TODO replace this with direction_step()
+        x_points = radius*np.cos(thetas) + obstacle.center_x
+        y_points = radius*np.sin(thetas) + obstacle.center_y
+        return x_points, y_points
 
 def compare_solutions(sol1,sol2):
     '''returns if two lists are the same'''

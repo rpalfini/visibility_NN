@@ -24,6 +24,8 @@ Meaning for the labels values is defined in vis_graph_enum.py but a down label c
 1. vis_main.py is main script to create data files for various obstacle courses.  -h option explains how to use
 2. Random obstacle courses can be generated with obstacle_course_gen.py. -h option explains how to use
 3. obstacle_viewer.py allows preview of obstacle course generated.  -h option has not been added yet, so just open file and change var to path to obstacle
+4. csv_file_combiner.py allows you to combine csv files created during data generation
+5. ML_folder contains code related to neural networks trained on this data.
 
 ### Sample Usage
 python vis_main.py 1_courses_10_obstacles_normal.txt

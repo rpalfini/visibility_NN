@@ -224,7 +224,7 @@ if __name__ == "__main__":
         
         for obs_num in range(obstacles):
             
-                if divide_by_course:
+                if divide_by_course: # this section doesnt get used, Canidate delete
                     for ii in range(courses):
                         if ii % 5 == 0: 
                             if args["fname_out"] == "obstacle_locations.txt":

@@ -10,7 +10,7 @@ import os
 import copy
 import warnings
 import pickle
-import scipy.io as sp
+import scipy.io as sp_io
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 class point:
@@ -608,7 +608,7 @@ class visibility_graph_generator:
         if is_ion:
             self.place_figure() #sets location of plot window to second monitor on the left
         if record_on:
-            self._init_graph_props()    
+            self._init_graph_props()
         
 
     #vis graph methods
@@ -964,7 +964,7 @@ class visibility_graph_generator:
             plt.plot(x,y,color='purple',linewidth=self.line_width,label='solution')
         
         #loading data from matlab for making a specific plot
-        data = sp.loadmat('for_graphic.mat')
+        data = sp_io.loadmat('for_graphic.mat')
         x_out = data['x_out'][0]
         y_span_guess = data['y_span_guess'][0]
         y_out = data['y_out'][0]

@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-import scipy.io as sp
+import scipy as sp
 import min_utils as utils
 import plotting
 import sys
@@ -34,38 +34,45 @@ def distance_objective(y0,yf,y,dx,N):
 
 def circle_constraint(y_vals, x, obstacles):
     # defines constraints for minimization
-    num_obst = obstacles.shape[0]
+    num_obst = len(obstacles)
     num_steps = len(y_vals)-2
-
     c = np.array([])
     for jj in range(num_obst):
         c_inter = np.zeros(num_steps)
         for ii in range(num_steps):
             c_inter[ii] = -(x[ii+1]-obstacles[jj,1])**2 - (y_vals[ii]-obstacles[jj,2])**2 + obstacles[jj,0]**2
         c = np.concatenate((c, c_inter))
-    ceq = np.array([])
-    return c, ceq
+    return c
 
-def find_path_cost(points):
+def circle_constraint(y_vals, x, obstacles):
+    
+
+def find_path_cost(x,y):
     """
     Calculates the cost of the given path represented by a sequence of points.
     
     Args:
-    - points: a 2D NumPy array of shape (n, 2) representing the coordinates of the n points
-    
+    - x: one dimensional vector of x coordinates of points along path
+    - y: one dimensional vector of y coordinates of points along path
+   
     Returns:
     - cost: a float representing the total cost of the path
     """
-    n = points.shape[0]
-    distances = np.zeros(n)
+    points = np.vstack((x,y)) #points: a 2D NumPy array of shape (2, n) representing the coordinates of the n points
+    n = points.shape[1]
+    cost = 0
     for i in range(n-1):
-        distances[i] = np.linalg.norm(points[i,:] - points[i+1,:])
-    cost = np.sum(distances)
+        cost += np.linalg.norm(points[:,i] - points[:,i+1],ord=2)
     return cost
 
-def short_dist_multi_obs(obs_file,guess_file):
+def short_dist_multi_obs(obs_file,guess_file,load_option='np'):
     obstacles = vg.read_obstacle_list(obs_file)
-    guess = utils.import_guess(guess_file) # guess is 2xN array with x values in first row and y values in second row of guess
+    if load_option == 'np':
+        guess = utils.import_guess(guess_file) # guess is 2xN array with x values in first row and y values in second row of guess
+    elif load_option == 'mat':
+        x_span, x_out, y_out, y_span_guess, y_guess, solution_cost_truth = utils.load_guess_from_mat(guess_file)
+    else:
+        raise Exception('Invalid load option.  Valid options are np and mat.')
 
     x0 = guess[0,0]
     xf = guess[0,-1]

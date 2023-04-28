@@ -23,7 +23,7 @@ def optimization_func_test():
         print('test failed')
 
     print(path_length)
-    print(f'G = {G}')
+    print(f'G = {G}; N = {N}')
 
 
 if __name__ == "__main__":

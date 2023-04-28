@@ -79,8 +79,8 @@ model = K.Sequential()
 
 # attempt for 3 layer model
 model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-model.add(K.layers.Dense(200, activation='relu'))
-model.add(K.layers.Dense(200, activation='relu'))
+model.add(K.layers.Dense(20, activation='relu'))
+model.add(K.layers.Dense(20, activation='relu'))
 model.add(K.layers.Dense(labels, activation='sigmoid'))
 
 # compile the keras model

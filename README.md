@@ -57,3 +57,4 @@ python vis_main.py 1_courses_10_obstacles_normal.txt
 23. ~~Fix collision check to check for obstacles vertically and horizontally.  Can we only consider obstacle centers or do we need to check their extrema?~~
 24. ~~Change plot handles from subplots to just plots.~~
 25. ~~Finish adding batch mode in vis_main.py~~
+26. Fix setup_and_gen.sh script to work with Cron

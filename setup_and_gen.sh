@@ -16,7 +16,7 @@ echo "date: $today"
 echo "batch_num: $batch_num"
 file_name="${file_name_prefix}${batch_num}"
 
-python3 obstacle_course_gen.py -f "$file_name" -nc 5 -no 20 -o -u -b
+python3 obstacle_course_gen.py -f "$file_name" -nc 7 -no 20 -o -u -b
 
 # Set the prefix to search for
 dir=./obs_courses

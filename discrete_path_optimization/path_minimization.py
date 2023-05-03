@@ -44,8 +44,6 @@ def circle_constraint(y_vals, x, obstacles):
         c = np.concatenate((c, c_inter))
     return c
 
-def circle_constraint(y_vals, x, obstacles):
-    
 
 def find_path_cost(x,y):
     """

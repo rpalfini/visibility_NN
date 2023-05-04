@@ -44,6 +44,17 @@ def circle_constraint(y_vals, x, obstacles):
         c = np.concatenate((c, c_inter))
     return c
 
+def circle_ineq_constraint(y_vals,x,obstacles):
+    # defines constraints for minimization
+    constraints = []
+    num_obst = len(obstacles)
+    num_steps = len(y_vals)-2
+    c = []
+    for ii in range(num_obst):
+        for jj in range(obstacles):
+            pass
+
+
 
 def find_path_cost(x,y):
     """

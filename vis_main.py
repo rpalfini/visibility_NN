@@ -114,14 +114,14 @@ else:
         else:
             vg_gen.plot_solution(0,g_title)
         
-        # # vg_gen.plot_env(0)
+        # vg_gen.plot_env(0)
         # vg_gen.plot_labels(0)
         # vg_gen.plot_sub_plot('test_subplot')
         # vg_gen._plot_4_pane_sub_plot('test_4_subplot')
-        #output the results
+        # output the results
         file_title = args["fname"].replace('.txt','')
-        # vg_gen.output_csv(f'{file_title}_obs_data')
-        # vg_gen.save_plot_image(f'{file_title}_obs_fig')
+        vg_gen.output_csv(f'{file_title}_obs_data')
+        vg_gen.save_plot_image(f'{file_title}_obs_fig')
 
 toc = time.perf_counter()
 print(f"created the data in {toc - tic:0.4f} seconds for file {obs_file}")

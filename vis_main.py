@@ -102,18 +102,6 @@ def main(args):
             vg_gen.plot_solution(0,"dijkstra")
             vg_gen.plot_solution(1,"AStar")
         else:
-<<<<<<< HEAD
-            vg_gen.plot_solution(0,g_title)
-        
-        # vg_gen.plot_env(0)
-        # vg_gen.plot_labels(0)
-        # vg_gen.plot_sub_plot('test_subplot')
-        # vg_gen._plot_4_pane_sub_plot('test_4_subplot')
-        # output the results
-        file_title = args["fname"].replace('.txt','')
-        vg_gen.output_csv(f'{file_title}_obs_data')
-        vg_gen.save_plot_image(f'{file_title}_obs_fig')
-=======
             # this mode means we are just testing one course and getting an output
             vg_gen = vg.visibility_graph_generator(record_on=args["record_on"],is_ion=args["is_ion"])
             vg_gen.run_test(start_list,end_list,obstacle_list,algorithm=args["solve_option"],pad_list=args["pad_mode"])
@@ -133,7 +121,6 @@ def main(args):
             if args["output_csv"]:
                 vg_gen.output_csv(f'{file_title}_obs_data')
             vg_gen.save_plot_image(f'{file_title}_obs_fig')
->>>>>>> 7-add-generators
 
     toc = time.perf_counter()
     print(f"created the data in {toc - tic:0.4f} seconds for file {obs_file}")

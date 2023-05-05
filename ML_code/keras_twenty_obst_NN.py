@@ -35,7 +35,7 @@ num_obstacles = args.num_obs
 features = 3*num_obstacles + 4
 labels = num_obstacles
 
-np.random.shuffle(dataset)
+# np.random.shuffle(dataset)
 
 X = dataset[:,:features]
 Y = dataset[:,features:-1]
@@ -102,5 +102,5 @@ print('Test_Accuracy: %.2f' % (test_accuracy*100))
 data_file = os.path.basename(file_path)
 model_output_folder = util.init_data_store_folder(data_file.strip('.csv'))
 model.save(model_output_folder+"\keras_model")
-util.record_model_results(model_output_folder,n_epochs,b_size,train_accuracy*100,test_accuracy*100,model)
+util.record_model_results(model_output_folder,n_epochs,b_size,train_accuracy*100,test_accuracy*100)
 util.record_model_fit_results(results,model_output_folder)

@@ -12,7 +12,7 @@ def constraint_test():
     xf = 28
     yf = 2
     dx = 0.5
-    obs_file = "C:/Users/Robert/git/visibility_NN/obs_courses/1_courses_5_obstacles_normal.txt"
+    obs_file = "./obs_courses/1_courses_5_obstacles_normal.txt"
     obstacles = vg.read_obstacle_list(obs_file)
     N = (xf-x0)/dx
     # load a created guess

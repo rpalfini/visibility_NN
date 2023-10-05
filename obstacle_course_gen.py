@@ -86,7 +86,8 @@ def gen_obs(num_obstacles = 6,show_result = False, start_x=5, start_y=5, bound_x
     bound_x = bound_x
     bound_y = bound_y
     r_bound = 10
-    mu, sigma = 4, 1 # these are used for radius normal distirbution
+    # mu, sigma = 4, 1 # these are used for radius normal distirbution
+    mu, sigma = 2, 0.5
     mu_circle = (bound_x + 2*start_x)/2
     sigma_circle = bound_x/4
     max_attempts = 20
@@ -113,11 +114,10 @@ def gen_obs(num_obstacles = 6,show_result = False, start_x=5, start_y=5, bound_x
                         place_attempts = 0
                         cand_r = sample_radius_normal(mu,sigma,r_bound)
             
-            
-
         elif mode == 'uniform':
             max_attempts = 10
-            cand_r = sample_radius_uniform(r_bound)
+            # cand_r = sample_radius_uniform(r_bound)
+            cand_r = sample_radius_normal(mu,sigma,r_bound)
             while not placed:
                 # cand_x,cand_y = sample_point_uniform(cand_r,bound_x,bound_y,start_x,start_y)
                 cand_x,cand_y = sample_point_uniform(cand_r,bound_x,bound_y,start_x,start_y)
@@ -212,7 +212,10 @@ if __name__ == "__main__":
         if args["fname_out"] == "obstacle_locations.txt":
             fname = f"{formatted_date}_{courses}_courses_{obstacles}_obstacles_normal.txt"
         else:
-            fname = args["fname_out"] + '.txt'
+            if not args["fname_out"].endswith('.txt'):
+                fname = './obs_courses/' + args["fname_out"] + '.txt'
+            else:
+                fname = './obs_courses/' + args["fname_out"]
         for ii in range(courses):
             gen_obs(num_obstacles=args["num_obstacles"],fname=fname,start_x=start_x,start_y=start_y,bound_x=bound_x,bound_y=bound_y,mode=args["mode"])
         

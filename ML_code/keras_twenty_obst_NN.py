@@ -35,7 +35,7 @@ num_obstacles = args.num_obs
 features = 3*num_obstacles + 4
 labels = num_obstacles
 
-# np.random.shuffle(dataset)
+np.random.shuffle(dataset)
 
 X = dataset[:,:features]
 Y = dataset[:,features:-1]

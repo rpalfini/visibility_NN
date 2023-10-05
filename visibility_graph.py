@@ -848,12 +848,12 @@ class visibility_graph_generator:
                 #TODO replace bleow with method plot_graph_edge()
                 if graph.is_edge_hugging(node_id,adj_node_id) == False: # 
                     node_points.append(graph.get_node_xy(adj_node_id))
-                    plt.plot(*zip(*node_points),color='purple',linewidth=self.line_width)
+                    plt.plot(*zip(*node_points),color='purple',linewidth=2)
                     node_points.pop()
                 else:
                     arc_points = self.make_arc_points(node_id,adj_node_id,graph)
                     for point in arc_points: node_points.append(point)
-                    plt.plot(*zip(*node_points),color='purple',linewidth=self.line_width) # plot formatted points
+                    plt.plot(*zip(*node_points),color='purple',linewidth=2) # plot formatted points
                     # node_points.remove(arc_points) #TODO verify this code removes all points except for the root node id
                     del node_points[1:]
             if len(node_points) > 1:
@@ -895,9 +895,17 @@ class visibility_graph_generator:
         #TODO: this poltos node ids, not node labels
         self._act_fig()
         graph = self.graphs_memory[test_num]
+        is_first = True
+        width = 2
+        mtype = "x"
         for node_id in graph.node_dict:
             node = graph.node_dict[node_id]
-            plt.text(node[0],node[1],str(node_id))
+            # plt.text(node[0],node[1],str(node_id))
+            if is_first:
+                plt.scatter(node[0],node[1],marker=mtype,linewidth=width,color='blue',label = 'vertex')
+                is_first = False
+            else:
+                plt.scatter(node[0],node[1],marker=mtype,linewidth=width,color='blue')
     
     def plot_obstacle_node_labels(self,test_num,obstacle):
         self._act_fig()

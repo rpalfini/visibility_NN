@@ -140,7 +140,7 @@ def main(args):
 
 if __name__ == "__main__":
     args = vg.arg_parse()
-    output_default_args = True
+    output_default_args = False
     if output_default_args:
         with open('default_args.pickle','wb') as f:
             pickle.dump(args,f)

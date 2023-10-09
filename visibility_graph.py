@@ -892,6 +892,7 @@ class visibility_graph_generator:
             # node_points.remove(arc_points) #TODO verify this code removes all points except for the root node id
 
     def plot_all_node_labels(self,test_num):
+        #TODO: this poltos node ids, not node labels
         self._act_fig()
         graph = self.graphs_memory[test_num]
         is_first = True

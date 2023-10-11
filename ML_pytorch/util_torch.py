@@ -1,25 +1,56 @@
 import pandas as pd
 import torch
+import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 # Define a custom dataset class
 class CustomDataset(Dataset):
-    def __init__(self, csv_file, transform=None):
+    '''Class is used to load dataset from csv file'''
+    def __init__(self, csv_file, feat_size, label_size, transform=None):
         self.data = pd.read_csv(csv_file)
+        self.feat_size = feat_size
+        self.label_size = label_size
         self.transform = transform
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
-        features = self.data.iloc[idx, 0]  # Assuming the features are in the first column
-        labels = self.data.iloc[idx, 1]  # Assuming the labels are in the second column
+        features = self.data.iloc[idx,:self.feat_size]
+        labels = self.data.iloc[idx,self.feat_size:-1] #last column is the cost of the optimal path as found during data generation
+        
+        # verify labels are the correct length
+        if labels.shape[1] != self.label_size:
+            raise Exception('incorrect number of labels')
 
         if self.transform:
             features = self.transform(features)
 
         return features, labels
+
+def example_seq_model():
+    model = nn.Sequential(
+        nn.Linear(784, 128),  # Input size: 784, Output size: 128
+        nn.ReLU(),            # ReLU activation function
+        nn.Linear(128, 64),   # Input size: 128, Output size: 64
+        nn.ReLU(),
+        nn.Linear(64, 10),    # Input size: 64, Output size: 10 (assuming a classification task)
+    )
+    return model
+
+def three_obs_nn(num_feat,num_labels):
+    model = nn.Sequential(
+        nn.Linear(num_feat,10),
+        nn.ReLU(),
+        nn.Linear(10,20),
+        nn.ReLU(),
+        nn.Linear(20,20),
+        nn.ReLU(),
+        nn.Linear(20,num_labels),
+        nn.Sigmoid()
+    )
+    return model
 
 def calc_num_feat_label(num_obstacles):
     features = 3*num_obstacles + 4

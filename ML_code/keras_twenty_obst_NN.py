@@ -52,7 +52,7 @@ split_row = round(test_split*nrows)
 #TODO make splitting a function
 X_tv = X[0:split_row,:] # train and validation data
 Y_tv = Y[0:split_row,:]
-X_test = X[split_row:,:]
+X_test = X[split_row:,:] # test data
 Y_test = Y[split_row:,:]
 
 nrows = X_tv.shape[0]
@@ -73,15 +73,27 @@ model = K.Sequential()
 # model.add(K.layers.Dense(labels, activation='sigmoid'))
 
 # attempt for 1 and 2 layer model
-# model.add(K.layers.Dense(12, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-# model.add(K.layers.Dense(8, activation='relu'))
-# model.add(K.layers.Dense(labels, activation='sigmoid'))
+model.add(K.layers.Dense(12, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+model.add(K.layers.Dense(8, activation='relu'))
+model.add(K.layers.Dense(labels, activation='sigmoid'))
 
 # attempt for 3 layer model
-model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-model.add(K.layers.Dense(20, activation='relu'))
-model.add(K.layers.Dense(20, activation='relu'))
-model.add(K.layers.Dense(labels, activation='sigmoid'))
+# model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+# model.add(K.layers.Dense(20, activation='relu'))
+# model.add(K.layers.Dense(100, activation='relu'))
+# model.add(K.layers.Dense(100, activation='relu'))
+# model.add(K.layers.Dense(100, activation='relu'))
+# model.add(K.layers.Dense(20, activation='relu'))
+# model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+# model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+# model.add(K.layers.Dense(20, activation='relu'))
+# model.add(K.layers.Dense(100, activation='relu'))
+# model.add(K.layers.Dense(100, activation='relu'))
+# model.add(K.layers.Dense(100, activation='relu'))
+# model.add(K.layers.Dense(20, activation='relu'))
+# model.add(K.layers.Dense(labels, activation='sigmoid'))
+
 
 # compile the keras model
 # optimizer = K.optimizers.Adam(learning_rate=0.0001)
@@ -94,13 +106,18 @@ b_size = args.batch_size
 results = model.fit(X_train, Y_train, validation_data = (X_val,Y_val), epochs=n_epochs, batch_size=b_size)
 
 # evaluate the keras model
+print('testing training data')
 _, train_accuracy = model.evaluate(X_train, Y_train)
+print('testing validation data')
+_, val_accuracy = model.evaluate(X_val, Y_val)
+print('testing test data')
 _, test_accuracy = model.evaluate(X_test, Y_test)
 print('Train_Accuracy: %.2f' % (train_accuracy*100))
+print('Validation_Accuracy: %.2f' % (val_accuracy*100))
 print('Test_Accuracy: %.2f' % (test_accuracy*100))
 # model.save('C:/Users/Robert/git/visibility_NN')
 data_file = os.path.basename(file_path)
 model_output_folder = util.init_data_store_folder(data_file.strip('.csv'))
 model.save(model_output_folder+"\keras_model")
-util.record_model_results(model_output_folder,n_epochs,b_size,train_accuracy*100,test_accuracy*100)
+util.record_model_results(model_output_folder,n_epochs,b_size,train_accuracy*100,val_accuracy*100,test_accuracy*100,model,X_train.shape[0],X_val.shape[0],X_test.shape[0])
 util.record_model_fit_results(results,model_output_folder)

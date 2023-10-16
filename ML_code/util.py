@@ -24,13 +24,15 @@ def init_data_store_folder(data_file):
         os.mkdir(data_store_folder)
     return data_store_folder
 
-def record_model_results(output_dir,epochs, batch_size, train_acc, val_acc, test_acc, model, num_train, num_val, num_test):
+def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc, val_acc, test_acc, model, num_train, num_val, num_test, data_set_name, optimizer_name):
     with open(output_dir+"/results.txt","w") as f:
         formatted_time = get_datetime()
         f.write(formatted_time)
-        f.write('epochs,batch_size,train_acc,val_acc,num_train_data,num_val_data,num_test_data\n')
-        f.write(f'{epochs},{batch_size},{train_acc},{val_acc},{num_train},{num_val},{num_test}\n')
+        f.write(f'trained on file {data_set_name}\n')
+        f.write('train_acc,val_acc,test_acc,epochs,batch_size,optimizer,learning_rate,num_train_data,num_val_data,num_test_data\n')
+        f.write(f'{train_acc},{val_acc},{test_acc},{epochs},{batch_size},{optimizer_name},{learning_rate},{num_train},{num_val},{num_test}\n')
         per_train,per_val,per_test = get_data_percents(num_train,num_val,num_test)
+        f.write('percent of data for train, val and test')
         f.write(f'percent_train={per_train},percent_val={per_val},percent_test={per_test}\n')
         # following code outputs model summary to file
         sys.stdout = f
@@ -73,6 +75,8 @@ def arg_parse():
     parser.add_argument("-f", "--file_path", type=str, default = "./ML_code/Data/main_data_file_courses3.csv")
     parser.add_argument("-b","--batch_size", type=int, default=64, help="set batch size for training")
     parser.add_argument("-e","--n_epochs", type=int, default=100, help="sets number of epochs for the data")
+    parser.add_argument("-l","--learning_rate",type=float, default = 0.001, help="sets the learning rate")
+
     args = parser.parse_args()
     return args
 

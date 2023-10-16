@@ -40,7 +40,7 @@ np.random.shuffle(dataset)
 X = dataset[:,:features]
 Y = dataset[:,features:-1]
 if Y.shape[1] != labels:
-    raise Exception('incorrect number of labels')
+    raise Exception(f'incorrect number of labels, expecting {labels} but found {Y.shape[1]}')
 
 opt_costs = dataset[:,-1]
 
@@ -73,9 +73,9 @@ model = K.Sequential()
 # model.add(K.layers.Dense(labels, activation='sigmoid'))
 
 # attempt for 1 and 2 layer model
-model.add(K.layers.Dense(12, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-model.add(K.layers.Dense(8, activation='relu'))
-model.add(K.layers.Dense(labels, activation='sigmoid'))
+# model.add(K.layers.Dense(12, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+# model.add(K.layers.Dense(8, activation='relu'))
+# model.add(K.layers.Dense(labels, activation='sigmoid'))
 
 # attempt for 3 layer model
 # model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
@@ -86,18 +86,17 @@ model.add(K.layers.Dense(labels, activation='sigmoid'))
 # model.add(K.layers.Dense(20, activation='relu'))
 # model.add(K.layers.Dense(labels, activation='sigmoid'))
 
-# model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-# model.add(K.layers.Dense(20, activation='relu'))
-# model.add(K.layers.Dense(100, activation='relu'))
-# model.add(K.layers.Dense(100, activation='relu'))
-# model.add(K.layers.Dense(100, activation='relu'))
-# model.add(K.layers.Dense(20, activation='relu'))
-# model.add(K.layers.Dense(labels, activation='sigmoid'))
+model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+model.add(K.layers.Dense(20, activation='relu'))
+model.add(K.layers.Dense(100, activation='relu'))
+model.add(K.layers.Dense(20, activation='relu'))
+model.add(K.layers.Dense(labels, activation='sigmoid'))
 
 
 # compile the keras model
-# optimizer = K.optimizers.Adam(learning_rate=0.0001)
-optimizer = K.optimizers.Adam()
+learning_rate = args.learning_rate
+optimizer = K.optimizers.Adam(learning_rate=learning_rate)
+# optimizer = K.optimizers.Adam()
 model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
 # fit the keras model on the dataset
@@ -119,5 +118,6 @@ print('Test_Accuracy: %.2f' % (test_accuracy*100))
 data_file = os.path.basename(file_path)
 model_output_folder = util.init_data_store_folder(data_file.strip('.csv'))
 model.save(model_output_folder+"\keras_model")
-util.record_model_results(model_output_folder,n_epochs,b_size,train_accuracy*100,val_accuracy*100,test_accuracy*100,model,X_train.shape[0],X_val.shape[0],X_test.shape[0])
+f_trained,_ = util.split_fname_path(args.file_path)
+util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_accuracy*100,val_accuracy*100,test_accuracy*100,model,X_train.shape[0],X_val.shape[0],X_test.shape[0],f_trained,optimizer._name)
 util.record_model_fit_results(results,model_output_folder)

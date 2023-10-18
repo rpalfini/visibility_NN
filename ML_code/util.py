@@ -24,15 +24,16 @@ def init_data_store_folder(data_file):
         os.mkdir(data_store_folder)
     return data_store_folder
 
-def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc, val_acc, test_acc, model, num_train, num_val, num_test, data_set_name, optimizer_name):
+def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc, val_acc, test_acc,
+                          model, num_train, num_val, num_test, data_set_name, optimizer_name,start_time):
     with open(output_dir+"/results.txt","w") as f:
         formatted_time = get_datetime()
-        f.write(formatted_time)
+        f.write(f'{start_time} - {formatted_time}')
         f.write(f'trained on file {data_set_name}\n')
         f.write('train_acc,val_acc,test_acc,epochs,batch_size,optimizer,learning_rate,num_train_data,num_val_data,num_test_data\n')
         f.write(f'{train_acc},{val_acc},{test_acc},{epochs},{batch_size},{optimizer_name},{learning_rate},{num_train},{num_val},{num_test}\n')
         per_train,per_val,per_test = get_data_percents(num_train,num_val,num_test)
-        f.write('percent of data for train, val and test')
+        f.write('percent of data for train, val and test\n')
         f.write(f'percent_train={per_train},percent_val={per_val},percent_test={per_test}\n')
         # following code outputs model summary to file
         sys.stdout = f
@@ -55,10 +56,11 @@ def get_data_percents(num_train,num_val,num_test):
     per_test = num_test/total_data
     return per_train, per_val, per_test
 
-def get_datetime():
+def get_datetime(add_new_line=True):
     current_datetime = datetime.datetime.now()
     formatted_datetime = current_datetime.strftime("%Y/%m/%d %H:%M:%S")
-    formatted_datetime += "\n"
+    if add_new_line:
+        formatted_datetime += "\n"
     return formatted_datetime
 
 def split_fname_path(data_path):

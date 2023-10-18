@@ -5,119 +5,127 @@ from tensorflow.python.client import device_lib
 import util
 import os
 
-args = util.arg_parse()
+def main():
 
-print(device_lib.list_local_devices())
+    start_time = util.get_datetime(add_new_line=False)
 
-# from tensorflow.keras.models import Sequential
-# from tensorflow.keras.layers import Dense
+    args = util.arg_parse()
 
-# data_folder = 'G:/My Drive/Python/Visual Graph'
+    print(device_lib.list_local_devices())
 
-# dataset = np.loadtxt(data_folder+'/2022_10_17one_obst data_large.csv',delimiter=',')
-# tf.debugging.set_log_device_placement(True)
+    # from tensorflow.keras.models import Sequential
+    # from tensorflow.keras.layers import Dense
 
-# data_folder = './ML_code/Data'
-# data_folder = 'D:\Vis_network_data\data_file_by_course'
-# # data_folder = './results_merge/'
-# # data_folder = 'H:/My Drive/Visibility_data_generation/Data Backups/23_02_18_and_19/'
-# # data_file = '23_02_18_batch2_2_course_18_obs_data.csv'
-# # data_file = '23_02_18_19_20_merge_fixed.csv'
-# data_file = 'main_data_file_courses1.csv'
-# data_file = 'test_file_fixed.csv'
-# data_file = '23_02_18_and_19_merge.csv'
-# file_path = os.path.join(data _folder,data_file)
-file_path = args.file_path
-dataset = np.loadtxt(file_path,delimiter=',')
+    # data_folder = 'G:/My Drive/Python/Visual Graph'
 
-# num_obstacles = 3
-num_obstacles = args.num_obs
-features = 3*num_obstacles + 4
-labels = num_obstacles
+    # dataset = np.loadtxt(data_folder+'/2022_10_17one_obst data_large.csv',delimiter=',')
+    # tf.debugging.set_log_device_placement(True)
 
-np.random.shuffle(dataset)
+    # data_folder = './ML_code/Data'
+    # data_folder = 'D:\Vis_network_data\data_file_by_course'
+    # # data_folder = './results_merge/'
+    # # data_folder = 'H:/My Drive/Visibility_data_generation/Data Backups/23_02_18_and_19/'
+    # # data_file = '23_02_18_batch2_2_course_18_obs_data.csv'
+    # # data_file = '23_02_18_19_20_merge_fixed.csv'
+    # data_file = 'main_data_file_courses1.csv'
+    # data_file = 'test_file_fixed.csv'
+    # data_file = '23_02_18_and_19_merge.csv'
+    # file_path = os.path.join(data _folder,data_file)
+    file_path = args.file_path
+    dataset = np.loadtxt(file_path,delimiter=',')
 
-X = dataset[:,:features]
-Y = dataset[:,features:-1]
-if Y.shape[1] != labels:
-    raise Exception(f'incorrect number of labels, expecting {labels} but found {Y.shape[1]}')
+    # num_obstacles = 3
+    num_obstacles = args.num_obs
+    features = 3*num_obstacles + 4
+    labels = num_obstacles
 
-opt_costs = dataset[:,-1]
+    np.random.shuffle(dataset)
 
-# split data
-test_split = 0.8 # percentage to use for training
-nrows = X.shape[0]
-split_row = round(test_split*nrows)
+    X = dataset[:,:features]
+    Y = dataset[:,features:-1]
+    if Y.shape[1] != labels:
+        raise Exception(f'incorrect number of labels, expecting {labels} but found {Y.shape[1]}')
 
-#TODO make splitting a function
-X_tv = X[0:split_row,:] # train and validation data
-Y_tv = Y[0:split_row,:]
-X_test = X[split_row:,:] # test data
-Y_test = Y[split_row:,:]
+    opt_costs = dataset[:,-1]
 
-nrows = X_tv.shape[0]
-val_split_row = round(test_split*nrows)
+    # split data
+    test_split = 0.8 # percentage to use for training
+    nrows = X.shape[0]
+    split_row = round(test_split*nrows)
 
-X_train = X_tv[0:val_split_row,:]
-Y_train = Y_tv[0:val_split_row,:]
-X_val = X_tv[val_split_row:,:]
-Y_val = Y_tv[val_split_row:,:]
+    #TODO make splitting a function
+    X_tv = X[0:split_row,:] # train and validation data
+    Y_tv = Y[0:split_row,:]
+    X_test = X[split_row:,:] # test data
+    Y_test = Y[split_row:,:]
 
-model = K.Sequential()
-# attempt for 20 layer model
-# model.add(K.layers.Dense(100, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-# model.add(K.layers.Dense(200, activation='relu'))
-# # model.add(K.layers.Dense(800, activation='relu'))
-# # model.add(K.layers.Dense(1300, activation='relu'))
-# # model.add(K.layers.Dense(400, activation='relu'))
-# model.add(K.layers.Dense(labels, activation='sigmoid'))
+    nrows = X_tv.shape[0]
+    val_split_row = round(test_split*nrows)
 
-# attempt for 1 and 2 layer model
-# model.add(K.layers.Dense(12, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-# model.add(K.layers.Dense(8, activation='relu'))
-# model.add(K.layers.Dense(labels, activation='sigmoid'))
+    X_train = X_tv[0:val_split_row,:]
+    Y_train = Y_tv[0:val_split_row,:]
+    X_val = X_tv[val_split_row:,:]
+    Y_val = Y_tv[val_split_row:,:]
 
-# attempt for 3 layer model
-# model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-# model.add(K.layers.Dense(20, activation='relu'))
-# model.add(K.layers.Dense(100, activation='relu'))
-# model.add(K.layers.Dense(100, activation='relu'))
-# model.add(K.layers.Dense(100, activation='relu'))
-# model.add(K.layers.Dense(20, activation='relu'))
-# model.add(K.layers.Dense(labels, activation='sigmoid'))
+    model = K.Sequential()
+    # attempt for 20 layer model
+    # model.add(K.layers.Dense(100, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # model.add(K.layers.Dense(200, activation='relu'))
+    # # model.add(K.layers.Dense(800, activation='relu'))
+    # # model.add(K.layers.Dense(1300, activation='relu'))
+    # # model.add(K.layers.Dense(400, activation='relu'))
+    # model.add(K.layers.Dense(labels, activation='sigmoid'))
 
-model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-model.add(K.layers.Dense(20, activation='relu'))
-model.add(K.layers.Dense(100, activation='relu'))
-model.add(K.layers.Dense(20, activation='relu'))
-model.add(K.layers.Dense(labels, activation='sigmoid'))
+    # attempt for 1 and 2 layer model
+    # model.add(K.layers.Dense(12, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # model.add(K.layers.Dense(8, activation='relu'))
+    # model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+    # attempt for 3 layer model
+    # model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # model.add(K.layers.Dense(20, activation='relu'))
+    # model.add(K.layers.Dense(100, activation='relu'))
+    # model.add(K.layers.Dense(100, activation='relu'))
+    # model.add(K.layers.Dense(100, activation='relu'))
+    # model.add(K.layers.Dense(20, activation='relu'))
+    # model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+    model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    model.add(K.layers.Dense(20, activation='relu'))
+    model.add(K.layers.Dense(100, activation='relu'))
+    model.add(K.layers.Dense(20, activation='relu'))
+    model.add(K.layers.Dense(labels, activation='sigmoid'))
 
 
-# compile the keras model
-learning_rate = args.learning_rate
-optimizer = K.optimizers.Adam(learning_rate=learning_rate)
-# optimizer = K.optimizers.Adam()
-model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+    # compile the keras model
+    learning_rate = args.learning_rate
+    optimizer = K.optimizers.Adam(learning_rate=learning_rate)
+    # optimizer = K.optimizers.Adam()
+    model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
-# fit the keras model on the dataset
-n_epochs = args.n_epochs
-b_size = args.batch_size
-results = model.fit(X_train, Y_train, validation_data = (X_val,Y_val), epochs=n_epochs, batch_size=b_size)
+    # fit the keras model on the dataset
+    n_epochs = args.n_epochs
+    b_size = args.batch_size
+    results = model.fit(X_train, Y_train, validation_data = (X_val,Y_val), epochs=n_epochs, batch_size=b_size)
 
-# evaluate the keras model
-print('testing training data')
-_, train_accuracy = model.evaluate(X_train, Y_train)
-print('testing validation data')
-_, val_accuracy = model.evaluate(X_val, Y_val)
-print('testing test data')
-_, test_accuracy = model.evaluate(X_test, Y_test)
-print('Train_Accuracy: %.2f' % (train_accuracy*100))
-print('Validation_Accuracy: %.2f' % (val_accuracy*100))
-print('Test_Accuracy: %.2f' % (test_accuracy*100))
-# model.save('C:/Users/Robert/git/visibility_NN')
-data_file = os.path.basename(file_path)
-model_output_folder = util.init_data_store_folder(data_file.strip('.csv'))
-model.save(model_output_folder+"\keras_model")
-f_trained,_ = util.split_fname_path(args.file_path)
-util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_accuracy*100,val_accuracy*100,test_accuracy*100,model,X_train.shape[0],X_val.shape[0],X_test.shape[0],f_trained,optimizer._name)
-util.record_model_fit_results(results,model_output_folder)
+    # evaluate the keras model
+    print('testing training data')
+    _, train_accuracy = model.evaluate(X_train, Y_train)
+    print('testing validation data')
+    _, val_accuracy = model.evaluate(X_val, Y_val)
+    print('testing test data')
+    _, test_accuracy = model.evaluate(X_test, Y_test)
+    print('Train_Accuracy: %.2f' % (train_accuracy*100))
+    print('Validation_Accuracy: %.2f' % (val_accuracy*100))
+    print('Test_Accuracy: %.2f' % (test_accuracy*100))
+    # model.save('C:/Users/Robert/git/visibility_NN')
+    data_file = os.path.basename(file_path)
+    model_output_folder = util.init_data_store_folder(data_file.strip('.csv'))
+    model.save(model_output_folder+"\keras_model")
+    f_trained,_ = util.split_fname_path(args.file_path)
+    util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_accuracy*100,val_accuracy*100,test_accuracy*100,model,X_train.shape[0],X_val.shape[0],X_test.shape[0],f_trained,optimizer._name,start_time)
+    util.record_model_fit_results(results,model_output_folder)
+    print('training complete')
+
+if __name__ == "__main__":
+    main()

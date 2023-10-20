@@ -1091,8 +1091,9 @@ def arg_parse():
     parser.add_argument("-gs","--graph_storage",dest='record_on',action='store_const',const=False,default=True,help="Turns off storage of graph objects in vis_obs generator")
     parser.add_argument("-f","--output_file", default = None, help="sets the output directory for generated data in batch mode")
     parser.add_argument("-nt","--no_title", dest='no_title',action='store_const', const=True, default=False,help='Turns off title for graphs outputted by function')
-    parser.add_argument("-pm","--pad_mode",action="store_false",default=True,help="turns off pad mode for data storage")
-    parser.add_argument("-oc","--output_csv",action="store_false",default=True,help="turns off outputting csv file")
+    parser.add_argument("-pm","--pad_mode",action="store_false",default=True,help="adding this argument turns off pad mode for data storage")
+    parser.add_argument("-oc","--output_csv",action="store_false",default=True,help="adding this argument turns off outputting csv file")
+    parser.add_argument("-so","--single_output", action="store_true",default=False,help="adding this argument will cause vis_main.py to return the direction of a given problem.  Only used for by visualize_decision_boundary.py to view an example decision boundary we are trying to learn.")
     parser.add_argument("fname", help="Obstacle course file to test")
     
     args = parser.parse_args()

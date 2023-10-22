@@ -46,26 +46,40 @@ def main():
     if Y.shape[1] != labels:
         raise Exception(f'incorrect number of labels, expecting {labels} but found {Y.shape[1]}')
 
-    opt_costs = dataset[:,-1]
+    opt_costs = dataset[:,-1] # these azre the optimal path costs as found by dijkstra algo during data generation
 
-    # split data
-    test_split = 0.8 # percentage to use for training
-    nrows = X.shape[0]
-    split_row = round(test_split*nrows)
+    split_percentages = [0.7, 0.15, 0.15] # percentage split for train, val, and test
 
-    #TODO make splitting a function
-    X_tv = X[0:split_row,:] # train and validation data
-    Y_tv = Y[0:split_row,:]
-    X_test = X[split_row:,:] # test data
-    Y_test = Y[split_row:,:]
+    X_splits = util.split_array(X,split_percentages)
+    Y_splits = util.split_array(Y,split_percentages)
 
-    nrows = X_tv.shape[0]
-    val_split_row = round(test_split*nrows)
+    X_train = X_splits[0]
+    X_val = X_splits[1]
+    X_test = X_splits[2]
+    
+    Y_train = Y_splits[0]
+    Y_val = Y_splits[1]
+    Y_test = Y_splits[2]
 
-    X_train = X_tv[0:val_split_row,:]
-    Y_train = Y_tv[0:val_split_row,:]
-    X_val = X_tv[val_split_row:,:]
-    Y_val = Y_tv[val_split_row:,:]
+
+    # # split data
+    # test_split = 0.8 # percentage to use for training
+    # nrows = X.shape[0]
+    # split_row = round(test_split*nrows)
+
+    # #TODO make splitting a function
+    # X_tv = X[0:split_row,:] # train and validation data
+    # Y_tv = Y[0:split_row,:]
+    # X_test = X[split_row:,:] # test data
+    # Y_test = Y[split_row:,:]
+
+    # nrows = X_tv.shape[0]
+    # val_split_row = round(test_split*nrows)
+
+    # X_train = X_tv[0:val_split_row,:]
+    # Y_train = Y_tv[0:val_split_row,:]
+    # X_val = X_tv[val_split_row:,:]
+    # Y_val = Y_tv[val_split_row:,:]
 
     model = K.Sequential()
     # attempt for 20 layer model
@@ -83,18 +97,25 @@ def main():
 
     # attempt for 3 layer model
     # model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-    # model.add(K.layers.Dense(20, activation='relu'))
+    # # model.add(K.layers.Dense(20, activation='relu'))
     # model.add(K.layers.Dense(100, activation='relu'))
     # model.add(K.layers.Dense(100, activation='relu'))
     # model.add(K.layers.Dense(100, activation='relu'))
-    # model.add(K.layers.Dense(20, activation='relu'))
+    # # model.add(K.layers.Dense(20, activation='relu'))
     # model.add(K.layers.Dense(labels, activation='sigmoid'))
 
     model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
     model.add(K.layers.Dense(20, activation='relu'))
-    model.add(K.layers.Dense(100, activation='relu'))
+    for ii in range(20):
+        model.add(K.layers.Dense(30, activation='relu'))
     model.add(K.layers.Dense(20, activation='relu'))
     model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+    # model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # model.add(K.layers.Dense(20, activation='relu'))
+    # model.add(K.layers.Dense(100, activation='relu'))
+    # model.add(K.layers.Dense(20, activation='relu'))
+    # model.add(K.layers.Dense(labels, activation='sigmoid'))
 
 
     # compile the keras model

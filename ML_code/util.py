@@ -2,6 +2,7 @@ import os
 import pickle
 import datetime
 import sys
+import numpy as np
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 # place to store functions in project
@@ -82,3 +83,18 @@ def arg_parse():
     args = parser.parse_args()
     return args
 
+def split_array(original_array, split_percentages):
+    if sum(split_percentages) != 1.0:
+        raise ValueError("Split percentages must sum to 1.0")
+
+    # Calculate the split indices
+    split_indices = [np.round(x * original_array.shape[0]) for x in split_percentages]
+    split_indices = np.cumsum(split_indices).astype(int)
+    
+    # split_indices = np.cumsum(np.round(split_percentages * len(original_array))).astype(int)
+
+    # Perform the array splitting
+    splits = np.split(original_array, split_indices)
+    splits = splits[0:len(split_percentages)] #remove empty array at the end
+
+    return splits

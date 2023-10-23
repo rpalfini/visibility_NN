@@ -3,8 +3,6 @@ from matplotlib import pyplot as plt
 
 ## This script allows you to preview a course
 
-# obs_file = r"./obs_courses/1_courses_5_obstacles_normal.txt"
-obs_file = "./obs_courses/test_10_obstacle.txt"
 
 args = vg.arg_parse()
 obs_file = args["obs_fpath"]

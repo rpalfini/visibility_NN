@@ -18,7 +18,7 @@ Meaning for the labels values is defined in vis_graph_enum.py but a down label c
 2. numpy
 3. pandas (not used currently)
 4. Scipy
-5. llook at requirements.txt
+5. look at requirements.txt
 
 ### Other capabilities
 1. vis_main.py is main script to create data files for various obstacle courses.  -h option explains how to use

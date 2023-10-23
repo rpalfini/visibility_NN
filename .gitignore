@@ -11,3 +11,5 @@
 *results.txt
 *.pkl
 *.pickle
+err_out.txt
+log_out.txt

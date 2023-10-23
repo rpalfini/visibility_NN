@@ -83,7 +83,7 @@ def main(args):
         start_list = vg.init_points(start_vals)
         end_list = vg.init_points(end_vals)
 
-        if args["test_mode"] and not batch:
+        if args["test_mode"] and not batch: # the and not batch seems unnecessary in this check but I won't change it b/c it works currently and I dont have time to test it
             # this mode solves one course with dijkstra and AStar and compares their solutions
             vg_gen = vg.visibility_graph_generator(is_ion=args["is_ion"])
             vg_gen.run_test(start_list,end_list,obstacle_list,algorithm="dijkstra")
@@ -106,10 +106,11 @@ def main(args):
             vg_gen = vg.visibility_graph_generator(record_on=args["record_on"],is_ion=args["is_ion"])
             vg_gen.run_test(start_list,end_list,obstacle_list,algorithm=args["solve_option"],pad_list=args["pad_mode"])
             g_title = f"course {args['fname']}"
-            if args["no_title"]:
-                vg_gen.plot_solution(0)
-            else:
-                vg_gen.plot_solution(0,g_title)
+            if not args["single_output"]:
+                if args["no_title"]:
+                    vg_gen.plot_solution(0)
+                else:
+                    vg_gen.plot_solution(0,g_title)
             
             # other plot commands
             # # vg_gen.plot_env(0)
@@ -120,10 +121,12 @@ def main(args):
             file_title = args["fname"].replace('.txt','')
             if args["output_csv"]:
                 vg_gen.output_csv(f'{file_title}_obs_data')
-            vg_gen.save_plot_image(f'{file_title}_obs_fig')
+            if not args["single_output"]:    
+                vg_gen.save_plot_image(f'{file_title}_obs_fig')
 
     toc = time.perf_counter()
-    print(f"created the data in {toc - tic:0.4f} seconds for file {obs_file}")
+    if not args["single_output"]:
+        print(f"created the data in {toc - tic:0.4f} seconds for file {obs_file}")
     plt.close()
 
     # file_title = args["fname"].replace('.txt','')
@@ -141,8 +144,9 @@ def main(args):
 if __name__ == "__main__":
     args = vg.arg_parse()
     output_default_args = False
+    output_file = 'default_args.pickle'
     if output_default_args:
-        with open('default_args.pickle','wb') as f:
+        with open(output_file,'wb') as f:
             pickle.dump(args,f)
     else:
         vg_gen = main(args)

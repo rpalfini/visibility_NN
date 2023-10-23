@@ -1080,7 +1080,7 @@ class graph_viewer(visibility_graph_generator):
 # global methods
 def arg_parse():
     parser = ArgumentParser(description="obstacle testing file",formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-b", "--batch", type=bool, default = False, help="Creates unique file name and does not display courses")
+    parser.add_argument("-b", "--batch", type=bool, default = False, help="Creates unique file name and does not display courses") # i know this in inconsistent but there are too many dependencies in shell automation scripts to try and change this to be like the other arguments
     parser.add_argument("-p", "--base_path", default = "./obs_courses/",help="path to folder containing obstacle course files")
     parser.add_argument("-c","--course", type=int, default=0, help="specify obstacle course number when multiple courses available")
     parser.add_argument("-s", "--start", type=float, default = [0,3], nargs=2, help='course start point')
@@ -1093,7 +1093,7 @@ def arg_parse():
     parser.add_argument("-nt","--no_title", dest='no_title',action='store_const', const=True, default=False,help='Turns off title for graphs outputted by function')
     parser.add_argument("-pm","--pad_mode",action="store_false",default=True,help="adding this argument turns off pad mode for data storage")
     parser.add_argument("-oc","--output_csv",action="store_false",default=True,help="adding this argument turns off outputting csv file")
-    parser.add_argument("-so","--single_output", action="store_true",default=False,help="adding this argument will cause vis_main.py to return the direction of a given problem.  Only used for by visualize_decision_boundary.py to view an example decision boundary we are trying to learn.")
+    parser.add_argument("-so","--single_output", action="store_true",default=False,help="adding this argument will cause vis_main.py to not output a picture or the time it takes to run the vis graph generation.  Only used for by visualize_decision_boundary.py to view an example decision boundary we are trying to learn.")
     parser.add_argument("fname", help="Obstacle course file to test")
     
     args = parser.parse_args()
@@ -1230,6 +1230,18 @@ def check_collision(start_node,end_node,obstacle):
         return collision
 
 def check_intersection(seg1,seg2):
+
+    def check_special_zero_division(num,den):
+        #checks for case of zero/zero to prevent error
+        try:
+            S = num/den
+        except ZeroDivisionError as e:
+            if num_a == 0 and den_a == 0:
+                S = 0
+            else:
+                print(f"Caught a ZeroDivisionError: {e}")
+        return S
+
     '''checks if two line segments are intersecting.  Line segment should be tuple of 2 point objects'''
     dbg = False
     # based on chapter 4, slide 172 of Lectures on Robotic Planning and Kinematics by Francessco Bullo and Stephen L. Smith available here http://motion.me.ucsb.edu/book-lrpk/
@@ -1246,8 +1258,15 @@ def check_intersection(seg1,seg2):
     e = x2-x1
     f = y2-y1
 
-    Sa = (a*b-c*d)/(c*e-f*b)
-    Sb = (a*e-d*f)/(e*c-f*b)
+    
+    num_a = (a*b-c*d)
+    den_a = (c*e-f*b)
+    Sa = check_special_zero_division(num_a,den_a)
+
+    num_b = (a*e-d*f)
+    den_b = (e*c-f*b)
+    Sb = check_special_zero_division(num_b,den_b)
+
     A_in_range = in_range(Sa,(0,1),tol)
     B_in_range = in_range(Sb,(0,1),tol)
     if A_in_range and B_in_range:

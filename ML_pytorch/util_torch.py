@@ -21,7 +21,7 @@ class CustomDataset(Dataset):
         labels = self.data.iloc[idx,self.feat_size:-1] #last column is the cost of the optimal path as found during data generation
         
         # verify labels are the correct length
-        if labels.shape[1] != self.label_size:
+        if labels.shape[0] != self.label_size:
             raise Exception('incorrect number of labels')
 
         if self.transform:

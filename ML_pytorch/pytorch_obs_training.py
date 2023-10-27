@@ -4,7 +4,7 @@ import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 import util_torch as util
 
-# converting keras code to pytorch to leverage use of DataLoader Class
+# converting keras code to pytorch to leverage use of DataLoader class
 
 def main():
 
@@ -17,7 +17,7 @@ def main():
     dataset = util.CustomDataset(args.file_path,num_feat,num_label)
     data_loader = DataLoader(dataset, batch_size=64, shuffle=True)
 
-    model = util.three_obs_nn()
+    model = util.three_obs_nn(num_feat,num_label)
 
     # Define a loss function and optimizer
     criterion = nn.CrossEntropyLoss()

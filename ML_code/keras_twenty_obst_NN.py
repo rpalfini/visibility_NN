@@ -48,7 +48,8 @@ def main():
 
     opt_costs = dataset[:,-1] # these azre the optimal path costs as found by dijkstra algo during data generation
 
-    split_percentages = [0.7, 0.15, 0.15] # percentage split for train, val, and test
+    # split_percentages = [0.8, 0.10, 0.10] # percentage split for train, val, and test
+    split_percentages = [0.9, 0.05, 0.05] # percentage split for train, val, and test
 
     X_splits = util.split_array(X,split_percentages)
     Y_splits = util.split_array(Y,split_percentages)
@@ -104,11 +105,11 @@ def main():
     # # model.add(K.layers.Dense(20, activation='relu'))
     # model.add(K.layers.Dense(labels, activation='sigmoid'))
 
-    model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-    model.add(K.layers.Dense(20, activation='relu'))
-    for ii in range(20):
-        model.add(K.layers.Dense(30, activation='relu'))
-    model.add(K.layers.Dense(20, activation='relu'))
+    model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # model.add(K.layers.Dense(20, activation='relu'))
+    for ii in range(19):
+        model.add(K.layers.Dense(190-10*ii, activation='relu'))
+    # model.add(K.layers.Dense(20, activation='relu'))
     model.add(K.layers.Dense(labels, activation='sigmoid'))
 
     # model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
@@ -116,7 +117,8 @@ def main():
     # model.add(K.layers.Dense(100, activation='relu'))
     # model.add(K.layers.Dense(20, activation='relu'))
     # model.add(K.layers.Dense(labels, activation='sigmoid'))
-
+    print(f'Number of Features = {features}')
+    model.summary()
 
     # compile the keras model
     learning_rate = args.learning_rate

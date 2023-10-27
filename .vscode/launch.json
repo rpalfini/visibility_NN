@@ -304,6 +304,27 @@
             "justMyCode": true
         },
         {
+            "name": "Python: vis_main_boundary_visual",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "boundary_visual.txt",
+                "-s",
+                "5",
+                "1",
+                "-e",
+                "25",
+                "20",
+                "-pm",
+                "-oc",
+                "-so",
+                "-gs"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: vis_main5",
             "type": "python",
             "request": "launch",
@@ -378,6 +399,20 @@
             "args": [
                 "-f",
                 "D:/Vis_network_data/data_file_by_course/main_data_file_courses3.csv",
+                "-e",
+                "100"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: vis_main_test",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-f",
+                "D:/Vis_network_data/data_file_by_course/d.csv",
                 "-e",
                 "100"
             ],

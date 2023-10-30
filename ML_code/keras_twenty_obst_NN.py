@@ -107,8 +107,8 @@ def main():
 
     model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
     # model.add(K.layers.Dense(20, activation='relu'))
-    for ii in range(19):
-        model.add(K.layers.Dense(190-10*ii, activation='relu'))
+    for ii in range(9):
+        model.add(K.layers.Dense(190-20*ii, activation='relu'))
     # model.add(K.layers.Dense(20, activation='relu'))
     model.add(K.layers.Dense(labels, activation='sigmoid'))
 

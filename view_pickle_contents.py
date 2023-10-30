@@ -15,5 +15,6 @@ def view_pickle_contents(pickle_file_path):
 
 
 if __name__ == "__main__":
-    pickle_file_path = "boundary_args.pickle"
+    # pickle_file_path = "boundary_args.pickle"
+    pickle_file_path = "default_args.pickle"
     view_pickle_contents(pickle_file_path)

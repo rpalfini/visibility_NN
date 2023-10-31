@@ -11,7 +11,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 def arg_parse():
     parser = ArgumentParser(description="Keras Model Training.  Used for script that is training model based on data file",formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument("-n", "--num_obs", type=int, default = 3, help="Specify number of obstacles in selected data set")
-    parser.add_argument("-f", "--file_path", type=str, default = "./ML_code/Data/main_data_file_courses3.csv")
+    parser.add_argument("-f", "--file_path", type=str, default = "./ML_code/Data/small_main_data_file_courses3.csv")
     parser.add_argument("-b","--batch_size", type=int, default=64, help="set batch size for training")
     parser.add_argument("-e","--n_epochs", type=int, default=100, help="sets number of epochs for the data")
     parser.add_argument("-l","--learning_rate",type=float, default = 0.001, help="sets the learning rate")
@@ -21,9 +21,9 @@ def arg_parse():
 
 def init_data_store_folder(data_file,is_torch=False):
     if is_torch:
-        data_path = ('./torch_'+data_file)
+        data_path = ('./main_train_results/torch_'+data_file)
     else:
-        data_path = ('./'+data_file)
+        data_path = ('./main_train_results/'+data_file)
     dir_exists = os.path.isdir(data_path)
     if dir_exists:
         model_dirs = get_dir_list(data_path)
@@ -31,7 +31,8 @@ def init_data_store_folder(data_file,is_torch=False):
         data_store_folder = data_path+model_folder
         os.mkdir(data_store_folder)
     else:
-        os.mkdir(data_path)
+        # os.mkdir(data_path)
+        os.makedirs(data_path,exist_ok=True)
         model_folder = '/model_1'
         data_store_folder = data_path+model_folder
         os.mkdir(data_store_folder)

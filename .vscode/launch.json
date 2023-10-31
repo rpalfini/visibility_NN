@@ -418,6 +418,24 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        {
+            "name": "Python: test_keras_name_issue",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-f",
+                "./ML_code/Data/small_main_data_file_courses3.csv",
+                "-b",
+                "64",
+                "-e",
+                "2",
+                "-n",
+                "3"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }

@@ -97,7 +97,7 @@ def main():
     # model.save('C:/Users/Robert/git/visibility_NN')
     data_file = os.path.basename(file_path)
     model_output_folder = util.init_data_store_folder(data_file.rstrip('.csv'))
-    model.save(model_output_folder+"\keras_model")
+    model.save(os.path.join(model_output_folder,"keras_model"))
     _, f_trained = os.path.split(args.file_path)
     util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_accuracy*100,val_accuracy*100,test_accuracy*100,model,X_train.shape[0],X_val.shape[0],X_test.shape[0],f_trained,optimizer._name,start_time)
     util.record_model_fit_results(results,model_output_folder)

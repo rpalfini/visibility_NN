@@ -1,4 +1,5 @@
 import os
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from tensorflow import keras as K
 import util
 
@@ -49,14 +50,23 @@ def load_model_with_checkpoint(model_path,epoch):
     loaded_model.load_weights(checkpoint_fpath)
     # loaded_model.set_weights(checkpoint_model.get_weights())
     return loaded_model
-    
 
+def arg_parse():
+    parser = ArgumentParser(description="Script allows you to load and test a model with weights from earlier epoch.",formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-n", "--num_obs", type=int, default = 3, help="Specify number of obstacles in selected data set")
+    parser.add_argument("-d", "--data_path", type=str, default = "./ML_code/Data/small_main_data_file_courses3.csv", help = 'Path to dataset you want to evaluate NN model on.')
+    parser.add_argument("-m","--model_path", type=str, default = "./main_train_results/small_main_data_file_courses3/model_15", help = 'Path to model results you wish to pull weights from.')
+    parser.add_argument("-e","--epoch", type=int, default=2, help="Chooses the weights from a given epoch to be loaded into the model")
+    
+    args = parser.parse_args()
+    return args
 
 if __name__ == "__main__":
-    model_path = 'C:/Users/Robert/git/visibility_NN/main_train_results/small_main_data_file_courses3/model_15/keras_model'
-    # model_path = 'C:/Users/Robert/git/visibility_NN/main_train_results/small_main_data_file_courses3/model_10'
-    data_file = 'C:/Users/Robert/git/visibility_NN/ML_code/Data/small_main_data_file_courses3.csv'
-    num_obs = 3
+    #TODO until I implement recording which samples were used for each training, the only way to make results repeatable is by training with data shuffle off
+    args = arg_parse()
+    model_path = args.model_path
+    data_file = args.data_path
+    num_obs = args.num_obs
+    epoch = args.epoch
 
-    epoch = 3
     main(model_path,epoch,data_file,num_obs)

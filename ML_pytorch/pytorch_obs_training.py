@@ -2,7 +2,11 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
+
+# importing custom modules
+import config
 import util_torch as util
+from ML_code import util as ml_util
 
 # converting keras code to pytorch to leverage use of DataLoader class
 

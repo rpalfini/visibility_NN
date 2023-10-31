@@ -3,9 +3,10 @@ import pickle
 import datetime
 import sys
 import numpy as np
+from keras.callbacks import ModelCheckpoint
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
-# place to store functions in project
+## place to store functions used for neural network training
 
 ## These functions deal with saving data from training
 def arg_parse():
@@ -20,22 +21,25 @@ def arg_parse():
     return args
 
 def init_data_store_folder(data_file,is_torch=False):
+    '''creates directories needed for saving training results'''
+    main_results_folder = 'main_train_results'
     if is_torch:
-        data_path = ('./main_train_results/torch_'+data_file)
+        data_path = os.path.join('.',main_results_folder,'torch_'+data_file)
     else:
-        data_path = ('./main_train_results/'+data_file)
+        data_path = os.path.join('.',main_results_folder,data_file)
     dir_exists = os.path.isdir(data_path)
     if dir_exists:
         model_dirs = get_dir_list(data_path)
-        model_folder = f'/model_{len(model_dirs)+1}'
-        data_store_folder = data_path+model_folder
+        model_folder = f'model_{len(model_dirs)+1}'
+        data_store_folder = os.path.join(data_path,model_folder)
         os.mkdir(data_store_folder)
     else:
         # os.mkdir(data_path)
         os.makedirs(data_path,exist_ok=True)
-        model_folder = '/model_1'
-        data_store_folder = data_path+model_folder
+        model_folder = 'model_1'
+        data_store_folder = os.path.join(data_path,model_folder)
         os.mkdir(data_store_folder)
+        # checkpoint_folder = data_path+
     return data_store_folder
 
 def get_dir_list(path):
@@ -62,9 +66,10 @@ def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc
     sys.stdout = sys.__stdout__ #reset stdout to console
 
 def record_model_fit_results(results, output_folder):
-    model_number,model_results_path = split_fname_path(output_folder)
-    fname = f'/{model_number}_results.pkl'
-    PK_fname = output_folder + fname
+    # model_number,model_results_path = split_fname_path(output_folder)
+    model_results_path, model_number = os.path.split(output_folder)
+    fname = f'{model_number}_results.pkl'
+    PK_fname = os.path.join(output_folder,fname)
     Temp = open(PK_fname,'wb')
     pickle.dump(results.history,Temp)
     Temp.close()
@@ -161,13 +166,13 @@ def calc_num_features(num_obs):
     return 3*num_obs + 4
 
 ## General functions
-def split_fname_path(data_path):
-    '''splits a file name from its path and returns both'''
-    tokens = data_path.split('/')
-    fname = tokens[-1]
-    fpath = "/".join(tokens[:-1])
-    fpath += "/"
-    return fname,fpath
+# def split_fname_path(data_path):
+#     '''splits a file name from its path and returns both'''
+#     tokens = data_path.split('/')
+#     fname = tokens[-1]
+#     fpath = "/".join(tokens[:-1])
+#     fpath += "/"
+#     return fname,fpath
 
 
     

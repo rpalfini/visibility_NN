@@ -128,7 +128,7 @@ def calc_time_duration(start_time, end_time):
 def load_data(file_path):
     return np.loadtxt(file_path,delimiter=',')
 
-def shuffle_and_split_data(dataset,num_obstacles,split_percentages):
+def shuffle_and_split_data(dataset,num_obstacles,split_percentages,shuffle_data=True):
     '''Shuffles data using np.random.shuffle and then splits into train, val, and test data.
        INPUTS:
         dataset: file read from load_data
@@ -137,7 +137,8 @@ def shuffle_and_split_data(dataset,num_obstacles,split_percentages):
        OUTPUTS:
         split_data: dictionary with train,val,test data as well as opt_costs,num_feat,num_labels'''
     
-    np.random.shuffle(dataset)
+    if shuffle_data:
+        np.random.shuffle(dataset)
     # calcualte num labels and features based on data
     features = calc_num_features(num_obstacles)
     labels = num_obstacles

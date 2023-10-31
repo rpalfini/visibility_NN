@@ -46,7 +46,7 @@ def main():
     if Y.shape[1] != labels:
         raise Exception(f'incorrect number of labels, expecting {labels} but found {Y.shape[1]}')
 
-    opt_costs = dataset[:,-1] # these azre the optimal path costs as found by dijkstra algo during data generation
+    opt_costs = dataset[:,-1] # these are the optimal path costs as found by dijkstra algo during data generation
 
     # split_percentages = [0.8, 0.10, 0.10] # percentage split for train, val, and test
     split_percentages = [0.9, 0.05, 0.05] # percentage split for train, val, and test
@@ -62,25 +62,6 @@ def main():
     Y_val = Y_splits[1]
     Y_test = Y_splits[2]
 
-
-    # # split data
-    # test_split = 0.8 # percentage to use for training
-    # nrows = X.shape[0]
-    # split_row = round(test_split*nrows)
-
-    # #TODO make splitting a function
-    # X_tv = X[0:split_row,:] # train and validation data
-    # Y_tv = Y[0:split_row,:]
-    # X_test = X[split_row:,:] # test data
-    # Y_test = Y[split_row:,:]
-
-    # nrows = X_tv.shape[0]
-    # val_split_row = round(test_split*nrows)
-
-    # X_train = X_tv[0:val_split_row,:]
-    # Y_train = Y_tv[0:val_split_row,:]
-    # X_val = X_tv[val_split_row:,:]
-    # Y_val = Y_tv[val_split_row:,:]
 
     model = K.Sequential()
     # attempt for 20 layer model

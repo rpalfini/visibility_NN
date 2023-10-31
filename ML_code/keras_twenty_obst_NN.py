@@ -13,54 +13,24 @@ def main():
 
     print(device_lib.list_local_devices())
 
-    # from tensorflow.keras.models import Sequential
-    # from tensorflow.keras.layers import Dense
-
-    # data_folder = 'G:/My Drive/Python/Visual Graph'
-
-    # dataset = np.loadtxt(data_folder+'/2022_10_17one_obst data_large.csv',delimiter=',')
     # tf.debugging.set_log_device_placement(True)
 
-    # data_folder = './ML_code/Data'
-    # data_folder = 'D:\Vis_network_data\data_file_by_course'
-    # # data_folder = './results_merge/'
-    # # data_folder = 'H:/My Drive/Visibility_data_generation/Data Backups/23_02_18_and_19/'
-    # # data_file = '23_02_18_batch2_2_course_18_obs_data.csv'
-    # # data_file = '23_02_18_19_20_merge_fixed.csv'
-    # data_file = 'main_data_file_courses1.csv'
-    # data_file = 'test_file_fixed.csv'
-    # data_file = '23_02_18_and_19_merge.csv'
-    # file_path = os.path.join(data _folder,data_file)
     file_path = args.file_path
-    dataset = np.loadtxt(file_path,delimiter=',')
+    split_percentages = [0.9, 0.05, 0.05]
+    dataset = util.load_data(file_path)
+    split_data = util.shuffle_and_split_data(dataset,args.num_obs,split_percentages)
 
-    # num_obstacles = 3
-    num_obstacles = args.num_obs
-    features = 3*num_obstacles + 4
-    labels = num_obstacles
+    X_train = split_data["X_train"] 
+    X_val = split_data["X_val"]   
+    X_test = split_data["X_test"]  
 
-    np.random.shuffle(dataset)
+    Y_train = split_data["Y_train"] 
+    Y_val = split_data["Y_val"]   
+    Y_test = split_data["Y_test"]  
 
-    X = dataset[:,:features]
-    Y = dataset[:,features:-1]
-    if Y.shape[1] != labels:
-        raise Exception(f'incorrect number of labels, expecting {labels} but found {Y.shape[1]}')
-
-    opt_costs = dataset[:,-1] # these are the optimal path costs as found by dijkstra algo during data generation
-
-    # split_percentages = [0.8, 0.10, 0.10] # percentage split for train, val, and test
-    split_percentages = [0.9, 0.05, 0.05] # percentage split for train, val, and test
-
-    X_splits = util.split_array(X,split_percentages)
-    Y_splits = util.split_array(Y,split_percentages)
-
-    X_train = X_splits[0]
-    X_val = X_splits[1]
-    X_test = X_splits[2]
-    
-    Y_train = Y_splits[0]
-    Y_val = Y_splits[1]
-    Y_test = Y_splits[2]
+    opt_costs = split_data["opt_costs"]
+    features = split_data["num_features"]
+    labels = split_data["num_labels"]
 
 
     model = K.Sequential()
@@ -124,7 +94,7 @@ def main():
     print('Test_Accuracy: %.2f' % (test_accuracy*100))
     # model.save('C:/Users/Robert/git/visibility_NN')
     data_file = os.path.basename(file_path)
-    model_output_folder = util.init_data_store_folder(data_file.strip('.csv'))
+    model_output_folder = util.init_data_store_folder(data_file.rstrip('.csv'))
     model.save(model_output_folder+"\keras_model")
     f_trained,_ = util.split_fname_path(args.file_path)
     util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_accuracy*100,val_accuracy*100,test_accuracy*100,model,X_train.shape[0],X_val.shape[0],X_test.shape[0],f_trained,optimizer._name,start_time)

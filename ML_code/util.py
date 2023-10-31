@@ -100,6 +100,46 @@ def calc_time_duration(start_time, end_time):
     return time_duration
 
 ## These functions are used in preparing datasets
+def load_data(file_path):
+    return np.loadtxt(file_path,delimiter=',')
+
+def shuffle_and_split_data(dataset,num_obstacles,split_percentages):
+    '''Shuffles data using np.random.shuffle and then splits into train, val, and test data.
+       INPUTS:
+        dataset: file read from load_data
+        num_obstacles: number of obstacles in the data file, use size of the padded dataset if using padded data
+        split_percentages: length three list indicating the percent for training, validation, and testing
+       OUTPUTS:
+        split_data: dictionary with train,val,test data as well as opt_costs,num_feat,num_labels'''
+    
+    np.random.shuffle(dataset)
+    # calcualte num labels and features based on data
+    features = calc_num_features(num_obstacles)
+    labels = num_obstacles
+
+    X = dataset[:,:features]
+    Y = dataset[:,features:-1]
+    if Y.shape[1] != labels:
+        raise Exception(f'incorrect number of labels, expecting {labels} but found {Y.shape[1]}')
+    opt_costs = dataset[:,-1] # these are the optimal path costs as found by dijkstra algo during data generation
+
+    X_splits = split_array(X,split_percentages)
+    Y_splits = split_array(Y,split_percentages)
+
+    split_data = {}
+    split_data["X_train"] = X_splits[0]
+    split_data["X_val"] = X_splits[1]
+    split_data["X_test"] = X_splits[2]
+    
+    split_data["Y_train"] = Y_splits[0]
+    split_data["Y_val"] = Y_splits[1]
+    split_data["Y_test"] = Y_splits[2]
+
+    split_data["opt_costs"] = opt_costs
+    split_data["num_features"] = features
+    split_data["num_labels"] = labels
+    return split_data
+
 def split_array(original_array, split_percentages):
     if sum(split_percentages) != 1.0:
         raise ValueError("Split percentages must sum to 1.0")
@@ -115,6 +155,9 @@ def split_array(original_array, split_percentages):
     splits = splits[0:len(split_percentages)] #remove empty array at the end
 
     return splits
+
+def calc_num_features(num_obs):
+    return 3*num_obs + 4
 
 ## General functions
 def split_fname_path(data_path):

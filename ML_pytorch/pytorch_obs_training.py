@@ -5,23 +5,22 @@ from torch.utils.data import Dataset, DataLoader
 
 # importing custom modules
 import config
-import util_torch as util
-from ML_code import util as ml_util
+import util_torch
+from ML_code import util
 
 # converting keras code to pytorch to leverage use of DataLoader class
-
 def main():
 
     args = util.arg_parse()
 
     data_file = args.file_path
-    num_feat, num_label = util.calc_num_feat_label(args.num_obs)
+    num_feat, num_label = util_torch.calc_num_feat_label(args.num_obs)
 
     # Create a custom dataset and data loader
-    dataset = util.CustomDataset(args.file_path,num_feat,num_label)
+    dataset = util_torch.CustomDataset(args.file_path,num_feat,num_label)
     data_loader = DataLoader(dataset, batch_size=64, shuffle=True)
 
-    model = util.three_obs_nn(num_feat,num_label)
+    model = util_torch.three_obs_nn(num_feat,num_label)
 
     # Define a loss function and optimizer
     criterion = nn.CrossEntropyLoss()

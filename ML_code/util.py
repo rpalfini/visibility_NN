@@ -6,9 +6,18 @@ import numpy as np
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 # place to store functions in project
-def get_dir_list(path):
-    result = [name for name in os.listdir(path) if os.path.isdir(os.path.join(path,name))]
-    return result
+
+## These functions deal with saving data from training
+def arg_parse():
+    parser = ArgumentParser(description="Keras Model Training.  Used for script that is training model based on data file",formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-n", "--num_obs", type=int, default = 3, help="Specify number of obstacles in selected data set")
+    parser.add_argument("-f", "--file_path", type=str, default = "./ML_code/Data/main_data_file_courses3.csv")
+    parser.add_argument("-b","--batch_size", type=int, default=64, help="set batch size for training")
+    parser.add_argument("-e","--n_epochs", type=int, default=100, help="sets number of epochs for the data")
+    parser.add_argument("-l","--learning_rate",type=float, default = 0.001, help="sets the learning rate")
+
+    args = parser.parse_args()
+    return args
 
 def init_data_store_folder(data_file,is_torch=False):
     if is_torch:
@@ -27,6 +36,10 @@ def init_data_store_folder(data_file,is_torch=False):
         data_store_folder = data_path+model_folder
         os.mkdir(data_store_folder)
     return data_store_folder
+
+def get_dir_list(path):
+    result = [name for name in os.listdir(path) if os.path.isdir(os.path.join(path,name))]
+    return result
 
 def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc, val_acc, test_acc,
                           model, num_train, num_val, num_test, data_set_name, optimizer_name,start_time):
@@ -69,25 +82,24 @@ def get_datetime(add_new_line=True):
         formatted_datetime += "\n"
     return formatted_datetime
 
-def split_fname_path(data_path):
-    '''splits a file name from its path and returns both'''
-    tokens = data_path.split('/')
-    fname = tokens[-1]
-    fpath = "/".join(tokens[:-1])
-    fpath += "/"
-    return fname,fpath
+def calc_time_duration(start_time, end_time):
+    # function expects times formatted by util.get_datetime()
+    # removes the \n character
+    if start_time.endswith("\n"):
+        start_time = start_time.strip()
 
-def arg_parse():
-    parser = ArgumentParser(description="Keras Model Training.  Used for script that is training model based on data file",formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-n", "--num_obs", type=int, default = 3, help="Specify number of obstacles in selected data set")
-    parser.add_argument("-f", "--file_path", type=str, default = "./ML_code/Data/main_data_file_courses3.csv")
-    parser.add_argument("-b","--batch_size", type=int, default=64, help="set batch size for training")
-    parser.add_argument("-e","--n_epochs", type=int, default=100, help="sets number of epochs for the data")
-    parser.add_argument("-l","--learning_rate",type=float, default = 0.001, help="sets the learning rate")
+    if end_time.endswith("\n"):
+        end_time = end_time.strip()
 
-    args = parser.parse_args()
-    return args
+    format_str = "%Y/%m/%d %H:%M:%S"
+    start = datetime.datetime.strptime(start_time, format_str)
+    end = datetime.datetime.strptime(end_time, format_str)
 
+    # Calculate the time duration
+    time_duration = end - start
+    return time_duration
+
+## These functions are used in preparing datasets
 def split_array(original_array, split_percentages):
     if sum(split_percentages) != 1.0:
         raise ValueError("Split percentages must sum to 1.0")
@@ -104,30 +116,17 @@ def split_array(original_array, split_percentages):
 
     return splits
 
-def calc_time_duration(start_time, end_time):
-    #removes the \n character
-    if start_time.endswith("\n"):
-        start_time = start_time.strip()
+## General functions
+def split_fname_path(data_path):
+    '''splits a file name from its path and returns both'''
+    tokens = data_path.split('/')
+    fname = tokens[-1]
+    fpath = "/".join(tokens[:-1])
+    fpath += "/"
+    return fname,fpath
 
-# Check if datetime_str2 ends with "\n" and strip it if it does
-    if end_time.endswith("\n"):
-        end_time = end_time.strip()
 
-    format_str = "%Y/%m/%d %H:%M:%S"
-    start = datetime.datetime.strptime(start_time, format_str)
-    end = datetime.datetime.strptime(end_time, format_str)
-
-    # Calculate the time duration
-    time_duration = end - start
-
-    # You can then extract different components of the time duration, such as days, seconds, microseconds, etc.
-    days = time_duration.days
-    seconds = time_duration.seconds
-    microseconds = time_duration.microseconds
-
-    return time_duration
-    # print(f"Time duration: {time_duration}")
-    # print(f"Days: {days}")
-    # print(f"Seconds: {seconds}")
-    # print(f"Microseconds: {microseconds}")
     
+
+
+

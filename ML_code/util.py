@@ -3,7 +3,7 @@ import pickle
 import datetime
 import sys
 import numpy as np
-from keras.callbacks import ModelCheckpoint
+
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 ## place to store functions used for neural network training

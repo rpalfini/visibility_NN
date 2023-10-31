@@ -10,7 +10,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 ## These functions deal with saving data from training
 def arg_parse():
-    parser = ArgumentParser(description="Keras Model Training.  Used for script that is training model based on data file",formatter_class=ArgumentDefaultsHelpFormatter)
+    parser = ArgumentParser(description="NN Model Training.  Used for script that is training model based on data file",formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument("-n", "--num_obs", type=int, default = 3, help="Specify number of obstacles in selected data set")
     parser.add_argument("-f", "--file_path", type=str, default = "./ML_code/Data/small_main_data_file_courses3.csv")
     parser.add_argument("-b","--batch_size", type=int, default=64, help="set batch size for training")
@@ -184,18 +184,4 @@ def split_array(original_array, split_percentages):
 
 def calc_num_features(num_obs):
     return 3*num_obs + 4
-
-def create_checkpoint_callback(subdirectory, filename_template):
-    checkpoint = ModelCheckpoint(
-        os.path.join(subdirectory, filename_template),
-        save_weights_only=True,
-        period=1
-    )
-    return checkpoint
-
-
-
-    
-
-
 

@@ -3,6 +3,7 @@ import tensorflow as tf
 from tensorflow import keras as K
 from tensorflow.python.client import device_lib
 import util
+import util_keras
 import os
 
 def main():
@@ -17,7 +18,7 @@ def main():
     data_file = os.path.basename(args.file_path)
     model_output_folder, checkpoint_folder = util.init_data_store_folder(data_file.rstrip('.csv'))
 
-    checkpoint = util.create_checkpoint_callback(checkpoint_folder,util.make_checkpoint_template())
+    checkpoint = util_keras.create_checkpoint_callback(checkpoint_folder,util.make_checkpoint_template())
 
     file_path = args.file_path
     split_percentages = [0.9, 0.05, 0.05]

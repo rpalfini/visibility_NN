@@ -33,19 +33,23 @@ def init_data_store_folder(data_file,is_torch=False):
         model_folder = f'model_{len(model_dirs)+1}'
         data_store_folder = os.path.join(data_path,model_folder)
         os.mkdir(data_store_folder)
-        make_checkpoint_folder(data_store_folder)
+        checkpoint_folder = make_checkpoint_folder(data_store_folder)
     else:
         # os.mkdir(data_path)
         os.makedirs(data_path,exist_ok=True)
         model_folder = 'model_1'
         data_store_folder = os.path.join(data_path,model_folder)
         os.mkdir(data_store_folder)
-        make_checkpoint_folder(data_store_folder)
-    return data_store_folder
+        checkpoint_folder = make_checkpoint_folder(data_store_folder)
+    return data_store_folder, checkpoint_folder
 
 def make_checkpoint_folder(data_path):
     checkpoint_folder = os.path.join(data_path,'weight_checkpoints')
     os.mkdir(checkpoint_folder)
+    return checkpoint_folder
+
+def make_checkpoint_template():
+    return "model_weights_epoch_{epoch:02d}.h5"
 
 def get_dir_list(path):
     result = [name for name in os.listdir(path) if os.path.isdir(os.path.join(path,name))]
@@ -80,8 +84,6 @@ def make_results_file_name(output_dir,train_acc,val_acc,test_acc):
     fname = os.path.join(output_dir,f"results_{train_acc_str}_{val_acc_str}_{test_acc_str}.txt")
     return fname
     
-
-
 def record_model_fit_results(results, output_folder):
     # model_number,model_results_path = split_fname_path(output_folder)
     model_results_path, model_number = os.path.split(output_folder)
@@ -182,14 +184,14 @@ def split_array(original_array, split_percentages):
 def calc_num_features(num_obs):
     return 3*num_obs + 4
 
-## General functions
-# def split_fname_path(data_path):
-#     '''splits a file name from its path and returns both'''
-#     tokens = data_path.split('/')
-#     fname = tokens[-1]
-#     fpath = "/".join(tokens[:-1])
-#     fpath += "/"
-#     return fname,fpath
+def create_checkpoint_callback(subdirectory, filename_template):
+    checkpoint = ModelCheckpoint(
+        os.path.join(subdirectory, filename_template),
+        save_weights_only=True,
+        period=1
+    )
+    return checkpoint
+
 
 
     

@@ -8,12 +8,16 @@ import os
 def main():
 
     start_time = util.get_datetime(add_new_line=False)
-
     args = util.arg_parse()
-
     print(device_lib.list_local_devices())
 
     # tf.debugging.set_log_device_placement(True)
+
+    # initialize folder for recording results
+    data_file = os.path.basename(args.file_path)
+    model_output_folder, checkpoint_folder = util.init_data_store_folder(data_file.rstrip('.csv'))
+
+    checkpoint = util.create_checkpoint_callback(checkpoint_folder,util.make_checkpoint_template())
 
     file_path = args.file_path
     split_percentages = [0.9, 0.05, 0.05]
@@ -31,7 +35,7 @@ def main():
     opt_costs = split_data["opt_costs"]
     features = split_data["num_features"]
     labels = split_data["num_labels"]
-
+    
 
     model = K.Sequential()
     # attempt for 20 layer model
@@ -80,9 +84,7 @@ def main():
     # fit the keras model on the dataset
     n_epochs = args.n_epochs
     b_size = args.batch_size
-    # checkpoint = ModelCheckpoint("")
-    # results = model.fit(X_train, Y_train, validation_data = (X_val,Y_val), epochs=n_epochs, batch_size=b_size, callbacks=[checkpoint])
-    results = model.fit(X_train, Y_train, validation_data = (X_val,Y_val), epochs=n_epochs, batch_size=b_size)
+    results = model.fit(X_train, Y_train, validation_data = (X_val,Y_val), epochs=n_epochs, batch_size=b_size, callbacks=[checkpoint])
 
     # evaluate the keras model
     print('testing training data')
@@ -94,9 +96,10 @@ def main():
     print('Train_Accuracy: %.2f' % (train_accuracy*100))
     print('Validation_Accuracy: %.2f' % (val_accuracy*100))
     print('Test_Accuracy: %.2f' % (test_accuracy*100))
-    # model.save('C:/Users/Robert/git/visibility_NN')
-    data_file = os.path.basename(file_path)
-    model_output_folder = util.init_data_store_folder(data_file.rstrip('.csv'))
+    
+    # record model training results
+    # data_file = os.path.basename(file_path)
+    # model_output_folder = util.init_data_store_folder(data_file.rstrip('.csv'))
     model.save(os.path.join(model_output_folder,"keras_model"))
     _, f_trained = os.path.split(args.file_path)
     util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_accuracy*100,val_accuracy*100,test_accuracy*100,model,X_train.shape[0],X_val.shape[0],X_test.shape[0],f_trained,optimizer._name,start_time)

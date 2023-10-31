@@ -33,14 +33,19 @@ def init_data_store_folder(data_file,is_torch=False):
         model_folder = f'model_{len(model_dirs)+1}'
         data_store_folder = os.path.join(data_path,model_folder)
         os.mkdir(data_store_folder)
+        make_checkpoint_folder(data_store_folder)
     else:
         # os.mkdir(data_path)
         os.makedirs(data_path,exist_ok=True)
         model_folder = 'model_1'
         data_store_folder = os.path.join(data_path,model_folder)
         os.mkdir(data_store_folder)
-        # checkpoint_folder = data_path+
+        make_checkpoint_folder(data_store_folder)
     return data_store_folder
+
+def make_checkpoint_folder(data_path):
+    checkpoint_folder = os.path.join(data_path,'weight_checkpoints')
+    os.mkdir(checkpoint_folder)
 
 def get_dir_list(path):
     result = [name for name in os.listdir(path) if os.path.isdir(os.path.join(path,name))]
@@ -48,7 +53,9 @@ def get_dir_list(path):
 
 def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc, val_acc, test_acc,
                           model, num_train, num_val, num_test, data_set_name, optimizer_name,start_time):
-    with open(output_dir+"/results.txt","w") as f:
+    # output_path = os.path.join(output_dir,f"results_{df}.txt")
+    output_path = make_results_file_name(output_dir,train_acc,val_acc,test_acc)
+    with open(output_path,"w") as f:
         formatted_time = get_datetime()
         t_dur = calc_time_duration(start_time,formatted_time)
         f.write(f'{start_time} - {formatted_time}')
@@ -64,6 +71,16 @@ def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc
         model.summary()
         f.write(f'number of data points = {num_train + num_test + num_val}')
     sys.stdout = sys.__stdout__ #reset stdout to console
+
+def make_results_file_name(output_dir,train_acc,val_acc,test_acc):
+    '''This file creates a results name that includes accuracy of model'''
+    train_acc_str = "{:.2f}".format(train_acc)
+    val_acc_str = "{:.2f}".format(val_acc)
+    test_acc_str = "{:.2f}".format(test_acc)
+    fname = os.path.join(output_dir,f"results_{train_acc_str}_{val_acc_str}_{test_acc_str}.txt")
+    return fname
+    
+
 
 def record_model_fit_results(results, output_folder):
     # model_number,model_results_path = split_fname_path(output_folder)

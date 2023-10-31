@@ -9,6 +9,7 @@
 *.index
 *.7z
 *results.txt
+*results*.txt
 *.pkl
 *.pickle
 obs_courses/*.txt

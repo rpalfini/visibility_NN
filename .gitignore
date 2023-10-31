@@ -11,5 +11,6 @@
 *results.txt
 *.pkl
 *.pickle
+obs_courses/*.txt
 err_out.txt
 log_out.txt

@@ -1,4 +1,4 @@
-# can be used to create default args for problems with arguments
+# can be used to create view args for problems with arguments
 import pickle
 
 def view_pickle_contents(pickle_file_path):

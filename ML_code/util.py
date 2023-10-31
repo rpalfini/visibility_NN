@@ -10,8 +10,11 @@ def get_dir_list(path):
     result = [name for name in os.listdir(path) if os.path.isdir(os.path.join(path,name))]
     return result
 
-def init_data_store_folder(data_file):
-    data_path = ('./'+data_file)
+def init_data_store_folder(data_file,is_torch=False):
+    if is_torch:
+        data_path = ('./torch_'+data_file)
+    else:
+        data_path = ('./'+data_file)
     dir_exists = os.path.isdir(data_path)
     if dir_exists:
         model_dirs = get_dir_list(data_path)
@@ -29,7 +32,9 @@ def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc
                           model, num_train, num_val, num_test, data_set_name, optimizer_name,start_time):
     with open(output_dir+"/results.txt","w") as f:
         formatted_time = get_datetime()
+        t_dur = calc_time_duration(start_time,formatted_time)
         f.write(f'{start_time} - {formatted_time}')
+        f.write(f'Training Duration = {t_dur}\n')
         f.write(f'trained on file {data_set_name}\n')
         f.write('train_acc,val_acc,test_acc,epochs,batch_size,optimizer,learning_rate,num_train_data,num_val_data,num_test_data\n')
         f.write(f'{train_acc},{val_acc},{test_acc},{epochs},{batch_size},{optimizer_name},{learning_rate},{num_train},{num_val},{num_test}\n')
@@ -98,3 +103,31 @@ def split_array(original_array, split_percentages):
     splits = splits[0:len(split_percentages)] #remove empty array at the end
 
     return splits
+
+def calc_time_duration(start_time, end_time):
+    #removes the \n character
+    if start_time.endswith("\n"):
+        start_time = start_time.strip()
+
+# Check if datetime_str2 ends with "\n" and strip it if it does
+    if end_time.endswith("\n"):
+        end_time = end_time.strip()
+
+    format_str = "%Y/%m/%d %H:%M:%S"
+    start = datetime.datetime.strptime(start_time, format_str)
+    end = datetime.datetime.strptime(end_time, format_str)
+
+    # Calculate the time duration
+    time_duration = end - start
+
+    # You can then extract different components of the time duration, such as days, seconds, microseconds, etc.
+    days = time_duration.days
+    seconds = time_duration.seconds
+    microseconds = time_duration.microseconds
+
+    return time_duration
+    # print(f"Time duration: {time_duration}")
+    # print(f"Days: {days}")
+    # print(f"Seconds: {seconds}")
+    # print(f"Microseconds: {microseconds}")
+    

@@ -436,6 +436,20 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        {
+            "name": "Python: test_SVM",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-f",
+                "./ML_code/Data/small_main_data_file_courses1.csv",
+                "-n",
+                "1"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }

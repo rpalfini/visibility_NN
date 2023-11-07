@@ -438,6 +438,24 @@
             "justMyCode": true
         },
         {
+            "name": "Python: test_keras_10_obs",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-f",
+                "D:/Vis_network_data/data_file_by_course/main_data_file_courses10.csv",
+                "-b",
+                "64",
+                "-e",
+                "3",
+                "-n",
+                "10"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: test_SVM",
             "type": "python",
             "request": "launch",

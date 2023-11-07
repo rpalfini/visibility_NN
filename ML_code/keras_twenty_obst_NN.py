@@ -1,12 +1,17 @@
+import os
+import time
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras as K
 from tensorflow.python.client import device_lib
+from tqdm import tqdm
 import util
 import util_keras
-import os
 
 def main():
+    # user options
+    is_shift_data = True # this shifts the data over so that the course is center around origin of (0,0)
+    split_percentages = [0.9, 0.05, 0.05]
 
     start_time = util.get_datetime(add_new_line=False)
     args = util.arg_parse()
@@ -21,9 +26,20 @@ def main():
     checkpoint = util_keras.create_checkpoint_callback(checkpoint_folder,util.make_checkpoint_template())
 
     file_path = args.file_path
-    split_percentages = [0.9, 0.05, 0.05]
-    dataset = util.load_data(file_path)
-    split_data = util.shuffle_and_split_data(dataset,args.num_obs,split_percentages)
+    tic = time.perf_counter()
+    dataset_in = util.load_data(file_path)
+    toc = time.perf_counter()
+    print(f"Loaded data in {toc - tic:0.4f} seconds")
+
+    if is_shift_data:
+        tic = time.perf_counter()
+        dataset_processed = util.shift_data_set(dataset_in,args.num_obs)
+        toc = time.perf_counter()
+        print(f"Shifted data in {toc - tic:0.4f} seconds")
+    else:
+        dataset_processed = dataset_in
+
+    split_data = util.shuffle_and_split_data(dataset_processed,args.num_obs,split_percentages)
 
     X_train = split_data["X_train"] 
     X_val = split_data["X_val"]   
@@ -55,19 +71,89 @@ def main():
     # attempt for 3 layer model
     # model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
     # # model.add(K.layers.Dense(20, activation='relu'))
+    # model.add(K.layers.Dense(100, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
     # model.add(K.layers.Dense(100, activation='relu'))
     # model.add(K.layers.Dense(100, activation='relu'))
     # model.add(K.layers.Dense(100, activation='relu'))
     # # model.add(K.layers.Dense(20, activation='relu'))
     # model.add(K.layers.Dense(labels, activation='sigmoid'))
 
+    # model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # model.add(K.layers.Dense(50, activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # model.add(K.layers.Dense(50, activation='relu'))
+    # model.add(K.layers.Dense(50, activation='relu'))
+    # model.add(K.layers.Dense(50, activation='relu'))
+    # model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+    # # same as above but with drop out
+    # model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # model.add(K.layers.Dropout(0.1))
+    # model.add(K.layers.Dense(50, activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # model.add(K.layers.Dropout(0.1))
+    # model.add(K.layers.Dense(50, activation='relu'))
+    # model.add(K.layers.Dropout(0.1))
+    # model.add(K.layers.Dense(50, activation='relu'))
+    # model.add(K.layers.Dropout(0.1))
+    # model.add(K.layers.Dense(50, activation='relu'))
+    # model.add(K.layers.Dropout(0.1))
+    # model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+    
+    # model.add(K.layers.Dense(100, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # model.add(K.layers.Dense(100, activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # model.add(K.layers.Dense(90, activation='relu'))
+    # model.add(K.layers.Dense(90, activation='relu'))
+    # model.add(K.layers.Dense(80, activation='relu'))
+    # model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+    #  same as above but with dropout
+    # model.add(K.layers.Dense(100, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # # model.add(K.layers.Dense(20, activation='relu'))
+    # model.add(K.layers.Dense(100, activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # model.add(K.layers.Dropout(0.1))
+    # model.add(K.layers.Dense(90, activation='relu'))
+    # model.add(K.layers.Dropout(0.1))
+    # model.add(K.layers.Dense(90, activation='relu'))
+    # model.add(K.layers.Dropout(0.1))
+    # model.add(K.layers.Dense(80, activation='relu'))
+    # model.add(K.layers.Dropout(0.1))
+    # # model.add(K.layers.Dense(20, activation='relu'))
+    # model.add(K.layers.Dense(labels, activation='sigmoid'))
+
     model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-    # model.add(K.layers.Dense(20, activation='relu'))
-    for ii in range(9):
-        model.add(K.layers.Dense(190-20*ii, activation='relu'))
-    # model.add(K.layers.Dense(20, activation='relu'))
+    model.add(K.layers.Dense(150, activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    model.add(K.layers.Dense(100, activation='sigmoid'))
+    model.add(K.layers.Dense(150, activation='relu'))
+    model.add(K.layers.Dense(200, activation='relu'))
     model.add(K.layers.Dense(labels, activation='sigmoid'))
 
+    # model.add(K.layers.Dense(100, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # model.add(K.layers.Dense(150, activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # model.add(K.layers.Dense(200, activation='sigmoid'))
+    # model.add(K.layers.Dense(150, activation='relu'))
+    # model.add(K.layers.Dense(100, activation='relu'))
+    # model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+
+    # model.add(K.layers.Dense(300, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # # model.add(K.layers.Dense(20, activation='relu'))
+    # for ii in range(7):
+    #     model.add(K.layers.Dense(280-40*ii, activation='relu'))
+    # model.add(K.layers.Dense(20, activation='relu'))
+    # model.add(K.layers.Dense(10, activation='sigmoid')) 
+
+    # model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # # model.add(K.layers.Dense(20, activation='relu'))
+    # for ii in range(5):
+    #     model.add(K.layers.Dense(180-40*ii, activation='relu'))
+    # # model.add(K.layers.Dense(20, activation='relu'))
+    # model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+
+    # model.add(K.layers.Dense(500, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    # model.add(K.layers.Dense(labels, activation='sigmoid'))
+   
+   
     # model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
     # model.add(K.layers.Dense(20, activation='relu'))
     # model.add(K.layers.Dense(100, activation='relu'))
@@ -80,16 +166,20 @@ def main():
     learning_rate = args.learning_rate
     optimizer = K.optimizers.Adam(learning_rate=learning_rate)
     # optimizer = K.optimizers.Adam()
+    # optimizer = K.optimizers.SGD()
+    
+    # optimizer = K.optimizers.RMSprop(learning_rate=learning_rate)
+    # optimizer = K.optimizers.Adam()
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
     # fit the keras model on the dataset
     n_epochs = args.n_epochs
     b_size = args.batch_size
-    results = model.fit(X_train, Y_train, validation_data = (X_val,Y_val), epochs=n_epochs, batch_size=b_size, callbacks=[checkpoint])
+    results = model.fit(X_train, Y_train, validation_data = (X_val,Y_val), epochs=n_epochs, batch_size=b_size, callbacks=[checkpoint],shuffle = True)
 
     # evaluate the keras model
     print('testing training data')
-    _, train_accuracy = model.evaluate(X_train, Y_train)
+    _, train_accuracy = model.evaluate(X_train,Y_train)
     print('testing validation data')
     _, val_accuracy = model.evaluate(X_val, Y_val)
     print('testing test data')
@@ -103,7 +193,9 @@ def main():
     # model_output_folder = util.init_data_store_folder(data_file.rstrip('.csv'))
     model.save(os.path.join(model_output_folder,"keras_model"))
     _, f_trained = os.path.split(args.file_path)
-    util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_accuracy*100,val_accuracy*100,test_accuracy*100,model,X_train.shape[0],X_val.shape[0],X_test.shape[0],f_trained,optimizer._name,start_time)
+    util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_accuracy*100,
+                              val_accuracy*100,test_accuracy*100,model,X_train.shape[0],X_val.shape[0],
+                              X_test.shape[0],f_trained,optimizer._name,start_time,is_shift_data)
     util.record_model_fit_results(results,model_output_folder)
     print('training complete')
 

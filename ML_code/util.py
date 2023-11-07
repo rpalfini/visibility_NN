@@ -1,7 +1,8 @@
+import sys
 import os
 import pickle
 import datetime
-import sys
+from tqdm import tqdm
 import numpy as np
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
@@ -56,7 +57,7 @@ def get_dir_list(path):
     return result
 
 def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc, val_acc, test_acc,
-                          model, num_train, num_val, num_test, data_set_name, optimizer_name,start_time):
+                          model, num_train, num_val, num_test, data_set_name, optimizer_name,start_time,is_shift_data):
     # output_path = os.path.join(output_dir,f"results_{df}.txt")
     output_path = make_results_file_name(output_dir,train_acc,val_acc,test_acc)
     with open(output_path,"w") as f:
@@ -65,16 +66,37 @@ def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc
         f.write(f'{start_time} - {formatted_time}')
         f.write(f'Training Duration = {t_dur}\n')
         f.write(f'trained on file {data_set_name}\n')
+        f.write(f'data shuffled during epochs = True')
+        f.write(f'is data shift so course is centered on origin = {is_shift_data}\n')
         f.write('train_acc,val_acc,test_acc,epochs,batch_size,optimizer,learning_rate,num_train_data,num_val_data,num_test_data\n')
         f.write(f'{train_acc},{val_acc},{test_acc},{epochs},{batch_size},{optimizer_name},{learning_rate},{num_train},{num_val},{num_test}\n')
         per_train,per_val,per_test = get_data_percents(num_train,num_val,num_test)
         f.write('percent of data for train, val and test\n')
-        f.write(f'percent_train={per_train},percent_val={per_val},percent_test={per_test}\n')
+        f.write(f'percent_train={per_train:.2f},percent_val={per_val:.2f},percent_test={per_test:.2f}\n')
+        f.write(f'number of data points = {num_train + num_test + num_val}\n')
+        write_activation_info_to_file(model,f)
         # following code outputs model summary to file
         sys.stdout = f
         model.summary()
-        f.write(f'number of data points = {num_train + num_test + num_val}')
     sys.stdout = sys.__stdout__ #reset stdout to console
+
+def write_activation_info_to_file(model, file_handle):
+    """
+    Write layer name, layer type, and activation function information to a file.
+
+    Args:
+        model: Keras model.
+        file_handle: An open file handle where the information will be written.
+
+    Returns:
+        None
+    """
+    file_handle.write("Layer Name, Layer Type, Activation Function\n")
+    for layer in model.layers:
+        layer_type = type(layer).__name__
+        activation_function = layer.get_config().get('activation', 'N/A')
+        layer_name = layer.name
+        file_handle.write(f"{layer_name}, {layer_type}, {activation_function}\n")
 
 def make_results_file_name(output_dir,train_acc,val_acc,test_acc):
     '''This file creates a results name that includes accuracy of model'''
@@ -126,6 +148,7 @@ def calc_time_duration(start_time, end_time):
 
 ## These functions are used in preparing datasets
 def load_data(file_path):
+    print(f'Loading data from {file_path}')
     return np.loadtxt(file_path,delimiter=',')
 
 def shuffle_and_split_data(dataset,num_obstacles,split_percentages,shuffle_data=True):
@@ -185,3 +208,25 @@ def split_array(original_array, split_percentages):
 def calc_num_features(num_obs):
     return 3*num_obs + 4
 
+def shift_row(row,num_obs):
+    '''shifts data so course is centered at origin (0,0) instead of at (15,15)'''
+    interval = 2
+    result_list = []
+
+    for ii in range(len(row)):
+        if ii > 3 and (ii-4) % (interval + 1) < interval and ii < len(row)-num_obs-1:
+            result_list.append(row[ii] - 15)
+        elif ii < 4:
+            result_list.append(row[ii] - 15)
+        else:
+            result_list.append(row[ii])
+    return result_list
+
+def shift_data_set(data_set,num_obs):
+    '''data set should be an array of read data file'''
+    modified_array = np.empty_like(data_set)
+    for ii,row in enumerate(tqdm(data_set,file=sys.stdout,desc="Shifting Data Set", unit="row")):
+        mod_row = shift_row(row,num_obs)
+        modified_array[ii,:] = np.array(mod_row)
+
+    return modified_array

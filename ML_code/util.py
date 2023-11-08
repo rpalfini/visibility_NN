@@ -66,7 +66,6 @@ def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc
         f.write(f'{start_time} - {formatted_time}')
         f.write(f'Training Duration = {t_dur}\n')
         f.write(f'trained on file {data_set_name}\n')
-        f.write(f'data shuffled during epochs = True')
         f.write(f'is data shift so course is centered on origin = {is_shift_data}\n')
         f.write('train_acc,val_acc,test_acc,epochs,batch_size,optimizer,learning_rate,num_train_data,num_val_data,num_test_data\n')
         f.write(f'{train_acc},{val_acc},{test_acc},{epochs},{batch_size},{optimizer_name},{learning_rate},{num_train},{num_val},{num_test}\n')

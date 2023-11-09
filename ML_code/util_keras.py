@@ -7,6 +7,6 @@ def create_checkpoint_callback(subdirectory, filename_template):
     checkpoint = ModelCheckpoint(
         os.path.join(subdirectory, filename_template),
         save_weights_only=True,
-        period=1
+        save_freq="epoch"
     )
     return checkpoint

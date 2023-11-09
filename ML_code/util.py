@@ -17,6 +17,7 @@ def arg_parse():
     parser.add_argument("-b","--batch_size", type=int, default=64, help="set batch size for training")
     parser.add_argument("-e","--n_epochs", type=int, default=100, help="sets number of epochs for the data")
     parser.add_argument("-l","--learning_rate",type=float, default = 0.001, help="sets the learning rate")
+    parser.add_argument("-m", "--NN_model", type=int, default=0, help="Selects neural network to train.  Used for training automation.")
 
     args = parser.parse_args()
     return args
@@ -150,8 +151,10 @@ def load_data(file_path):
     print(f'Loading data from {file_path}')
     return np.loadtxt(file_path,delimiter=',')
 
+
+
 def shuffle_and_split_data(dataset,num_obstacles,split_percentages,shuffle_data=True):
-    '''Shuffles data using np.random.shuffle and then splits into train, val, and test data.
+    '''Splits data into train/val and test. Shuffles train/val data, and then splits train and val data.
        INPUTS:
         dataset: file read from load_data
         num_obstacles: number of obstacles in the data file, use size of the padded dataset if using padded data
@@ -161,27 +164,49 @@ def shuffle_and_split_data(dataset,num_obstacles,split_percentages,shuffle_data=
     
     if shuffle_data:
         np.random.shuffle(dataset)
+
+    split_data = {}
+    total_rows = dataset.shape[0]
     # calcualte num labels and features based on data
     features = calc_num_features(num_obstacles)
     labels = num_obstacles
 
-    X = dataset[:,:features]
-    Y = dataset[:,features:-1]
-    if Y.shape[1] != labels:
-        raise Exception(f'incorrect number of labels, expecting {labels} but found {Y.shape[1]}')
-    opt_costs = dataset[:,-1] # these are the optimal path costs as found by dijkstra algo during data generation
+    # First split into train/val and test without shuffling
+    test_split_percent = [split_percentages["train"] + split_percentages["val"], split_percentages["test"]]
+    data_splits = split_array(dataset, test_split_percent)
 
-    X_splits = split_array(X,split_percentages)
-    Y_splits = split_array(Y,split_percentages)
+    # Separate into train/val dataset and test dataset
+    dataset_TV = data_splits[0]
+    dataset_test = data_splits[1]
 
-    split_data = {}
-    split_data["X_train"] = X_splits[0]
-    split_data["X_val"] = X_splits[1]
-    split_data["X_test"] = X_splits[2]
+    # Separate test features and labels and record
+    X_test, Y_test = separate_features_labels(dataset_test,num_obstacles)
+    split_data["X_test"] = X_test
+    split_data["Y_test"] = Y_test
+
+    # shuffle training/validation data
+    if shuffle_data:
+        np.random.shuffle(dataset_TV)
+
+    # Calculate split percentages based on remaining data
+    percent_data_left = 100 - split_percentages["test"]*100
+    TV_split_percent = [split_percentages["train"]*100/percent_data_left, split_percentages["val"]*100/percent_data_left] # split percentages for training and validation
     
-    split_data["Y_train"] = Y_splits[0]
-    split_data["Y_val"] = Y_splits[1]
-    split_data["Y_test"] = Y_splits[2]
+    # Split data into training/validation, separate features from labels, and record
+    TV_data_splits = split_array(dataset_TV,TV_split_percent)
+    dataset_train = TV_data_splits[0]
+    X_train, Y_train = separate_features_labels(dataset_train,num_obstacles)
+    split_data["X_train"] = X_train
+    split_data["Y_train"] = Y_train
+
+    dataset_val = TV_data_splits[1]
+    X_val, Y_val = separate_features_labels(dataset_val,num_obstacles)
+    split_data["X_val"] = X_val
+    split_data["Y_val"] = Y_val
+
+    opt_cost_test = dataset_test[:,-1]
+    opt_cost_TV = dataset_TV[:,-1]
+    opt_costs = np.hstack((opt_cost_TV,opt_cost_test))
 
     split_data["opt_costs"] = opt_costs
     split_data["num_features"] = features
@@ -204,6 +229,16 @@ def split_array(original_array, split_percentages):
 
     return splits
 
+def separate_features_labels(dataset,num_obstacles):
+    '''Separates data set into features data and label data'''
+    num_features = calc_num_features(num_obstacles)
+    num_labels = num_obstacles
+    feature_data = dataset[:,:num_features]
+    label_data = dataset[:,num_features:-1]
+    if label_data.shape[1] != num_labels:
+        raise Exception(f'incorrect number of labels, expecting {num_labels} but found {label_data.shape[1]}')
+    return feature_data, label_data
+
 def calc_num_features(num_obs):
     return 3*num_obs + 4
 
@@ -221,11 +256,15 @@ def shift_row(row,num_obs):
             result_list.append(row[ii])
     return result_list
 
-def shift_data_set(data_set,num_obs):
+def shift_data_set(data_set,num_obs,is_shift_data):
     '''data set should be an array of read data file'''
-    modified_array = np.empty_like(data_set)
-    for ii,row in enumerate(tqdm(data_set,file=sys.stdout,desc="Shifting Data Set", unit="row")):
-        mod_row = shift_row(row,num_obs)
-        modified_array[ii,:] = np.array(mod_row)
-
-    return modified_array
+    if is_shift_data:
+        # implements shifting that data
+        modified_array = np.empty_like(data_set)
+        for ii,row in enumerate(tqdm(data_set,file=sys.stdout,desc="Shifting Data Set", unit="row")):
+            mod_row = shift_row(row,num_obs)
+            modified_array[ii,:] = np.array(mod_row)
+        return modified_array
+    else:
+        # returns array unmodified if we dont want to shift data
+        return data_set

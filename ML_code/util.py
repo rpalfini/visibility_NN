@@ -57,8 +57,9 @@ def get_dir_list(path):
     result = [name for name in os.listdir(path) if os.path.isdir(os.path.join(path,name))]
     return result
 
-def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc, val_acc, test_acc,
-                          model, num_train, num_val, num_test, data_set_name, optimizer_name,start_time,is_shift_data):
+def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc, val_acc, test_acc, 
+                         train_loss, val_loss, test_loss, model, num_train, num_val, num_test, 
+                         data_set_name, optimizer_name,start_time,is_shift_data):
     # output_path = os.path.join(output_dir,f"results_{df}.txt")
     output_path = make_results_file_name(output_dir,train_acc,val_acc,test_acc)
     with open(output_path,"w") as f:
@@ -68,12 +69,12 @@ def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc
         f.write(f'Training Duration = {t_dur}\n')
         f.write(f'trained on file {data_set_name}\n')
         f.write(f'is data shift so course is centered on origin = {is_shift_data}\n')
-        f.write('train_acc,val_acc,test_acc,epochs,batch_size,optimizer,learning_rate,num_train_data,num_val_data,num_test_data\n')
-        f.write(f'{train_acc},{val_acc},{test_acc},{epochs},{batch_size},{optimizer_name},{learning_rate},{num_train},{num_val},{num_test}\n')
+        f.write('train_acc,val_acc,test_acc,train_loss,val_loss,test_loss,epochs,batch_size,optimizer,learning_rate,num_train_data,num_val_data,num_test_data\n')
+        f.write(f'{train_acc},{val_acc},{test_acc},{train_loss:.6f},{val_loss:.6f},{test_loss:.6f},{epochs},{batch_size},{optimizer_name},{learning_rate},{num_train},{num_val},{num_test}\n')
         per_train,per_val,per_test = get_data_percents(num_train,num_val,num_test)
         f.write('percent of data for train, val and test\n')
         f.write(f'percent_train={per_train:.2f},percent_val={per_val:.2f},percent_test={per_test:.2f}\n')
-        f.write(f'number of data points = {num_train + num_test + num_val}\n')
+        f.write(f'total number of data points = {num_train + num_test + num_val}\n')
         write_activation_info_to_file(model,f)
         # following code outputs model summary to file
         sys.stdout = f

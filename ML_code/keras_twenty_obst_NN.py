@@ -224,9 +224,12 @@ def main():
         val_loss, val_accuracy = model.evaluate(X_val, Y_val)
         print('testing test data')
         test_loss, test_accuracy = model.evaluate(X_test, Y_test)
-        print('Train_Accuracy: %.2f' % (train_accuracy*100))
+        print('\nTrain_Accuracy: %.2f' % (train_accuracy*100))
         print('Validation_Accuracy: %.2f' % (val_accuracy*100))
         print('Test_Accuracy: %.2f' % (test_accuracy*100))
+        print('\nTrain_Loss: %.6f' % (train_loss))
+        print('Validation_Loss: %.6f' % (val_loss))
+        print('Test_Loss: %.6f' % (test_loss))
     # except KeyboardInterrupt:
     except:
         #save intermediate results upon exception
@@ -235,19 +238,17 @@ def main():
         util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,0,
                                 0,0,model,X_train.shape[0],X_val.shape[0],
                                 X_test.shape[0],f_trained,optimizer._name,start_time,is_shift_data)
-        return
-        # util.record_model_fit_results(results,model_output_folder)
-
-    
+        return    
     
     # record model training results
     model.save(os.path.join(model_output_folder,"keras_model"))
     _, f_trained = os.path.split(args.file_path)
     util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_accuracy*100,
-                              val_accuracy*100,test_accuracy*100,model,X_train.shape[0],X_val.shape[0],
-                              X_test.shape[0],f_trained,optimizer._name,start_time,is_shift_data)
+                              val_accuracy*100,test_accuracy*100,train_loss,val_loss,test_loss,
+                              model,X_train.shape[0],X_val.shape[0],X_test.shape[0],f_trained,
+                              optimizer._name,start_time,is_shift_data)
     util.record_model_fit_results(results,model_output_folder)
-    print('training complete')
+    print('\ntraining complete')
 
 if __name__ == "__main__":
     main()

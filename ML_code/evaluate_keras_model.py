@@ -28,14 +28,17 @@ def main(model_path,epoch,data_file,num_obs):
 
         # evaluate the keras weight_loaded_model
         print('testing training data')
-        _, train_accuracy = weight_loaded_model.evaluate(X_train, Y_train)
+        train_loss, train_accuracy = model.evaluate(X_train,Y_train)
         print('testing validation data')
-        _, val_accuracy = weight_loaded_model.evaluate(X_val, Y_val)
+        val_loss, val_accuracy = model.evaluate(X_val, Y_val)
         print('testing test data')
-        _, test_accuracy = weight_loaded_model.evaluate(X_test, Y_test)
-        print('Train_Accuracy: %.2f' % (train_accuracy*100))
+        test_loss, test_accuracy = model.evaluate(X_test, Y_test)
+        print('\nTrain_Accuracy: %.2f' % (train_accuracy*100))
         print('Validation_Accuracy: %.2f' % (val_accuracy*100))
         print('Test_Accuracy: %.2f' % (test_accuracy*100))
+        print('\nTrain_Loss: %.6f' % (train_loss))
+        print('Validation_Loss: %.6f' % (val_loss))
+        print('Test_Loss: %.6f' % (test_loss))
     else:
         print('not splitting data')
         dataset_in = util.load_data(data_file)
@@ -44,7 +47,7 @@ def main(model_path,epoch,data_file,num_obs):
         print('testing all data')
         loss, accuracy = weight_loaded_model.evaluate(X,Y)
         print('Accuracy: %.2f' % (accuracy*100))
-        print(f'Loss: {loss}')
+        print(f'Loss: {loss:.6f}')
 
 
 def load_model_with_checkpoint(model_path,epoch):
@@ -57,7 +60,6 @@ def load_model_with_checkpoint(model_path,epoch):
 
     if os.name == 'nt':
         dir_path = dir_path.replace('/','\\')
-        print(dir_path)
 
     loaded_model = K.models.load_model(model_path)
     checkpoint_template = util.make_checkpoint_template()

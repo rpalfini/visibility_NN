@@ -420,7 +420,7 @@
             "justMyCode": true
         },
         {
-            "name": "Python: test_keras_name_issue",
+            "name": "Python: test_keras_small_data",
             "type": "python",
             "request": "launch",
             "program": "${file}",

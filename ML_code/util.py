@@ -18,6 +18,8 @@ def arg_parse():
     parser.add_argument("-e","--n_epochs", type=int, default=100, help="sets number of epochs for the data")
     parser.add_argument("-l","--learning_rate",type=float, default = 0.001, help="sets the learning rate")
     parser.add_argument("-m", "--NN_model", type=int, default=0, help="Selects neural network to train.  Used for training automation.")
+    parser.add_argument("-o","--optimizer", type=int, default=0, help="Selects the optimizer to use for the neural network.  0 is Adam, 1 is RMSprop, 2 is SGD")
+    parser.add_argument("-s","--shift", action='store_false', help="Shifts dataset over by half of size of obstacle field.  Expected field size is 30mx30m")
 
     args = parser.parse_args()
     return args
@@ -268,4 +270,5 @@ def shift_data_set(data_set,num_obs,is_shift_data):
         return modified_array
     else:
         # returns array unmodified if we dont want to shift data
+        print('Data was not shifted.')
         return data_set

@@ -9,15 +9,16 @@ import util
 import util_keras
 
 def main():
-    # user options
-    is_shift_data = True # this shifts the data over so that the course is center around origin of (0,0)
-    # split_percentages = [0.9, 0.05, 0.05]
-    split_percentages = {"train": 0.9, "val": 0.05, "test": 0.05}
 
-
-    start_time = util.get_datetime(add_new_line=False)
+    
     args = util.arg_parse()
     print(device_lib.list_local_devices())
+
+    # user options
+    is_shift_data = args.shift # this shifts the data over so that the course is center around origin of (0,0)
+    # split_percentages = [0.9, 0.05, 0.05]
+    split_percentages = {"train": 0.9, "val": 0.05, "test": 0.05}
+   
 
     # tf.debugging.set_log_device_placement(True)
 
@@ -50,6 +51,7 @@ def main():
     labels = split_data["num_labels"]
     
     model2test = args.NN_model
+    optimizer2use = args.optimizer
 
     model = K.Sequential()
 
@@ -155,16 +157,42 @@ def main():
     # model.add(K.layers.Dense(20, activation='relu'))
     # model.add(K.layers.Dense(10, activation='sigmoid')) 
 
+    if model2test == 0:
+        print('using model 0')
+        model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        for ii in range(5):
+            model.add(K.layers.Dense(180-40*ii, activation='relu'))
+        model.add(K.layers.Dense(labels, activation='tanh'))
+        model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
 
-    # next test    
-    # test after try using SGD with more layers
-    model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-    # model.add(K.layers.Dense(20, activation='relu'))
-    for ii in range(5):
-        model.add(K.layers.Dense(180-40*ii, activation='relu'))
-    model.add(K.layers.Dense(labels, activation='sigmoid'))
-    model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-    model.add(K.layers.Dense(labels, activation='sigmoid'))
+    elif model2test == 1:
+        print('using model 1')
+        model.add(K.layers.Dense(300, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        for ii in range(6):
+            model.add(K.layers.Dense(260-40*ii, activation='relu'))
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
+        model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+    elif model2test == 2:
+        print('using model 2')
+        model.add(K.layers.Dense(200, input_shape=(features,), activation='tanh')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
+    
+    elif model2test == 3:
+        print('using model 3')
+        model.add(K.layers.Dense(500, input_shape=(features,), activation='tanh')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+    else:
+        print('using model 4')
+        model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        for ii in range(5):
+            model.add(K.layers.Dense(180-40*ii, activation='relu'))
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
+        model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
 
     # model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
     # # model.add(K.layers.Dense(20, activation='relu'))
@@ -200,13 +228,18 @@ def main():
 
     # compile the keras model
     learning_rate = args.learning_rate
-    if model2test == 1:
+    if optimizer2use == 0:
         optimizer = K.optimizers.Adam(learning_rate=learning_rate)
-    # optimizer = K.optimizers.Adam()
-    elif model2test == 2:
+        print('optimizer is Adam')
+    elif optimizer2use == 1:
+        optimizer = K.optimizers.RMSprop(learning_rate=learning_rate)
+        print('optimizer is RMSprop')
+    elif optimizer2use == 2:
         optimizer = K.optimizers.SGD(learning_rate=learning_rate)
+        print('optimizer is SGD')
     else:
         optimizer = K.optimizers.Adam(learning_rate=learning_rate)
+        print('optimizer is Adam')
     
     # optimizer = K.optimizers.RMSprop(learning_rate=learning_rate)
     # optimizer = K.optimizers.Adam()
@@ -215,31 +248,28 @@ def main():
     # fit the keras model on the dataset
     n_epochs = args.n_epochs
     b_size = args.batch_size
+    start_time = util.get_datetime(add_new_line=False)
     try:
         results = model.fit(X_train, Y_train, validation_data = (X_val,Y_val), epochs=n_epochs, batch_size=b_size, callbacks=[checkpoint],shuffle = True)
-        # evaluate the keras model
-        print('testing training data')
-        train_loss, train_accuracy = model.evaluate(X_train,Y_train)
-        print('testing validation data')
-        val_loss, val_accuracy = model.evaluate(X_val, Y_val)
-        print('testing test data')
-        test_loss, test_accuracy = model.evaluate(X_test, Y_test)
-        print('\nTrain_Accuracy: %.2f' % (train_accuracy*100))
-        print('Validation_Accuracy: %.2f' % (val_accuracy*100))
-        print('Test_Accuracy: %.2f' % (test_accuracy*100))
-        print('\nTrain_Loss: %.6f' % (train_loss))
-        print('Validation_Loss: %.6f' % (val_loss))
-        print('Test_Loss: %.6f' % (test_loss))
+        
     # except KeyboardInterrupt:
     except:
         #save intermediate results upon exception
+        train_loss, train_accuracy, val_loss, val_accuracy, test_loss, test_accuracy = evaluate_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, b_size)
         model.save(os.path.join(model_output_folder,"keras_model"))
         _, f_trained = os.path.split(args.file_path)
-        util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,0,
-                                0,0,model,X_train.shape[0],X_val.shape[0],
-                                X_test.shape[0],f_trained,optimizer._name,start_time,is_shift_data)
+        # util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,0,
+        #                         0,0,0,0,0,model,X_train.shape[0],X_val.shape[0],
+        #                         X_test.shape[0],f_trained,optimizer._name,start_time,is_shift_data)
+        util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_accuracy*100,
+                              val_accuracy*100,test_accuracy*100,train_loss,val_loss,test_loss,
+                              model,X_train.shape[0],X_val.shape[0],X_test.shape[0],f_trained,
+                              optimizer._name,start_time,is_shift_data) 
         return    
     
+    # evaluate the keras model
+    train_loss, train_accuracy, val_loss, val_accuracy, test_loss, test_accuracy = evaluate_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, b_size)
+
     # record model training results
     model.save(os.path.join(model_output_folder,"keras_model"))
     _, f_trained = os.path.split(args.file_path)
@@ -249,6 +279,21 @@ def main():
                               optimizer._name,start_time,is_shift_data)
     util.record_model_fit_results(results,model_output_folder)
     print('\ntraining complete')
+
+def evaluate_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, batch_size):
+    print('testing training data')
+    train_loss, train_accuracy = model.evaluate(X_train,Y_train, batch_size = batch_size)
+    print('testing validation data')
+    val_loss, val_accuracy = model.evaluate(X_val, Y_val, batch_size = batch_size)
+    print('testing test data')
+    test_loss, test_accuracy = model.evaluate(X_test, Y_test, batch_size = batch_size)
+    print('\nTrain_Accuracy: %.2f' % (train_accuracy*100))
+    print('Validation_Accuracy: %.2f' % (val_accuracy*100))
+    print('Test_Accuracy: %.2f' % (test_accuracy*100))
+    print('\nTrain_Loss: %.6f' % (train_loss))
+    print('Validation_Loss: %.6f' % (val_loss))
+    print('Test_Loss: %.6f' % (test_loss))
+    return train_loss,train_accuracy,val_loss,val_accuracy,test_loss,test_accuracy
 
 if __name__ == "__main__":
     main()

@@ -432,7 +432,11 @@
                 "-e",
                 "3",
                 "-n",
-                "3"
+                "3",
+                "-o",
+                "2",
+                "-m",
+                "4",
             ],
             "console": "integratedTerminal",
             "justMyCode": true

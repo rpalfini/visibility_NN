@@ -99,7 +99,6 @@ def main():
     # model.add(K.layers.Dropout(0.1))
     # model.add(K.layers.Dense(labels, activation='sigmoid'))
 
-    
     # model.add(K.layers.Dense(100, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
     # model.add(K.layers.Dense(100, activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
     # model.add(K.layers.Dense(90, activation='relu'))
@@ -149,7 +148,6 @@ def main():
     # model.add(K.layers.Dense(100, activation='relu'))
     # model.add(K.layers.Dense(labels, activation='sigmoid'))
 
-
     # model.add(K.layers.Dense(300, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
     # # model.add(K.layers.Dense(20, activation='relu'))
     # for ii in range(7):
@@ -185,13 +183,65 @@ def main():
         model.add(K.layers.Dense(500, input_shape=(features,), activation='tanh')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
         model.add(K.layers.Dense(labels, activation='sigmoid'))
 
-    else:
+    elif model2test == 4:
         print('using model 4')
         model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
         for ii in range(5):
             model.add(K.layers.Dense(180-40*ii, activation='relu'))
         model.add(K.layers.Dense(labels, activation='sigmoid'))
         model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+    elif model2test == 5:
+        print('using model 5')
+        model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        for ii in range(5):
+            model.add(K.layers.Dense(180-40*ii, activation='tanh'))
+        model.add(K.layers.Dense(labels, activation='tanh'))
+        model.add(K.layers.Dense(200, input_shape=(features,), activation='tanh')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+    # change to 500 on second to last layer
+    elif model2test == 6:
+        print('using model 6')
+        model.add(K.layers.Dense(500, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        for ii in range(5):
+            model.add(K.layers.Dense(420-80*ii, activation='relu'))
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
+        model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+    # change to 500 on second to last layer
+    elif model2test == 7:
+        print('using model 7')
+        model.add(K.layers.Dense(500, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        for ii in range(11):
+            model.add(K.layers.Dense(460-40*ii, activation='relu'))
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
+        model.add(K.layers.Dense(500, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+    elif model2test == 8:
+        print('using model 8')
+        first_layer = 1000
+        neurons_lost_per_layer = 140
+        num_hidden_layers = 6
+        model = util_keras.create_funnel_model(model,first_layer,neurons_lost_per_layer,num_hidden_layers,features,labels)
+
+    elif model2test == 9:
+        print('using model 9')
+        first_layer = 3220
+        neurons_lost_per_layer = 200
+        num_hidden_layers = 15
+        model = util_keras.create_funnel_model(model,first_layer,neurons_lost_per_layer,num_hidden_layers,features,labels)
+
+
+    else:
+        print('using default model')
+        model.add(K.layers.Dense(50, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        model.add(K.layers.Dense(100, activation='relu'))
+        model.add(K.layers.Dense(100, activation='relu'))
+        model.add(K.layers.Dense(100, activation='relu'))
         model.add(K.layers.Dense(labels, activation='sigmoid'))
 
     # model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
@@ -255,7 +305,7 @@ def main():
     # except KeyboardInterrupt:
     except:
         #save intermediate results upon exception
-        train_loss, train_accuracy, val_loss, val_accuracy, test_loss, test_accuracy = evaluate_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, b_size)
+        train_loss, train_accuracy, val_loss, val_accuracy, test_loss, test_accuracy = util_keras.evaluate_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, b_size)
         model.save(os.path.join(model_output_folder,"keras_model"))
         _, f_trained = os.path.split(args.file_path)
         # util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,0,
@@ -268,7 +318,7 @@ def main():
         return    
     
     # evaluate the keras model
-    train_loss, train_accuracy, val_loss, val_accuracy, test_loss, test_accuracy = evaluate_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, b_size)
+    train_loss, train_accuracy, val_loss, val_accuracy, test_loss, test_accuracy = util_keras.evaluate_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, b_size)
 
     # record model training results
     model.save(os.path.join(model_output_folder,"keras_model"))
@@ -280,20 +330,6 @@ def main():
     util.record_model_fit_results(results,model_output_folder)
     print('\ntraining complete')
 
-def evaluate_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, batch_size):
-    print('testing training data')
-    train_loss, train_accuracy = model.evaluate(X_train,Y_train, batch_size = batch_size)
-    print('testing validation data')
-    val_loss, val_accuracy = model.evaluate(X_val, Y_val, batch_size = batch_size)
-    print('testing test data')
-    test_loss, test_accuracy = model.evaluate(X_test, Y_test, batch_size = batch_size)
-    print('\nTrain_Accuracy: %.2f' % (train_accuracy*100))
-    print('Validation_Accuracy: %.2f' % (val_accuracy*100))
-    print('Test_Accuracy: %.2f' % (test_accuracy*100))
-    print('\nTrain_Loss: %.6f' % (train_loss))
-    print('Validation_Loss: %.6f' % (val_loss))
-    print('Test_Loss: %.6f' % (test_loss))
-    return train_loss,train_accuracy,val_loss,val_accuracy,test_loss,test_accuracy
 
 if __name__ == "__main__":
     main()

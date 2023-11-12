@@ -19,7 +19,7 @@ def arg_parse():
     parser.add_argument("-l","--learning_rate",type=float, default = 0.001, help="sets the learning rate")
     parser.add_argument("-m", "--NN_model", type=int, default=0, help="Selects neural network to train.  Used for training automation.")
     parser.add_argument("-o","--optimizer", type=int, default=0, help="Selects the optimizer to use for the neural network.  0 is Adam, 1 is RMSprop, 2 is SGD")
-    parser.add_argument("-s","--shift", action='store_false', help="Shifts dataset over by half of size of obstacle field.  Expected field size is 30mx30m")
+    parser.add_argument("-s","--shift", action='store_false', help="Turns off shifting dataset over by half of size of obstacle field.  Expected field size is 30mx30m so shift is -15 to each x,y coordinate")
 
     args = parser.parse_args()
     return args
@@ -154,8 +154,6 @@ def load_data(file_path):
     print(f'Loading data from {file_path}')
     return np.loadtxt(file_path,delimiter=',')
 
-
-
 def shuffle_and_split_data(dataset,num_obstacles,split_percentages,shuffle_data=True):
     '''Splits data into train/val and test. Shuffles train/val data, and then splits train and val data.
        INPUTS:
@@ -272,3 +270,4 @@ def shift_data_set(data_set,num_obs,is_shift_data):
         # returns array unmodified if we dont want to shift data
         print('Data was not shifted.')
         return data_set
+

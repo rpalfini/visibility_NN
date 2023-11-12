@@ -434,9 +434,10 @@
                 "-n",
                 "3",
                 "-o",
-                "2",
+                "0",
                 "-m",
-                "4",
+                "8",
+                "-s"
             ],
             "console": "integratedTerminal",
             "justMyCode": true

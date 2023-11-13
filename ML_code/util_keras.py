@@ -28,10 +28,22 @@ def evaluate_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, batch_
 
 def create_funnel_model(model,first_layer, neurons_lost_per_layer, num_hidden_layers,features,labels):
     '''creates specific neural network model based on inputs.  This one has worked fairly well.'''
-    model.add(K.layers.Dense(first_layer, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    model.add(K.layers.Dense(first_layer, input_shape=(features,), activation='relu')) 
     for ii in range(num_hidden_layers):
         model.add(K.layers.Dense(first_layer-neurons_lost_per_layer-neurons_lost_per_layer*ii, activation='relu'))
     model.add(K.layers.Dense(labels, activation='sigmoid'))
-    model.add(K.layers.Dense(first_layer, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+    model.add(K.layers.Dense(first_layer, activation='relu')) 
+    model.add(K.layers.Dense(labels, activation='sigmoid'))
+    return model
+
+def create_double_funnel_model(model,first_layer, neurons_lost_per_layer, num_hidden_layers,features,labels):
+    '''creates specific neural network model based on inputs.  This one has worked fairly well.'''
+    model.add(K.layers.Dense(first_layer, input_shape=(features,), activation='relu')) 
+    for ii in range(num_hidden_layers):
+        model.add(K.layers.Dense(first_layer-neurons_lost_per_layer-neurons_lost_per_layer*ii, activation='relu'))
+    model.add(K.layers.Dense(labels, activation='sigmoid'))
+    model.add(K.layers.Dense(first_layer, activation='relu')) 
+    model.add(K.layers.Dense(labels, activation='sigmoid'))
+    model.add(K.layers.Dense(first_layer, activation='relu')) 
     model.add(K.layers.Dense(labels, activation='sigmoid'))
     return model

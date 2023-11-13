@@ -235,6 +235,19 @@ def main():
         num_hidden_layers = 15
         model = util_keras.create_funnel_model(model,first_layer,neurons_lost_per_layer,num_hidden_layers,features,labels)
 
+    elif model2test == 10:
+        print('using model 10')
+        first_layer = 1000
+        neurons_lost_per_layer = 140
+        num_hidden_layers = 6
+        model = util_keras.create_double_funnel_model(model,first_layer,neurons_lost_per_layer,num_hidden_layers,features,labels)
+
+    elif model2test == 11:
+        print('using model 11')
+        first_layer = 1040
+        neurons_lost_per_layer = 60
+        num_hidden_layers = 16
+        model = util_keras.create_funnel_model(model,first_layer,neurons_lost_per_layer,num_hidden_layers,features,labels)
 
     else:
         print('using default model')

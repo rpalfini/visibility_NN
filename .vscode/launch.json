@@ -436,7 +436,7 @@
                 "-o",
                 "0",
                 "-m",
-                "8",
+                "10",
                 "-s"
             ],
             "console": "integratedTerminal",

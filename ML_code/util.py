@@ -59,6 +59,21 @@ def get_dir_list(path):
     result = [name for name in os.listdir(path) if os.path.isdir(os.path.join(path,name))]
     return result
 
+def get_completed_model_list(path):
+    '''Finds path to folders in directory that have completed training model'''
+    result = [name for name in os.listdir(path) if os.path.exists(os.path.join(path,name,f"{name}_results.pkl"))]
+    return result
+
+def compare_lists(list1,list2):
+    # Find elements in list1 that are not in list2
+    unique_elements_in_list1 = list(set(list1) - set(list2))
+
+    # Find elements in list2 that are not in list1
+    unique_elements_in_list2 = list(set(list2) - set(list1))
+
+    print("Elements in list1 but not in list2:", unique_elements_in_list1)
+    print("Elements in list2 but not in list1:", unique_elements_in_list2)
+
 def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc, val_acc, test_acc, 
                          train_loss, val_loss, test_loss, model, num_train, num_val, num_test, 
                          data_set_name, optimizer_name,start_time,is_shift_data):

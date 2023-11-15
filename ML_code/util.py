@@ -4,6 +4,7 @@ import pickle
 import datetime
 from tqdm import tqdm
 import numpy as np
+import graph_util as g_util
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
@@ -20,6 +21,8 @@ def arg_parse():
     parser.add_argument("-m", "--NN_model", type=int, default=0, help="Selects neural network to train.  Used for training automation.")
     parser.add_argument("-o","--optimizer", type=int, default=0, help="Selects the optimizer to use for the neural network.  0 is Adam, 1 is RMSprop, 2 is SGD")
     parser.add_argument("-s","--shift", action='store_false', help="Turns off shifting dataset over by half of size of obstacle field.  Expected field size is 30mx30m so shift is -15 to each x,y coordinate")
+    parser.add_argument("-sf","--scale_flag", action='store_true', help="Turns on scaling inputs based on the argument scale_value.  This scales all of the features by the scale_value.")
+    parser.add_argument("-sv","--scale_value", type=float, default=1, help="Scale value used when scale_flag is activated.  it is what the data is divided by. So 30 results in 1/30 scale")
 
     args = parser.parse_args()
     return args
@@ -76,7 +79,7 @@ def compare_lists(list1,list2):
 
 def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc, val_acc, test_acc, 
                          train_loss, val_loss, test_loss, model, num_train, num_val, num_test, 
-                         data_set_name, optimizer_name,start_time,is_shift_data):
+                         data_set_name, optimizer_name,start_time,is_shift_data,scale_value):
     # output_path = os.path.join(output_dir,f"results_{df}.txt")
     output_path = make_results_file_name(output_dir,train_acc,val_acc,test_acc)
     with open(output_path,"w") as f:
@@ -86,6 +89,7 @@ def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc
         f.write(f'Training Duration = {t_dur}\n')
         f.write(f'trained on file {data_set_name}\n')
         f.write(f'is data shift so course is centered on origin = {is_shift_data}\n')
+        f.write(f'Data is scaled by {scale_value}\n')
         f.write('train_acc,val_acc,test_acc,train_loss,val_loss,test_loss,epochs,batch_size,optimizer,learning_rate,num_train_data,num_val_data,num_test_data\n')
         f.write(f'{train_acc},{val_acc},{test_acc},{train_loss:.6f},{val_loss:.6f},{test_loss:.6f},{epochs},{batch_size},{optimizer_name},{learning_rate},{num_train},{num_val},{num_test}\n')
         per_train,per_val,per_test = get_data_percents(num_train,num_val,num_test)
@@ -132,6 +136,12 @@ def record_model_fit_results(results, output_folder):
     Temp = open(PK_fname,'wb')
     pickle.dump(results.history,Temp)
     Temp.close()
+
+def save_loss_acc_plot(results, output_folder):
+    model_results_path, model_number = os.path.split(output_folder)
+    g_util.plot_hist(results)
+    fig_path = os.path.join(output_folder,f"{model_number}_loss_acc.png")
+    g_util.plt.savefig(fig_path)
 
 def get_data_percents(num_train,num_val,num_test):
     total_data = num_train + num_test + num_val
@@ -285,4 +295,34 @@ def shift_data_set(data_set,num_obs,is_shift_data):
         # returns array unmodified if we dont want to shift data
         print('Data was not shifted.')
         return data_set
+    
+# def scale_row(row,num_obs,scale_val):
+#     '''rescales data set by scale'''
+#     scale = 1/scale_val
+#     num_features = calc_num_features(num_obs)
+#     row[:num_features] = [x * scale for x in row[:num_features]]
+#     row[-1] *= scale # also multiply the path distance found by the scale
+#     return row
+    
+# def scale_data_set(data_set,num_obs,scale,is_rescale_data):
+#     if is_rescale_data:
+#         modified_array = np.empty_like(data_set)
+#         for ii,row in enumerate(tqdm(data_set,file=sys.stdout,desc="Scaling Data Set", unit="row")):
+#             mod_row = scale_row(row,num_obs,scale)
+#             modified_array[ii,:] = np.array(mod_row)
+#         return modified_array
+#     else:
+#         print('Data was not rescaled.')
+#         return data_set
 
+def scale_data_set(data_set,num_obs,scale_val,is_scale_data):
+    scale = 1/scale_val
+    num_features = calc_num_features(num_obs)
+    if is_scale_data:
+        data_set[:,:num_features] *= scale
+        data_set[:,-1] *= scale
+        print(f'Data was rescaled by {scale}.')
+        return data_set
+    else:
+        print('Data was not rescaled.')
+        return data_set

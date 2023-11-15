@@ -7,6 +7,7 @@ from tensorflow.python.client import device_lib
 from tqdm import tqdm
 import util
 import util_keras
+import graph_util as g_util
 
 def main():
 
@@ -16,6 +17,8 @@ def main():
 
     # user options
     is_shift_data = args.shift # this shifts the data over so that the course is center around origin of (0,0)
+    is_scale_data = args.scale_flag
+    scale_value = args.scale_value
     # split_percentages = [0.9, 0.05, 0.05]
     split_percentages = {"train": 0.9, "val": 0.05, "test": 0.05}
    
@@ -36,6 +39,7 @@ def main():
 
     
     dataset_processed = util.shift_data_set(dataset_in,args.num_obs,is_shift_data)
+    dataset_processed = util.scale_data_set(dataset_processed,args.num_obs,scale_value,is_scale_data)
     split_data = util.shuffle_and_split_data(dataset_processed,args.num_obs,split_percentages)
 
     X_train = split_data["X_train"] 
@@ -211,14 +215,14 @@ def main():
         model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
         model.add(K.layers.Dense(labels, activation='sigmoid'))
 
-    # change to 500 on second to last layer
     elif model2test == 7:
         print('using model 7')
-        model.add(K.layers.Dense(500, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
-        for ii in range(11):
-            model.add(K.layers.Dense(460-40*ii, activation='relu'))
-        model.add(K.layers.Dense(labels, activation='sigmoid'))
-        model.add(K.layers.Dense(500, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
+        first_layer = 620
+        neurons_lost_per_layer = 75
+        num_hidden_layers = 7
+        model = util_keras.create_just_funnel_model(model,first_layer,neurons_lost_per_layer,num_hidden_layers,features,labels)
+        for ii in range(5):
+            model.add(K.layers.Dense(105, activation='relu'))
         model.add(K.layers.Dense(labels, activation='sigmoid'))
 
     elif model2test == 8:
@@ -230,9 +234,9 @@ def main():
 
     elif model2test == 9:
         print('using model 9')
-        first_layer = 3220
-        neurons_lost_per_layer = 200
-        num_hidden_layers = 15
+        first_layer = 620
+        neurons_lost_per_layer = 75
+        num_hidden_layers = 7
         model = util_keras.create_funnel_model(model,first_layer,neurons_lost_per_layer,num_hidden_layers,features,labels)
 
     elif model2test == 10:
@@ -327,7 +331,7 @@ def main():
         util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_accuracy*100,
                               val_accuracy*100,test_accuracy*100,train_loss,val_loss,test_loss,
                               model,X_train.shape[0],X_val.shape[0],X_test.shape[0],f_trained,
-                              optimizer._name,start_time,is_shift_data) 
+                              optimizer._name,start_time,is_shift_data,scale_value) 
         return    
     
     # evaluate the keras model
@@ -339,8 +343,9 @@ def main():
     util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_accuracy*100,
                               val_accuracy*100,test_accuracy*100,train_loss,val_loss,test_loss,
                               model,X_train.shape[0],X_val.shape[0],X_test.shape[0],f_trained,
-                              optimizer._name,start_time,is_shift_data)
+                              optimizer._name,start_time,is_shift_data,scale_value)
     util.record_model_fit_results(results,model_output_folder)
+    util.save_loss_acc_plot(results.history,model_output_folder)
     print('\ntraining complete')
 
 

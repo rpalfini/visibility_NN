@@ -36,6 +36,14 @@ def create_funnel_model(model,first_layer, neurons_lost_per_layer, num_hidden_la
     model.add(K.layers.Dense(labels, activation='sigmoid'))
     return model
 
+def create_just_funnel(model,first_layer, neurons_lost_per_layer, num_hidden_layers,features,labels):
+    '''creates specific neural network model based on inputs. First half of the one that has worked well'''
+    model.add(K.layers.Dense(first_layer, input_shape=(features,), activation='relu')) 
+    for ii in range(num_hidden_layers):
+        model.add(K.layers.Dense(first_layer-neurons_lost_per_layer-neurons_lost_per_layer*ii, activation='relu'))
+    model.add(K.layers.Dense(labels, activation='sigmoid'))
+    return model
+
 def create_double_funnel_model(model,first_layer, neurons_lost_per_layer, num_hidden_layers,features,labels):
     '''creates specific neural network model based on inputs.  This one has worked fairly well.'''
     model.add(K.layers.Dense(first_layer, input_shape=(features,), activation='relu')) 

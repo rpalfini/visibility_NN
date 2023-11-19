@@ -16,3 +16,7 @@ obs_courses/*.txt
 err_out.txt
 log_out.txt
 *.h5
+40_on_all_data.txt
+error*.txt
+*_normal.txt
+output_*.txt

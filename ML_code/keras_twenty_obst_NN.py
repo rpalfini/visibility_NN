@@ -220,7 +220,7 @@ def main():
         first_layer = 620
         neurons_lost_per_layer = 75
         num_hidden_layers = 7
-        model = util_keras.create_just_funnel_model(model,first_layer,neurons_lost_per_layer,num_hidden_layers,features,labels)
+        model = util_keras.create_just_funnel(model,first_layer,neurons_lost_per_layer,num_hidden_layers,features,labels)
         for ii in range(5):
             model.add(K.layers.Dense(105, activation='relu'))
         model.add(K.layers.Dense(labels, activation='sigmoid'))
@@ -251,6 +251,43 @@ def main():
         first_layer = 1040
         neurons_lost_per_layer = 60
         num_hidden_layers = 16
+        model = util_keras.create_funnel_model(model,first_layer,neurons_lost_per_layer,num_hidden_layers,features,labels)
+
+    elif model2test == 12:
+        print('using model 12')
+        first_layer = 1000
+        neurons_lost_per_layer = 140
+        num_hidden_layers = 6
+        model = util_keras.create_just_funnel(model,first_layer,neurons_lost_per_layer,num_hidden_layers,features,labels)
+        model.add(K.layers.Dense(first_layer, activation='sigmoid'))
+        model.add(K.layers.Dense(first_layer, activation='sigmoid'))
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+    elif model2test == 13:
+        print('using model 13')
+        first_layer = 1000
+        neurons_lost_per_layer = 140
+        num_hidden_layers = 6
+        model = util_keras.create_just_funnel(model,first_layer,neurons_lost_per_layer,num_hidden_layers,features,labels)
+        model.add(K.layers.Dense(55, activation='sigmoid'))
+        model.add(K.layers.Dense(55, activation='sigmoid'))
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+    elif model2test == 14:
+        print('using model 14')
+        first_layer = 1560
+        neurons_lost_per_layer = 140
+        num_hidden_layers = 10
+        model = util_keras.create_just_funnel(model,first_layer,neurons_lost_per_layer,num_hidden_layers,features,labels)
+        model.add(K.layers.Dense(100, activation='relu'))
+        model.add(K.layers.Dense(100, activation='relu'))
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+    elif model2test == 15:
+        print('using model 15')
+        first_layer = 1220
+        neurons_lost_per_layer = 150
+        num_hidden_layers = 7
         model = util_keras.create_funnel_model(model,first_layer,neurons_lost_per_layer,num_hidden_layers,features,labels)
 
     else:

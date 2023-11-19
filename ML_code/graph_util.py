@@ -48,3 +48,5 @@ def plot_hist(results, x_start = 0, x_end = None, logscale = 1):
     plt.title('Accuracy vs. Epochs', fontweight='bold')  
     ax.set_xlim(x_start, x_end)
     plt.legend() 
+
+    # plt.subplots_adjust(wspace=0.2)

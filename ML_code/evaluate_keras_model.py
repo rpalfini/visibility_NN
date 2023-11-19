@@ -28,11 +28,11 @@ def main(model_path,epoch,data_file,num_obs):
 
         # evaluate the keras weight_loaded_model
         print('testing training data')
-        train_loss, train_accuracy = model.evaluate(X_train,Y_train)
+        train_loss, train_accuracy = weight_loaded_model.evaluate(X_train,Y_train)
         print('testing validation data')
-        val_loss, val_accuracy = model.evaluate(X_val, Y_val)
+        val_loss, val_accuracy = weight_loaded_model.evaluate(X_val, Y_val)
         print('testing test data')
-        test_loss, test_accuracy = model.evaluate(X_test, Y_test)
+        test_loss, test_accuracy = weight_loaded_model.evaluate(X_test, Y_test)
         print('\nTrain_Accuracy: %.2f' % (train_accuracy*100))
         print('Validation_Accuracy: %.2f' % (val_accuracy*100))
         print('Test_Accuracy: %.2f' % (test_accuracy*100))
@@ -40,14 +40,21 @@ def main(model_path,epoch,data_file,num_obs):
         print('Validation_Loss: %.6f' % (val_loss))
         print('Test_Loss: %.6f' % (test_loss))
     else:
-        print('not splitting data')
+        print('splitting TV and test data')
+        split_percentages = {"train": 0.9, "val": 0.05, "test": 0.05}
         dataset_in = util.load_data(data_file)
         dataset_processed = util.shift_data_set(dataset_in,num_obs,is_shift_data)
-        X, Y = util.separate_features_labels(dataset_processed,num_obs)
-        print('testing all data')
-        loss, accuracy = weight_loaded_model.evaluate(X,Y)
-        print('Accuracy: %.2f' % (accuracy*100))
-        print(f'Loss: {loss:.6f}')
+        split_data = util.shuffle_and_split_data(dataset_processed,args.num_obs,split_percentages)
+        
+        X_test = split_data["X_test"]
+        Y_test = split_data["Y_test"]
+
+        # X, Y = util.separate_features_labels(dataset_processed,num_obs)
+        print('testing test data')
+        # loss, accuracy = weight_loaded_model.evaluate(X,Y)
+        loss, accuracy = weight_loaded_model.evaluate(X_test,Y_test)
+        print('Test Accuracy: %.2f' % (accuracy*100))
+        print(f'Test Loss: {loss:.6f}')
 
 
 def load_model_with_checkpoint(model_path,epoch):

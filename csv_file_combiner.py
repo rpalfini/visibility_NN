@@ -3,6 +3,11 @@ import os
 import glob
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
+from ML_code import util
+
+'''This module contains code for working with large csv files created from data generation.'''
+
+
 def append_file_csv():
     pass
 
@@ -26,8 +31,43 @@ def csv_reader(fname):
     for row in open(fname):
         yield row
 
+def row_counter(data_gen):
+    '''Counts rows in a generator.  Data_gen should be a generator to a data file created by csv_reader()'''
+    row_count = 0
+    for row in data_gen:
+        row_count += 1
+    return row_count
+
+def count_rows_in_dir(dir_path):
+    total_rows = 0
+    csv_files = get_file_list(dir_path)
+    for csv_file in csv_files:
+        row_count = 0
+        with open(dir_path + f'/{csv_file}','r') as file:
+            row_count = file.readlines()
+            # for line in file:
+            #     row_count += 1
+        # row_gen = csv_reader(dir_path + f'/{csv_file}')
+        # row_count = row_counter(row_gen)
+        total_rows += len(row_count)
+    return total_rows
+
+def other_count_rows_in_dir(dir_path):
+    total_rows = 0
+    csv_files = get_file_list(dir_path)
+    for csv_file in csv_files:
+        row_count = 0
+        with open(dir_path + f'/{csv_file}','r') as file:
+            # row_count = file.readlines()
+            for line in file:
+                row_count += 1
+        # row_gen = csv_reader(dir_path + f'/{csv_file}')
+        # row_count = row_counter(row_gen)
+        total_rows += row_count
+    return total_rows
+
 def data_check(file_path,ncolumns):
-    '''checks if every row of file in file_path has ncolumns'''
+    '''checks if every row of file in file_path has ncolumns.'''
     data_gen = csv_reader(file_path)
     valid_file = True
     ii = 0
@@ -45,6 +85,13 @@ def data_check(file_path,ncolumns):
                 break
     # print(f'nrows = {ii}')
     return valid_file,n_invalid_rows,ii
+
+def calculate_num_columns(num_obstacles):
+    num_feat = util.calc_num_features(num_obstacles)
+    num_labels = num_obstacles
+    num_extra_columns = 1 # this is because we are storing the optimal path cost found as the last row
+    num_columns = num_feat + num_labels + num_extra_columns
+    return num_columns
 
 def remove_invalid_data(data_file_path):
     '''input should be absolute or relative path to the data file including the data file i.e. C:/Users/dog.csv'''
@@ -75,7 +122,15 @@ def remove_invalid_data(data_file_path):
     if not is_valid:
         raise Exception("Fixed file is invalid/has errors")
     else:
-        print(f'{data_file_path} is fixed and valid')
+        print(f'{output_file} is fixed and valid')
+
+def count_zero_lines(file_path):
+    file_gen = csv_reader(file_path)
+    num_zero_lines = 0
+    for line in file_gen:
+        if all(map(lambda x: float(x.strip()) == 0.0, line.split(','))):
+            num_zero_lines += 1
+    return num_zero_lines
 
 def split_fname_path(data_path):
     tokens = data_path.split('/')
@@ -83,6 +138,21 @@ def split_fname_path(data_path):
     fpath = "/".join(tokens[:-1])
     fpath += "/"
     return fname,fpath
+
+def print_data_window(file_path,target_row,back_win,forward_win):
+    ii = 0
+    file_gen = csv_reader(file_path)
+    for row in file_gen:
+        ii+=1
+        if ii >= (target_row-back_win) and ii <= (target_row+forward_win):
+            print(row)
+        
+        if ii == target_row:
+            print(row)
+        
+        if ii > target_row+forward_win:
+            break
+
 
 def _name_output(csv_folder,merge_out_folder):
     # if ".csv" in csv_folder:
@@ -102,7 +172,6 @@ def _chunk_and_output(csv_file_list,csv_folder_path,output_file,biggest_file=Non
             chunk_container = pd.read_csv(csv_fpath, chunksize=CHUNK_SIZE, header=None)
             for chunk in chunk_container:
                 chunk.to_csv(output_file, mode="a", index=False,header=False)
-
 
 # def combin
 def combine_csv(csv_folder):

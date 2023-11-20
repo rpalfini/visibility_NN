@@ -430,7 +430,7 @@
                 "-b",
                 "64",
                 "-e",
-                "3",
+                "10",
                 "-n",
                 "3",
                 "-o",
@@ -477,6 +477,100 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": true
-        }
+        },
+        {
+            "name": "Python: test_evaluate_keras_model_no_epoch",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-d",
+                "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.csv",
+                "-f",
+                "./main_train_results/main_data_file_courses20/model_18",
+                "-b",
+                "64",
+                "-n",
+                "20",
+                "-s"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: test_evaluate_keras_model_three_obs",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-d",
+                "D:/Vis_network_data/data_file_by_course/main_data_file_courses3.csv",
+                "-f",
+                "./main_train_results/main_data_file_courses3/model_29",
+                "-b",
+                "64",
+                "-n",
+                "3"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: test_evaluate_keras_model_yes_epoch",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-d",
+                "D:/Vis_network_data/data_file_by_course/main_data_file_courses10.csv",
+                "-f",
+                "./main_train_results/main_data_file_courses10/model_7",
+                "-b",
+                "64",
+                "-e",
+                "3",
+                "-n",
+                "10"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: test_evaluate_keras_model_small_20",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-d",
+                "./ML_code/Data/small_main_data_file_courses20.csv",
+                "-f",
+                "./main_train_results/main_data_file_courses20/model_18",
+                "-b",
+                "1",
+                "-n",
+                "20",
+                "-s"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: test_evaluate_keras_model_small_3",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-d",
+                "./ML_code/Data/small_main_data_file_courses3.csv",
+                "-f",
+                "./main_train_results/main_data_file_courses3/model_29",
+                "-b",
+                "4",
+                "-n",
+                "3"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
     ]
 }

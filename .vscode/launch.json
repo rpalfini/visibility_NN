@@ -430,7 +430,7 @@
                 "-b",
                 "64",
                 "-e",
-                "10",
+                "3",
                 "-n",
                 "3",
                 "-o",
@@ -487,7 +487,7 @@
                 "-d",
                 "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.csv",
                 "-f",
-                "./main_train_results/main_data_file_courses20/model_18",
+                "./old_main_train_results/main_data_file_courses20/model_18",
                 "-b",
                 "64",
                 "-n",
@@ -506,7 +506,7 @@
                 "-d",
                 "D:/Vis_network_data/data_file_by_course/main_data_file_courses3.csv",
                 "-f",
-                "./main_train_results/main_data_file_courses3/model_29",
+                "./old_main_train_results/main_data_file_courses3/model_29",
                 "-b",
                 "64",
                 "-n",
@@ -524,7 +524,7 @@
                 "-d",
                 "D:/Vis_network_data/data_file_by_course/main_data_file_courses10.csv",
                 "-f",
-                "./main_train_results/main_data_file_courses10/model_7",
+                "./old_main_train_results/main_data_file_courses10/model_7",
                 "-b",
                 "64",
                 "-e",
@@ -544,7 +544,7 @@
                 "-d",
                 "./ML_code/Data/small_main_data_file_courses20.csv",
                 "-f",
-                "./main_train_results/main_data_file_courses20/model_18",
+                "./old_main_train_results/main_data_file_courses20/model_18",
                 "-b",
                 "1",
                 "-n",
@@ -563,7 +563,7 @@
                 "-d",
                 "./ML_code/Data/small_main_data_file_courses3.csv",
                 "-f",
-                "./main_train_results/main_data_file_courses3/model_29",
+                "./old_main_train_results/main_data_file_courses3/model_29",
                 "-b",
                 "4",
                 "-n",
@@ -572,5 +572,23 @@
             "console": "integratedTerminal",
             "justMyCode": true
         },
+        {
+            "name": "Python: test_tv_write_code_evaluate_keras",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-d",
+                "./ML_code/Data/small_main_data_file_courses3.csv",
+                "-f",
+                "./old_main_train_results/main_data_file_courses3/model_29",
+                "-b",
+                "64",
+                "-n",
+                "3"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
     ]
 }

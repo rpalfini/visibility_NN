@@ -188,6 +188,7 @@ def main():
         model.add(K.layers.Dense(labels, activation='sigmoid'))
 
     elif model2test == 4:
+        # 3 obstacles
         print('using model 4')
         model.add(K.layers.Dense(200, input_shape=(features,), activation='relu')) #specify shape of input layer to match number of features.  This is done on the first hidden layer.
         for ii in range(5):
@@ -289,6 +290,22 @@ def main():
         neurons_lost_per_layer = 150
         num_hidden_layers = 7
         model = util_keras.create_funnel_model(model,first_layer,neurons_lost_per_layer,num_hidden_layers,features,labels)
+
+    elif model2test == 16:
+        # for one obstacle
+        print('using model 16')
+        model.add(K.layers.Dense(12, input_shape=(features,), activation='relu')) 
+        model.add(K.layers.Dense(8,activation='relu'))
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
+
+    elif model2test == 17:
+        # for two obstacle
+        print('using model 17')
+        model.add(K.layers.Dense(10, input_shape=(features,), activation='relu')) 
+        model.add(K.layers.Dense(20,activation='relu'))
+        model.add(K.layers.Dense(100,activation='relu'))
+        model.add(K.layers.Dense(20,activation='relu'))
+        model.add(K.layers.Dense(labels, activation='sigmoid'))
 
     else:
         print('using default model')

@@ -39,11 +39,11 @@ def main(model_path,epoch,data_file,num_obs,batch,is_shift_data):
         # evaluate the keras weight_loaded_model
         #TODO replace this with the function from util.py
         print('testing training data')
-        train_loss, train_accuracy = weight_loaded_model.evaluate(X_train,Y_train)
+        train_loss, train_accuracy = weight_loaded_model.evaluate(X_train,Y_train,batch_size = batch)
         print('testing validation data')
-        val_loss, val_accuracy = weight_loaded_model.evaluate(X_val, Y_val)
+        val_loss, val_accuracy = weight_loaded_model.evaluate(X_val, Y_val,batch_size = batch)
         print('testing test data')
-        test_loss, test_accuracy = weight_loaded_model.evaluate(X_test, Y_test)
+        test_loss, test_accuracy = weight_loaded_model.evaluate(X_test, Y_test,batch_size = batch)
         print('\nTrain_Accuracy: %.2f' % (train_accuracy*100))
         print('Validation_Accuracy: %.2f' % (val_accuracy*100))
         print('Test_Accuracy: %.2f' % (test_accuracy*100))
@@ -87,6 +87,22 @@ def main(model_path,epoch,data_file,num_obs,batch,is_shift_data):
         print(f'\nTest Sample Accuracy: {test_sample_acc*100:.4f}')
         print(f'Test Binary Accuracy: {test_bin_acc*100:.2f}')
         print(f'Test Loss: {test_loss:.6f}')
+        write_results_file(util.fix_path_separator(model_path),tv_loss,tv_bin_acc,tv_sample_acc,test_loss,test_bin_acc,test_sample_acc)
+
+def write_results_file(model_path,tv_loss,tv_bin_acc,tv_sample_acc,test_loss,test_bin_acc,test_sample_acc):
+    out_file = make_tv_test_file_name(model_path,tv_sample_acc,test_sample_acc)
+    with open(out_file,"w") as f:
+        f.write('tv_sample_acc,test_sample_acc,tv_bin_acc,test_bin_acc,tv_loss,test_loss\n')
+        f.write(f'{tv_sample_acc},{test_sample_acc},{tv_bin_acc},{test_bin_acc},{tv_loss:.6f},{test_loss:.6f}\n')
+        
+
+def make_tv_test_file_name(output_dir,tv_acc,test_acc):
+    ''' similar to make_results_file_name in util.py but only being used for the case of retroactive testing'''
+    model_number = os.path.basename(output_dir)
+    tv_acc_str = "{:.2f}".format(tv_acc)
+    test_acc_str = "{:.2f}".format(test_acc)
+    fname = os.path.join(output_dir,f"{model_number}_results_{tv_acc_str}_{test_acc_str}.txt")
+    return fname
 
 #TODO move these functions to util_keras.py
 def load_model(model_path):
@@ -125,7 +141,7 @@ def arg_parse():
     parser = ArgumentParser(description="Script allows you to load and test a model with weights from earlier epoch.",formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument("-n", "--num_obs", type=int, default = 3, help="Specify number of obstacles in selected data set")
     parser.add_argument("-d", "--data_path", type=str, default = "./ML_code/Data/small_main_data_file_courses3.csv", help = 'Path to dataset you want to evaluate NN model on.')
-    parser.add_argument("-f","--model_path", type=str, default = "./main_train_results/small_main_data_file_courses3/model_15", help = 'Path to model results you wish to pull weights from.')
+    parser.add_argument("-f","--model_path", type=str, default = "./old_main_train_results/small_main_data_file_courses3/model_15", help = 'Path to model results you wish to pull weights from.')
     parser.add_argument("-e","--epoch", type=int, default=None, help="Chooses the weights from a given epoch to be loaded into the model.  If no epoch given, loads model weights from last epoch.")
     parser.add_argument("-b","--batch_size", type=int, default=64, help="Specify the batch size used during training to make accuracy calculation match results found during training.")
     parser.add_argument("-s","--shift", action='store_false', help="Turns off shifting dataset over by half of size of obstacle field.  Expected field size is 30mx30m so shift is -15 to each x,y coordinate")
@@ -136,7 +152,7 @@ def arg_parse():
 
 if __name__ == "__main__":
     #TODO until I implement recording which samples were used for each training, the only way to make results repeatable is by training with data shuffle off
-    
+
     #TODO: update so args used are the ones defined in util
     args = arg_parse()
     model_path = args.model_path
@@ -145,5 +161,7 @@ if __name__ == "__main__":
     epoch = args.epoch
     batch = args.batch_size
     is_shift_data = args.shift
+
+
 
     main(model_path,epoch,data_file,num_obs,batch,is_shift_data)

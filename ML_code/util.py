@@ -27,6 +27,15 @@ def arg_parse():
     args = parser.parse_args()
     return args
 
+def fix_path_separator(path_in):
+    '''Changes the / to \\ when looking at paths'''
+    if os.name == 'nt':
+        path_out = path_in.replace('/','\\')
+    else:
+        path_out = path_in
+    return path_out
+
+
 def init_data_store_folder(data_file,is_torch=False):
     '''creates directories needed for saving training results'''
     main_results_folder = 'main_train_results'
@@ -77,11 +86,11 @@ def compare_lists(list1,list2):
     print("Elements in list1 but not in list2:", unique_elements_in_list1)
     print("Elements in list2 but not in list1:", unique_elements_in_list2)
 
-def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc, val_acc, test_acc, 
-                         train_loss, val_loss, test_loss, model, num_train, num_val, num_test, 
-                         data_set_name, optimizer_name,start_time,is_shift_data,scale_value):
+def record_model_results(output_dir,epochs, batch_size, learning_rate, train_sample_acc, val_sample_acc, test_sample_acc,
+                         train_bin_acc, val_bin_acc, test_bin_acc, train_loss, val_loss, test_loss, model, num_train, 
+                         num_val, num_test, data_set_name, optimizer_name,start_time,is_shift_data,scale_value):
     # output_path = os.path.join(output_dir,f"results_{df}.txt")
-    output_path = make_results_file_name(output_dir,train_acc,val_acc,test_acc)
+    output_path = make_results_file_name(output_dir,train_sample_acc,val_sample_acc,test_sample_acc)
     with open(output_path,"w") as f:
         formatted_time = get_datetime()
         t_dur = calc_time_duration(start_time,formatted_time)
@@ -90,12 +99,14 @@ def record_model_results(output_dir,epochs, batch_size, learning_rate, train_acc
         f.write(f'trained on file {data_set_name}\n')
         f.write(f'is data shift so course is centered on origin = {is_shift_data}\n')
         f.write(f'Data is scaled by {scale_value}\n')
-        f.write('train_acc,val_acc,test_acc,train_loss,val_loss,test_loss,epochs,batch_size,optimizer,learning_rate,num_train_data,num_val_data,num_test_data\n')
-        f.write(f'{train_acc},{val_acc},{test_acc},{train_loss:.6f},{val_loss:.6f},{test_loss:.6f},{epochs},{batch_size},{optimizer_name},{learning_rate},{num_train},{num_val},{num_test}\n')
+        f.write('train_sample_acc,val_sample_acc,test_sample_acc,train_bin_acc,val_bin_acc,test_bin_acc,train_loss,val_loss,test_loss,epochs,batch_size,optimizer,learning_rate\n')
+        f.write(f'{train_sample_acc},{val_sample_acc},{test_sample_acc},{train_bin_acc},{val_bin_acc},{test_bin_acc},{train_loss:.6f},{val_loss:.6f},{test_loss:.6f},{epochs},{batch_size},{optimizer_name},{learning_rate}\n')
         per_train,per_val,per_test = get_data_percents(num_train,num_val,num_test)
         f.write('percent of data for train, val and test\n')
         f.write(f'percent_train={per_train:.2f},percent_val={per_val:.2f},percent_test={per_test:.2f}\n')
         f.write(f'total number of data points = {num_train + num_test + num_val}\n')
+        f.write('num_train_data,num_val_data,num_test_data\n')
+        f.write(f'{num_train},{num_val},{num_test}\n')
         write_activation_info_to_file(model,f)
         # following code outputs model summary to file
         sys.stdout = f

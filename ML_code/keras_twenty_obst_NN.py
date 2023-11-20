@@ -336,40 +336,44 @@ def main():
     
     # optimizer = K.optimizers.RMSprop(learning_rate=learning_rate)
     # optimizer = K.optimizers.Adam()
-    model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+    # model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['binary_accuracy',util_keras.AllOutputsCorrect()])
 
     # fit the keras model on the dataset
     n_epochs = args.n_epochs
     b_size = args.batch_size
     start_time = util.get_datetime(add_new_line=False)
     try:
-        results = model.fit(X_train, Y_train, validation_data = (X_val,Y_val), epochs=n_epochs, batch_size=b_size, callbacks=[checkpoint],shuffle = True)
+        results = model.fit(X_train, Y_train, validation_data = (X_val,Y_val), epochs=n_epochs, batch_size=b_size, callbacks=[checkpoint], shuffle = True)
         
     # except KeyboardInterrupt:
     except:
         #save intermediate results upon exception
-        train_loss, train_accuracy, val_loss, val_accuracy, test_loss, test_accuracy = util_keras.evaluate_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, b_size)
+        # train_loss, train_accuracy, val_loss, val_accuracy, test_loss, test_accuracy = util_keras.evaluate_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, b_size) #old way
+        train_loss,train_bin_acc,train_sample_acc,val_loss,val_bin_acc,val_sample_acc,test_loss,test_bin_acc,test_sample_acc = util_keras.evaluate_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, b_size)
         model.save(os.path.join(model_output_folder,"keras_model"))
         _, f_trained = os.path.split(args.file_path)
-        # util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,0,
-        #                         0,0,0,0,0,model,X_train.shape[0],X_val.shape[0],
-        #                         X_test.shape[0],f_trained,optimizer._name,start_time,is_shift_data)
-        util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_accuracy*100,
-                              val_accuracy*100,test_accuracy*100,train_loss,val_loss,test_loss,
-                              model,X_train.shape[0],X_val.shape[0],X_test.shape[0],f_trained,
-                              optimizer._name,start_time,is_shift_data,scale_value) 
+        # util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_accuracy*100,
+        #                       val_accuracy*100,test_accuracy*100,train_loss,val_loss,test_loss,
+        #                       model,X_train.shape[0],X_val.shape[0],X_test.shape[0],f_trained,
+        #                       optimizer._name,start_time,is_shift_data,scale_value) 
+        util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_sample_acc*100,
+                              val_sample_acc*100,test_sample_acc*100,train_bin_acc*100, val_bin_acc*100,
+                              test_bin_acc*100,train_loss,val_loss,test_loss,model,X_train.shape[0],
+                              X_val.shape[0],X_test.shape[0],f_trained,optimizer._name,start_time,is_shift_data,scale_value) 
         return    
     
     # evaluate the keras model
-    train_loss, train_accuracy, val_loss, val_accuracy, test_loss, test_accuracy = util_keras.evaluate_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, b_size)
+    # train_loss, train_accuracy, val_loss, val_accuracy, test_loss, test_accuracy = util_keras.evaluate_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, b_size)
+    train_loss,train_bin_acc,train_sample_acc,val_loss,val_bin_acc,val_sample_acc,test_loss,test_bin_acc,test_sample_acc = util_keras.evaluate_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, b_size)
 
     # record model training results
     model.save(os.path.join(model_output_folder,"keras_model"))
     _, f_trained = os.path.split(args.file_path)
-    util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_accuracy*100,
-                              val_accuracy*100,test_accuracy*100,train_loss,val_loss,test_loss,
-                              model,X_train.shape[0],X_val.shape[0],X_test.shape[0],f_trained,
-                              optimizer._name,start_time,is_shift_data,scale_value)
+    util.record_model_results(model_output_folder,n_epochs,b_size,learning_rate,train_sample_acc*100,
+                              val_sample_acc*100,test_sample_acc*100,train_bin_acc*100, val_bin_acc*100,
+                              test_bin_acc*100,train_loss,val_loss,test_loss,model,X_train.shape[0],
+                              X_val.shape[0],X_test.shape[0],f_trained,optimizer._name,start_time,is_shift_data,scale_value) 
     util.record_model_fit_results(results,model_output_folder)
     util.save_loss_acc_plot(results.history,model_output_folder)
     print('\ntraining complete')

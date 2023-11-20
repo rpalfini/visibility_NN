@@ -332,18 +332,7 @@ def main():
 
     # compile the keras model
     learning_rate = args.learning_rate
-    if optimizer2use == 0:
-        optimizer = K.optimizers.Adam(learning_rate=learning_rate)
-        print('optimizer is Adam')
-    elif optimizer2use == 1:
-        optimizer = K.optimizers.RMSprop(learning_rate=learning_rate)
-        print('optimizer is RMSprop')
-    elif optimizer2use == 2:
-        optimizer = K.optimizers.SGD(learning_rate=learning_rate)
-        print('optimizer is SGD')
-    else:
-        optimizer = K.optimizers.Adam(learning_rate=learning_rate)
-        print('optimizer is Adam')
+    optimizer = util_keras.optimizer_selector(optimizer2use, learning_rate)
     
     # optimizer = K.optimizers.RMSprop(learning_rate=learning_rate)
     # optimizer = K.optimizers.Adam()
@@ -384,6 +373,8 @@ def main():
     util.record_model_fit_results(results,model_output_folder)
     util.save_loss_acc_plot(results.history,model_output_folder)
     print('\ntraining complete')
+
+
 
 
 if __name__ == "__main__":

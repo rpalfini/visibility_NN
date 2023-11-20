@@ -255,6 +255,18 @@ def split_array(original_array, split_percentages):
 
     return splits
 
+def combine_test_val_data(split_data):
+    '''this combines test and validation data for use in evaluate_keras_model.py.  split_data should be the array created by shuffle_asnd_split_data()'''
+    X_train = split_data["X_train"] 
+    X_val = split_data["X_val"]   
+
+    Y_train = split_data["Y_train"] 
+    Y_val = split_data["Y_val"]   
+
+    X_tv = np.vstack((X_train,X_val))
+    Y_tv = np.vstack((Y_train,Y_val))
+    return X_tv,Y_tv
+
 def separate_features_labels(dataset,num_obstacles):
     '''Separates data set into features data and label data'''
     num_features = calc_num_features(num_obstacles)
@@ -295,25 +307,6 @@ def shift_data_set(data_set,num_obs,is_shift_data):
         # returns array unmodified if we dont want to shift data
         print('Data was not shifted.')
         return data_set
-    
-# def scale_row(row,num_obs,scale_val):
-#     '''rescales data set by scale'''
-#     scale = 1/scale_val
-#     num_features = calc_num_features(num_obs)
-#     row[:num_features] = [x * scale for x in row[:num_features]]
-#     row[-1] *= scale # also multiply the path distance found by the scale
-#     return row
-    
-# def scale_data_set(data_set,num_obs,scale,is_rescale_data):
-#     if is_rescale_data:
-#         modified_array = np.empty_like(data_set)
-#         for ii,row in enumerate(tqdm(data_set,file=sys.stdout,desc="Scaling Data Set", unit="row")):
-#             mod_row = scale_row(row,num_obs,scale)
-#             modified_array[ii,:] = np.array(mod_row)
-#         return modified_array
-#     else:
-#         print('Data was not rescaled.')
-#         return data_set
 
 def scale_data_set(data_set,num_obs,scale_val,is_scale_data):
     scale = 1/scale_val

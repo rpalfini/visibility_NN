@@ -17,7 +17,6 @@ def add_plot_to_files(fpath):
 
     for model_num in model_numbers:
         pickle_file = os.path.join(fpath,model_num,f"{model_num}_results.pkl")
-        model_path = os.path.join(fpath,model_num,"keras_model")
 
         results = pickle.load(open(pickle_file,'rb'))
         g_util.plot_hist(results)
@@ -26,14 +25,8 @@ def add_plot_to_files(fpath):
         
 
 if __name__ == "__main__":
-    fpath = "C:/Users/Robert/git/visibility_NN/main_train_results/main_data_file_courses1"
+    fpath = "C:/Users/Robert/git/visibility_NN/main_train_results/main_data_file_courses20"
     if os.name == 'nt':
         fpath = fpath.replace('/','\\')
     add_plot_to_files(fpath)
-
-
-
-
-
-
 

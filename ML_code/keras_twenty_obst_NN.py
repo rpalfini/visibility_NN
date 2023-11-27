@@ -31,6 +31,8 @@ def main():
 
     checkpoint = util_keras.create_checkpoint_callback(checkpoint_folder,util.make_checkpoint_template())
 
+    early_stopping = K.callbacks.EarlyStopping(monitor='loss',patience=5,verbose=1,mode='min')
+
     file_path = args.file_path
     tic = time.perf_counter()
     dataset_in = util.load_data(file_path)
@@ -361,7 +363,7 @@ def main():
     b_size = args.batch_size
     start_time = util.get_datetime(add_new_line=False)
     try:
-        results = model.fit(X_train, Y_train, validation_data = (X_val,Y_val), epochs=n_epochs, batch_size=b_size, callbacks=[checkpoint], shuffle = True)
+        results = model.fit(X_train, Y_train, validation_data = (X_val,Y_val), epochs=n_epochs, batch_size=b_size, callbacks=[checkpoint, early_stopping], shuffle = True)
         
     # except KeyboardInterrupt:
     except:

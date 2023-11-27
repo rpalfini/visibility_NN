@@ -5,7 +5,7 @@ import util
 import util_keras
 
 
-def main(model_path,epoch,data_file,num_obs,batch,is_shift_data):
+def main(model_path,epoch,data_file,num_obs,batch,is_shift_data,scale_value=1,is_scale_data=False,num_to_test=None):
     # This function lets us load a model with specific weights and evaluate on a new dataset
     if epoch is None:
         weight_loaded_model, _ = load_model(model_path)
@@ -16,16 +16,21 @@ def main(model_path,epoch,data_file,num_obs,batch,is_shift_data):
 
     if is_retroactive_test:
         # new_model = create_model_copy(weight_loaded_model) #recompiles the model with my new metric
-        weight_loaded_model = create_model_copy(weight_loaded_model) #recompiles the model with my new metric
+        if num_to_test is None:
+            weight_loaded_model = create_model_copy_with_all_output_metric(weight_loaded_model) #recompiles the model with my new metric
+        else:
+            weight_loaded_model = create_model_copy_with_all_n_output_metric(weight_loaded_model,num_to_test) #recompiles the model with metric testing n outputs
+
     
     is_split_data = False
-    is_test_whole_set = False # specifies if you want to test the whole data set in one go.  Note only is_split_data or is_test_whole_set can be activated
+    is_test_whole_set = True # specifies if you want to test the whole data set in one go.  Note only is_split_data or is_test_whole_set can be activated
     if is_split_data:
         # results from this are not guaranteed to match results from actual training
         print('splitting data')
         split_percentages = {"train": 0.9, "val": 0.05, "test": 0.05}
         dataset_in = util.load_data(data_file)
         dataset_processed = util.shift_data_set(dataset_in,num_obs,is_shift_data)
+        dataset_processed = util.scale_data_set(dataset_processed,args.num_obs,scale_value,is_scale_data)
         split_data = util.shuffle_and_split_data(dataset_processed,args.num_obs,split_percentages)
         # split_data = util.shuffle_and_split_data(dataset,num_obs,split_percentages,shuffle_data=False)
         X_train = split_data["X_train"] 
@@ -52,22 +57,28 @@ def main(model_path,epoch,data_file,num_obs,batch,is_shift_data):
         print('Test_Loss: %.6f' % (test_loss))
     elif is_test_whole_set:
         print('testing whole data set without splitting')
-        split_percentages = {"train": 0.9, "val": 0.05, "test": 0.05}
         dataset_in = util.load_data(data_file)
         dataset_processed = util.shift_data_set(dataset_in,num_obs,is_shift_data)
+        dataset_processed = util.scale_data_set(dataset_processed,args.num_obs,scale_value,is_scale_data)
+
 
         X, Y = util.separate_features_labels(dataset_processed,num_obs)
-
         print('testing test data')
-        test_loss, test_bin_acc, test_sample_acc = weight_loaded_model.evaluate(X,Y, batch_size = batch)
+        if num_to_test is None:
+            test_loss, test_bin_acc, test_sample_acc = weight_loaded_model.evaluate(X,Y, batch_size = batch)
+        else:
+            test_loss, test_bin_acc, test_sample_acc, test_n_sample_acc = weight_loaded_model.evaluate(X,Y, batch_size = batch)
         print(f'Sample Test Accuracy: {test_sample_acc*100:.4f}')
         print(f'Binary Test Accuracy: {test_bin_acc*100:.4f}')
         print(f'Test Loss: {test_loss:.6f}')
+        if num_to_test is not None:
+            print(f'Sample 1-n Test Accuracy: {test_n_sample_acc*100:.4f}')
     else:
         print('splitting TV and test data, and testing both sets')
         split_percentages = {"train": 0.9, "val": 0.05, "test": 0.05}
         dataset_in = util.load_data(data_file)
         dataset_processed = util.shift_data_set(dataset_in,num_obs,is_shift_data)
+        dataset_processed = util.scale_data_set(dataset_processed,args.num_obs,scale_value,is_scale_data)
         split_data = util.shuffle_and_split_data(dataset_processed,args.num_obs,split_percentages)
         
         X_tv, Y_tv = util.combine_test_val_data(split_data)
@@ -127,7 +138,7 @@ def load_model_with_checkpoint(model_path,epoch):
     loaded_model.load_weights(checkpoint_fpath)
     return loaded_model
 
-def create_model_copy(pretrained_model):
+def create_model_copy_with_all_output_metric(pretrained_model):
     '''Creates a copy of pretrained_model with same inputs, outputs, and weights, but compiles with new accuracy metric.'''
     learning_rate = 0.0001 #TODO add these as inputs to the function
     optimizer2use = 0 # 0 corresponds to adam, 1 for RMSprop, and 2 for SGD
@@ -135,6 +146,20 @@ def create_model_copy(pretrained_model):
     new_model = K.models.Model(inputs=pretrained_model.input, outputs=pretrained_model.output)
     new_model.set_weights(pretrained_model.get_weights())
     new_model.compile(loss='binary_crossentropy',optimizer=optimizer,metrics=['binary_accuracy',util_keras.AllOutputsCorrect()])
+    # if debugging, use run_eagerly=True
+    # new_model.compile(loss='binary_crossentropy',optimizer=optimizer,metrics=['binary_accuracy',util_keras.AllOutputsCorrect(),run_eagerly=True]) 
+    return new_model
+
+def create_model_copy_with_all_n_output_metric(pretrained_model,num2test):
+    '''Creates a copy of pretrained_model with same inputs, outputs, and weights, but compiles with new accuracy metrics.'''
+    learning_rate = 0.0001 #TODO add these as inputs to the function
+    optimizer2use = 0 # 0 corresponds to adam, 1 for RMSprop, and 2 for SGD
+    optimizer = util_keras.optimizer_selector(optimizer2use,learning_rate)
+    new_model = K.models.Model(inputs=pretrained_model.input, outputs=pretrained_model.output)
+    new_model.set_weights(pretrained_model.get_weights())
+    # new_model.compile(loss='binary_crossentropy',optimizer=optimizer,metrics=['binary_accuracy',util_keras.AllOutputsCorrect(),util_keras.All_n_OutputsCorrect(n=num2test)])
+    # if debugging, use run_eagerly=True
+    new_model.compile(loss='binary_crossentropy',optimizer=optimizer,metrics=['binary_accuracy',util_keras.AllOutputsCorrect(),util_keras.All_n_OutputsCorrect(n=num2test)],run_eagerly=True)
     return new_model
 
 def arg_parse():
@@ -145,15 +170,14 @@ def arg_parse():
     parser.add_argument("-e","--epoch", type=int, default=None, help="Chooses the weights from a given epoch to be loaded into the model.  If no epoch given, loads model weights from last epoch.")
     parser.add_argument("-b","--batch_size", type=int, default=64, help="Specify the batch size used during training to make accuracy calculation match results found during training.")
     parser.add_argument("-s","--shift", action='store_false', help="Turns off shifting dataset over by half of size of obstacle field.  Expected field size is 30mx30m so shift is -15 to each x,y coordinate")
+    parser.add_argument("-nt","--num_to_test", type=int, default=None, help="used when trying to test a model with N outputs on a dataset that has less than N outputs. This value specifies the number of outputs our metric should test.")
 
-    
     args = parser.parse_args()
     return args
 
 if __name__ == "__main__":
     #TODO until I implement recording which samples were used for each training, the only way to make results repeatable is by training with data shuffle off
 
-    #TODO: update so args used are the ones defined in util
     args = arg_parse()
     model_path = args.model_path
     data_file = args.data_path
@@ -161,7 +185,8 @@ if __name__ == "__main__":
     epoch = args.epoch
     batch = args.batch_size
     is_shift_data = args.shift
+    num_to_test = args.num_to_test
 
 
 
-    main(model_path,epoch,data_file,num_obs,batch,is_shift_data)
+    main(model_path,epoch,data_file,num_obs,batch,is_shift_data,num_to_test=num_to_test)

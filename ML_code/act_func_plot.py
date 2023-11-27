@@ -39,5 +39,8 @@ plt.axhline(0, color='black', linewidth=0.5)
 plt.axvline(0, color='black', linewidth=0.5)
 plt.grid(color='gray', linestyle='--', linewidth=0.5,alpha=0.2)
 plt.text(-4.5, 0.87, r'$\sigma(s) = \frac{1}{1 + e^{-s}}$', fontsize=16, color='black')
+# plt.text(-4.5, 0.4, r'$\sigma(s) = \begin{Bmatrix} 1, & \text{for } x \rightarrow + \infty\\ 0, & \text{for } x \rightarrow - \infty \end{Bmatrix}$', fontsize=16, color='black')
+plt.text(-4.5, 0.4, r'$\sigma(s) = \left\{ \begin{array}{ll} 1, & \text{for } x \rightarrow + \infty\\ 0, & \text{for } x \rightarrow - \infty \end{array} \right.$', fontsize=16, color='black')
+
 plt.savefig('sigmoid_plot.png')  # Save the Sigmoid plot as a PNG file
 plt.show()

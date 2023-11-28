@@ -20,7 +20,9 @@ def main():
     is_scale_data = args.scale_flag
     scale_value = args.scale_value
     # split_percentages = [0.9, 0.05, 0.05]
-    split_percentages = {"train": 0.9, "val": 0.05, "test": 0.05}
+    # split_percentages = {"train": 0.9, "val": 0.05, "test": 0.05}
+    split_percentages = {"train": args.split_percentages[0], "val": args.split_percentages[1], "test": args.split_percentages[2]}
+    print(f'using following split percentages: {split_percentages}')
    
 
     # tf.debugging.set_log_device_placement(True)
@@ -31,7 +33,8 @@ def main():
 
     checkpoint = util_keras.create_checkpoint_callback(checkpoint_folder,util.make_checkpoint_template())
 
-    early_stopping = K.callbacks.EarlyStopping(monitor='loss',patience=5,verbose=1,mode='min')
+    # early_stopping = K.callbacks.EarlyStopping(monitor='loss',patience=5,verbose=1,mode='min',restore_best_weights=True)
+    early_stopping = K.callbacks.EarlyStopping(monitor='all_outputs_correct',patience=20,verbose=1,mode='max',restore_best_weights=True)
 
     file_path = args.file_path
     tic = time.perf_counter()

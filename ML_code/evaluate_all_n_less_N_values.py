@@ -38,7 +38,7 @@ def main(args):
     num_obs = args.num_obs
     epoch = args.epoch
     batch = args.batch_size
-    num_to_test = args.num_to_test
+    # num_to_test = args.num_to_test
     # we require for this test that these values match what is specified below,
     # scale_val = args.scale_value
     # scale_flag = args.scale_flag
@@ -53,6 +53,7 @@ def main(args):
     base_data_path = util.fix_path_separator(base_data_path)
 
     for model in range(1,20): # we don't need to test on the data set that has the expected number of obstacles
+        num_to_test = model
         data_file = f"{base_data_path}_{model}.csv"
         results_dict = ekm.main(model_path,epoch, data_file,num_obs,batch,is_shift_data,num_to_test=num_to_test,scale_value=scale_val,is_scale_data=scale_flag)
         results_record = results_record.save_result(model,results_dict)

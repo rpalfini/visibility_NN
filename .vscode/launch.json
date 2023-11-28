@@ -436,12 +436,15 @@
                 "-o",
                 "0",
                 "-m",
-                "10",
+                "8",
                 "-s",
                 "-sf",
                 "-sv",
-                "4"
-
+                "30",
+                "-sp",
+                "0.8",
+                "0.1",
+                "0.1"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -632,6 +635,22 @@
                 "-sf",
                 "-sv",
                 "30"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: test_evaluate_all_n_less_N_values",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/ML_code/evaluate_all_n_less_N_values.py",
+            "args": [
+                "-f",
+                "./main_train_results/main_data_file_courses20/model_11",
+                "-b",
+                "64",
+                "-n",
+                "20"
             ],
             "console": "integratedTerminal",
             "justMyCode": true

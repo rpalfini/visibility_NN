@@ -156,11 +156,11 @@ def evaluate_model_old(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, ba
 
 #following function will be used in keras_twenty_obs_NN.py
 def evaluate_model(X_train, X_val, X_test, Y_train, Y_val, Y_test, model, batch_size):
-    print('testing training data')
+    print('\ntesting training data')
     train_loss, train_bin_acc, train_sample_acc = model.evaluate(X_train,Y_train, batch_size = batch_size)
-    print('testing validation data')
+    print('\ntesting validation data')
     val_loss, val_bin_acc, val_sample_acc = model.evaluate(X_val, Y_val, batch_size = batch_size)
-    print('testing test data')
+    print('\ntesting test data')
     test_loss, test_bin_acc, test_sample_acc = model.evaluate(X_test, Y_test, batch_size = batch_size)
     print_bin_acc_results(train_bin_acc, val_bin_acc, test_bin_acc)
     print_sample_acc_results(train_sample_acc, val_sample_acc, test_sample_acc)

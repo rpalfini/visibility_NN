@@ -23,6 +23,7 @@ def arg_parse():
     parser.add_argument("-s","--shift", action='store_false', help="Turns off shifting dataset over by half of size of obstacle field.  Expected field size is 30mx30m so shift is -15 to each x,y coordinate")
     parser.add_argument("-sf","--scale_flag", action='store_true', help="Turns on scaling inputs based on the argument scale_value.  This scales all of the features by the scale_value.")
     parser.add_argument("-sv","--scale_value", type=float, default=1, help="Scale value used when scale_flag is activated.  it is what the data is divided by. So 30 results in 1/30 scale")
+    parser.add_argument("-sp","--split_percentages", type=float, default = [0.90,0.05,0.05], nargs=3, help="enter train/val/test split percentages")
 
     args = parser.parse_args()
     return args

@@ -12,9 +12,10 @@ class AllOutputsCorrect(tf.keras.metrics.Metric):
         super(AllOutputsCorrect, self).__init__(name=name, **kwargs)
         self.total_samples = self.add_weight(name='total_samples', initializer='zeros')
         self.correct_samples = self.add_weight(name='correct_samples', initializer='zeros')
+        self.dbg = False
 
     def update_state(self, y_true, y_pred, sample_weight=None):
-        dbg = False
+        dbg = self.dbg
         # Assuming y_true and y_pred are arrays with binary values (0 or 1)
         # Threshold for predicted probabilities (e.g., 0.5 for sigmoid activation)
         threshold = 0.5
@@ -48,10 +49,69 @@ class AllOutputsCorrect(tf.keras.metrics.Metric):
 
     def result(self):
         # Calculate and return the proportion of samples where all outputs were correct
-        dbg = False
+        dbg = self.dbg
         if dbg:
             print(f'sample accuracy: {self.correct_samples / self.total_samples}')
         return self.correct_samples / self.total_samples
+
+class All_n_OutputsCorrect(tf.keras.metrics.Metric):
+    def __init__(self, n, name='all_n_outputs_correct', **kwargs):
+        super(All_n_OutputsCorrect, self).__init__(name=name, **kwargs)
+        self.total_samples = self.add_weight(name='total_samples', initializer='zeros')
+        self.correct_samples = self.add_weight(name='correct_samples', initializer='zeros')
+        self.n = n
+        self.dbg = False
+
+    def update_state(self, y_true, y_pred, sample_weight=None):
+        dbg = self.dbg
+        # Assuming y_true and y_pred are arrays with binary values (0 or 1)
+        # Threshold for predicted probabilities (e.g., 0.5 for sigmoid activation)
+        threshold = 0.5
+        if dbg:
+            print(f"y_true:{y_true}")
+            print(f"y_pred:{y_pred}")
+        # Determine predicted classes
+        y_pred_classes = tf.cast(y_pred > threshold, tf.float32)
+        
+        y_true = tf.cast(y_true, tf.float32)
+        if dbg:
+            print(f"y_pred_classes:{y_pred_classes}")
+            print(f"y_true:{y_true}")
+
+        # Consider only the first "n" elements
+        y_true = y_true[:, :self.n]
+        y_pred_classes = y_pred_classes[:, :self.n]
+        if dbg:
+            print(f"y_pred_classes:{y_pred_classes}")
+            print(f"(y_pred_classes).shape[1]:{(y_pred_classes).shape[1]}")
+            print(f"y_true:{y_true}")
+            print(f"(y_true).shape[1]:{(y_true).shape[1]}")
+
+        # Compare predicted classes to true classes for first "n" outputs
+        n_outputs_correct = tf.reduce_all(tf.equal(y_pred_classes, y_true), axis=-1)
+        if dbg:
+            print(f"tf.equal(y_pred_classes, y_true): {tf.equal(y_pred_classes, y_true)}")
+            print(f"n_outputs_correct: {n_outputs_correct}")
+            print(f"tf_shape(y_true):{tf.shape(y_true)[0]}")
+            print(f"tf.cast(tf.shape(y_true)[0], tf.float32): {tf.cast(tf.shape(y_true)[0], tf.float32)}")
+            print(f"tf.cast(tf.shape(y_true), tf.float32): {tf.cast(tf.shape(y_true), tf.float32)}")
+            print(f"tf.reduce_sum(tf.cast(n_outputs_correct, tf.float32)):{tf.reduce_sum(tf.cast(n_outputs_correct, tf.float32))}")
+            print(f"len(y_true.shape):{len(y_true.shape)}")
+        # Update total and correct samples
+        self.total_samples.assign_add(tf.cast(tf.shape(y_true)[0], tf.float32))
+
+        self.correct_samples.assign_add(tf.reduce_sum(tf.cast(n_outputs_correct, tf.float32)))
+        if dbg:
+            print(f"total_samples: {self.total_samples}")
+            print(f"correct_samples: {self.correct_samples}")
+
+    def result(self):
+        # Calculate and return the proportion of samples where all outputs were correct
+        dbg = self.dbg
+        if dbg:
+            print(f'sample accuracy: {self.correct_samples / self.total_samples}')
+        return self.correct_samples / self.total_samples
+
 
 def optimizer_selector(optimizer2use, learning_rate):
     if optimizer2use == 0:

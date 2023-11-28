@@ -589,6 +589,52 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        {
+            "name": "Python: test_evaluate_keras_model_n_less_than_N_small_data",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-d",
+                "./ML_code/Data/small_main_data_file_courses20.csv",
+                "-f",
+                "./main_train_results/main_data_file_courses20/model_11",
+                "-b",
+                "4",
+                "-n",
+                "20",
+                "-nt",
+                "3",
+                "-sf",
+                "-sv",
+                "30"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: test_evaluate_keras_model_n_less_than_N_large_data",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-d",
+                "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.csv",
+                "-f",
+                "./main_train_results/main_data_file_courses20/model_11",
+                "-b",
+                "64",
+                "-n",
+                "20",
+                "-nt",
+                "3",
+                "-sf",
+                "-sv",
+                "30"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }

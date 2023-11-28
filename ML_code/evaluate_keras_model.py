@@ -126,8 +126,27 @@ def load_model(model_path):
 
     if os.name == 'nt':
         dir_path = dir_path.replace('/','\\')
+        model_path = model_path.replace('/','\\')
+    
+    # if is_custom_metrics:
+    #     # Define a dictionary with the custom objects
+    #     custom_metrics = {'AllOutputsCorrect': util_keras.AllOutputsCorrect}
+    #     loaded_model = K.models.load_model(model_path,custom_objects=custom_metrics)
+    # else:
 
-    loaded_model = K.models.load_model(model_path)
+    #TODO: this should be implemented differently, but running out of time on project
+    try:
+        print(f'Loading model at {model_path}')
+        loaded_model = K.models.load_model(model_path)
+    except ValueError as e:
+        if "Unable to restore custom object of type" in str(e):
+            # Handle the specific ValueError related to custom objects
+            print("Trying to reload model with custom metric AllOutputsCorrect")
+            custom_metrics = {'AllOutputsCorrect': util_keras.AllOutputsCorrect}
+            loaded_model = K.models.load_model(model_path,custom_objects=custom_metrics)
+        else:
+            # If it's a different ValueError, re-raise the exception
+            raise
     return loaded_model, dir_path
 
 def load_model_with_checkpoint(model_path,epoch):
@@ -157,9 +176,10 @@ def create_model_copy_with_all_n_output_metric(pretrained_model,num2test):
     optimizer = util_keras.optimizer_selector(optimizer2use,learning_rate)
     new_model = K.models.Model(inputs=pretrained_model.input, outputs=pretrained_model.output)
     new_model.set_weights(pretrained_model.get_weights())
-    # new_model.compile(loss='binary_crossentropy',optimizer=optimizer,metrics=['binary_accuracy',util_keras.AllOutputsCorrect(),util_keras.All_n_OutputsCorrect(n=num2test)])
+    new_model.compile(loss='binary_crossentropy',optimizer=optimizer,metrics=['binary_accuracy',util_keras.AllOutputsCorrect(),util_keras.All_n_OutputsCorrect(n=num2test)])
     # if debugging, use run_eagerly=True
-    new_model.compile(loss='binary_crossentropy',optimizer=optimizer,metrics=['binary_accuracy',util_keras.AllOutputsCorrect(),util_keras.All_n_OutputsCorrect(n=num2test)],run_eagerly=True)
+    # new_model.compile(loss='binary_crossentropy',optimizer=optimizer,metrics=['binary_accuracy',util_keras.All_n_OutputsCorrect(n=num2test)],run_eagerly=True)
+    # new_model.compile(loss='binary_crossentropy',optimizer=optimizer,metrics=['binary_accuracy',util_keras.AllOutputsCorrect(),util_keras.All_n_OutputsCorrect(n=num2test)],run_eagerly=True)
     return new_model
 
 def arg_parse():
@@ -170,6 +190,8 @@ def arg_parse():
     parser.add_argument("-e","--epoch", type=int, default=None, help="Chooses the weights from a given epoch to be loaded into the model.  If no epoch given, loads model weights from last epoch.")
     parser.add_argument("-b","--batch_size", type=int, default=64, help="Specify the batch size used during training to make accuracy calculation match results found during training.")
     parser.add_argument("-s","--shift", action='store_false', help="Turns off shifting dataset over by half of size of obstacle field.  Expected field size is 30mx30m so shift is -15 to each x,y coordinate")
+    parser.add_argument("-sf","--scale_flag", action='store_true', help="Turns on scaling inputs based on the argument scale_value.  This scales all of the features by the scale_value.")
+    parser.add_argument("-sv","--scale_value", type=float, default=1, help="Scale value used when scale_flag is activated.  it is what the data is divided by. So 30 results in 1/30 scale")
     parser.add_argument("-nt","--num_to_test", type=int, default=None, help="used when trying to test a model with N outputs on a dataset that has less than N outputs. This value specifies the number of outputs our metric should test.")
 
     args = parser.parse_args()
@@ -186,7 +208,10 @@ if __name__ == "__main__":
     batch = args.batch_size
     is_shift_data = args.shift
     num_to_test = args.num_to_test
+    scale_val = args.scale_value
+    scale_flag = args.scale_flag
 
 
 
-    main(model_path,epoch,data_file,num_obs,batch,is_shift_data,num_to_test=num_to_test)
+    # main(model_path,epoch,data_file,num_obs,batch,is_shift_data,num_to_test=num_to_test)
+    main(model_path,epoch,data_file,num_obs,batch,is_shift_data,num_to_test=num_to_test,scale_value=scale_val,is_scale_data=scale_flag)

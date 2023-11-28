@@ -73,6 +73,8 @@ def main(model_path,epoch,data_file,num_obs,batch,is_shift_data,scale_value=1,is
         print(f'Test Loss: {test_loss:.6f}')
         if num_to_test is not None:
             print(f'Sample 1-n Test Accuracy: {test_n_sample_acc*100:.4f}')
+            output_val_dict = util.make_output_val_dict(test_loss=test_loss, test_bin_acc=test_bin_acc, test_sample_acc=test_sample_acc, test_n_sample_acc=test_n_sample_acc)
+        return output_val_dict #currently only this one uses the output_val_dict when called outside of this script, so I will only add to this until needed in the other cases
     else:
         print('splitting TV and test data, and testing both sets')
         split_percentages = {"train": 0.9, "val": 0.05, "test": 0.05}

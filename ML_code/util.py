@@ -185,6 +185,10 @@ def calc_time_duration(start_time, end_time):
     time_duration = end - start
     return time_duration
 
+def make_output_val_dict(**kwargs):
+    '''Function is used in evalaute_keras_model to create the output dictionary from the results if the evaluate code is used in a different script.'''
+    return kwargs
+
 ## These functions are used in preparing datasets
 def load_data(file_path):
     print(f'Loading data from {file_path}')

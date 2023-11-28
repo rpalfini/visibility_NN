@@ -1,4 +1,4 @@
-
+'''creates a smaller version of a test file by grabbing the first num_lines of the file'''
 large_file = "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.csv"
 small_file = "./ML_code/Data/small_main_data_file_courses20.csv"
 # num_lines = 25000

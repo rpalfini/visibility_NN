@@ -397,7 +397,7 @@ def main():
                               test_bin_acc*100,train_loss,val_loss,test_loss,model,X_train.shape[0],
                               X_val.shape[0],X_test.shape[0],f_trained,optimizer._name,start_time,is_shift_data,scale_value) 
     util.record_model_fit_results(results,model_output_folder)
-    util.save_loss_acc_plot(results.history,model_output_folder)
+    g_util.save_loss_acc_plot(results.history,model_output_folder)
     print('\ntraining complete')
 
 

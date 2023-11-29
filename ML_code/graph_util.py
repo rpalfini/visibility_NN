@@ -1,3 +1,4 @@
+import os
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import numpy as np
@@ -156,3 +157,9 @@ def old_plot_hist(results, x_start = 0, x_end = None, logscale = 1):
     plt.legend() 
 
     # plt.subplots_adjust(wspace=0.2)
+
+def save_loss_acc_plot(results, output_folder):
+    model_results_path, model_number = os.path.split(output_folder)
+    plot_hist(results)
+    fig_path = os.path.join(output_folder,f"{model_number}_loss_acc.png")
+    plt.savefig(fig_path)

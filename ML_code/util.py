@@ -4,8 +4,6 @@ import pickle
 import datetime
 from tqdm import tqdm
 import numpy as np
-import graph_util as g_util
-
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 ## place to store functions used for neural network training
@@ -148,12 +146,6 @@ def record_model_fit_results(results, output_folder):
     Temp = open(PK_fname,'wb')
     pickle.dump(results.history,Temp)
     Temp.close()
-
-def save_loss_acc_plot(results, output_folder):
-    model_results_path, model_number = os.path.split(output_folder)
-    g_util.plot_hist(results)
-    fig_path = os.path.join(output_folder,f"{model_number}_loss_acc.png")
-    g_util.plt.savefig(fig_path)
 
 def get_data_percents(num_train,num_val,num_test):
     total_data = num_train + num_test + num_val

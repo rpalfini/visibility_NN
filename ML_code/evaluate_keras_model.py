@@ -30,8 +30,8 @@ def main(model_path,epoch,data_file,num_obs,batch,is_shift_data,scale_value=1,is
         split_percentages = {"train": 0.9, "val": 0.05, "test": 0.05}
         dataset_in = util.load_data(data_file)
         dataset_processed = util.shift_data_set(dataset_in,num_obs,is_shift_data)
-        dataset_processed = util.scale_data_set(dataset_processed,args.num_obs,scale_value,is_scale_data)
-        split_data = util.shuffle_and_split_data(dataset_processed,args.num_obs,split_percentages)
+        dataset_processed = util.scale_data_set(dataset_processed,num_obs,scale_value,is_scale_data)
+        split_data = util.shuffle_and_split_data(dataset_processed,num_obs,split_percentages)
         # split_data = util.shuffle_and_split_data(dataset,num_obs,split_percentages,shuffle_data=False)
         X_train = split_data["X_train"] 
         X_val = split_data["X_val"]   
@@ -59,7 +59,7 @@ def main(model_path,epoch,data_file,num_obs,batch,is_shift_data,scale_value=1,is
         print('testing whole data set without splitting')
         dataset_in = util.load_data(data_file)
         dataset_processed = util.shift_data_set(dataset_in,num_obs,is_shift_data)
-        dataset_processed = util.scale_data_set(dataset_processed,args.num_obs,scale_value,is_scale_data)
+        dataset_processed = util.scale_data_set(dataset_processed,num_obs,scale_value,is_scale_data)
 
 
         X, Y = util.separate_features_labels(dataset_processed,num_obs)
@@ -80,8 +80,8 @@ def main(model_path,epoch,data_file,num_obs,batch,is_shift_data,scale_value=1,is
         split_percentages = {"train": 0.9, "val": 0.05, "test": 0.05}
         dataset_in = util.load_data(data_file)
         dataset_processed = util.shift_data_set(dataset_in,num_obs,is_shift_data)
-        dataset_processed = util.scale_data_set(dataset_processed,args.num_obs,scale_value,is_scale_data)
-        split_data = util.shuffle_and_split_data(dataset_processed,args.num_obs,split_percentages)
+        dataset_processed = util.scale_data_set(dataset_processed,num_obs,scale_value,is_scale_data)
+        split_data = util.shuffle_and_split_data(dataset_processed,num_obs,split_percentages)
         
         X_tv, Y_tv = util.combine_test_val_data(split_data)
 

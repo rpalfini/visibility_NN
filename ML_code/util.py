@@ -2,6 +2,7 @@ import sys
 import os
 import pickle
 import datetime
+import re
 from tqdm import tqdm
 import numpy as np
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
@@ -19,6 +20,7 @@ def arg_parse():
     parser.add_argument("-m", "--NN_model", type=int, default=0, help="Selects neural network to train.  Used for training automation.")
     parser.add_argument("-o","--optimizer", type=int, default=0, help="Selects the optimizer to use for the neural network.  0 is Adam, 1 is RMSprop, 2 is SGD")
     parser.add_argument("-s","--shift", action='store_false', help="Turns off shifting dataset over by half of size of obstacle field.  Expected field size is 30mx30m so shift is -15 to each x,y coordinate")
+    parser.add_argument("-xs","--x_shift", action='store_true', help="Turns on shifting dataset over only on x axis by half of size of obstacle field.")
     parser.add_argument("-sf","--scale_flag", action='store_true', help="Turns on scaling inputs based on the argument scale_value.  This scales all of the features by the scale_value.")
     parser.add_argument("-sv","--scale_value", type=float, default=1, help="Scale value used when scale_flag is activated.  it is what the data is divided by. So 30 results in 1/30 scale")
     parser.add_argument("-sp","--split_percentages", type=float, default = [0.90,0.05,0.05], nargs=3, help="enter train/val/test split percentages")
@@ -183,9 +185,61 @@ def make_output_val_dict(**kwargs):
     return kwargs
 
 ## These functions are used in preparing datasets
+def get_file_extension(file_path):
+    # Get the lowercase file extension
+    file_extension = file_path.lower().split('.')[-1]
+    
+    # Check if the file extension is either "npy" or "csv"
+    if file_extension in {'npy', 'csv'}:
+        return file_extension
+    else:
+        raise Exception(f'File path: {file_path} does not end with .npy or .csv')  # Or handle the case when the file has a different extension
+
 def load_data(file_path):
-    print(f'Loading data from {file_path}')
+    file_extension = get_file_extension(file_path)
+    if file_extension == 'npy':
+        return load_np_data(file_path)
+    elif file_extension == 'csv':
+        return load_csv_data(file_path)
+    else:
+        raise Exception('Invalid file extension') # I know this is redundant but I am still adding
+
+def load_csv_data(file_path):
+    print(f'Loading csv data from {file_path}')
     return np.loadtxt(file_path,delimiter=',')
+
+def load_np_data(file_path):
+    print(f'Loading np data from {file_path}')
+    return np.load(file_path)
+
+def read_model_num_from_file_path(file_path):
+    '''This function can check to see what number is used for a model data path for a single type of obstacle number, to infer the number of obstacles instead of having to specify it each time.
+    file_path should be of the form some_path/main_data_file_courses#.csv
+    '''
+    pattern = r'courses(\d+)[\.csv|\.npy]' #works if fiel is .csv or .npy extension
+
+    # Use re.search to find the pattern in the file path
+    match = re.search(pattern, file_path)
+
+    # Check if a match is found
+    if match:
+        # Extract the matched number from the regex group
+        number = match.group(1) # the first group is the entire matched string
+        return int(number)
+    else:
+        raise Exception(f"Model Number not found in string {file_path}.")
+
+def find_null_x_idx(num_obs,max_num_obs):
+    '''Returns the indices of the null or filler x obstacles in padded data files.
+    num_obs is the number of real obstracles in the file
+    max_num _obs is the number of obstacles the file is padded to'''
+    start_idx = calc_num_features(num_obs)
+    end_idx = calc_num_features(max_num_obs) #constant for the max num obs in padded files
+    y_idx = [x for x in range(start_idx,end_idx) if (x-(start_idx))%3 == 0]
+    if not len(y_idx) == max_num_obs-num_obs:
+        raise Exception(f"Number of y_idx: {len(y_idx)} does not equal num_obs: {max_num_obs-num_obs}") 
+
+    return y_idx
 
 def shuffle_and_split_data(dataset,num_obstacles,split_percentages,shuffle_data=True):
     '''Splits data into train/val and test. Shuffles train/val data, and then splits train and val data.
@@ -287,6 +341,9 @@ def separate_features_labels(dataset,num_obstacles):
 
 def calc_num_features(num_obs):
     return 3*num_obs + 4
+
+# def shift_x_axis_row(row,num_obs):
+
 
 def shift_row(row,num_obs):
     '''shifts data so course is centered at origin (0,0) instead of at (15,15)'''

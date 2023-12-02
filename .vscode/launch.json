@@ -646,11 +646,40 @@
             "program": "${workspaceFolder}/ML_code/evaluate_all_n_less_N_values.py",
             "args": [
                 "-f",
-                "./main_train_results/main_data_file_courses20/model_11",
+                "./main_train_results/main_data_file_courses20/model_17",
                 "-b",
                 "64",
                 "-n",
                 "20"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: full_shift_padded_obstacles",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/shift_padded_obstacles.py",
+            "args": [
+                "-d",
+                "D:/Vis_network_data/data_file_by_course_padded/main_data_file_courses10.csv",
+                "-s",
+                "D:/Vis_network_data/data_file_by_course_transformations/shift_padded_courses_x_to_15"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: test_dir_mode_shift_padded_obstacles",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/shift_padded_obstacles.py",
+            "args": [
+                "-b",
+                "-f",
+                "D:/Vis_network_data/data_file_by_course_padded",
+                "-s",
+                "D:/Vis_network_data/data_file_by_course_transformations/shift_padded_courses_x_to_15"
             ],
             "console": "integratedTerminal",
             "justMyCode": true

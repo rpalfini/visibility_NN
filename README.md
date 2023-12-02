@@ -25,10 +25,29 @@ Meaning for the labels values is defined in vis_graph_enum.py but a down label c
 2. Random obstacle courses can be generated with obstacle_course_gen.py. -h option explains how to use
 3. obstacle_viewer.py allows preview of obstacle course generated.  -h option has not been added yet, so just open file and change var to path to obstacle
 4. csv_file_combiner.py allows you to combine csv files created during data generation
-5. ML_folder contains code related to neural networks trained on this data.
+5. ML_Code contains code related to neural networks trained on this data.
 
 ### Sample Usage
 python vis_main.py 1_courses_10_obstacles_normal.txt
+
+## ML_Code Package
+This package contians most of the implementations of neural networks or working with them.  In the Data folder there are acouple of small data sets for a few obstacle configurations.  Use vis_main.py to generate data for the neural networks.
+
+### Main scripts
+keras_twenty_obstacle.py  This is the main script for training neural networks and works for any number of obstacle network.  This trains a model on a given data set and has many options for working with that can be found with -h.
+
+evaluate
+
+### Helper Libraries
+util.py contains utility functions when trying to train Neural Networks.  It contains two types of functions, ones used for saving data from training, and for preparing datasets for training such as loading the data set, shuffling and splitting the data, and more.
+
+util_keras.py contains classes and functions used for neural network training that require the keras package.  These functions are used for checkpoints, custom metrics, and more.
+
+graph_util.py containts graphing functions for plotting results from training.
+
+
+
+
 ### Open Items
 
 (person working on task)

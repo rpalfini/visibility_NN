@@ -66,16 +66,32 @@
 @REM python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.csv" -b 64 -e 10 -l 0.0001 -n 20 -o 0 -m 18 -s 2> error_eleventh.txt
 @REM echo Eleventh program finished.
 
-echo Running the twelth Python program...
-::python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses3.csv" -b 64 -e 20 -n 3 -m 2 -l 0.001 2> error_third.txt
-::python ./ML_code/keras_twenty_obst_NN.py -f "./ML_code/Data/small_main_data_file_courses3.csv" -b 64 -e 20 -n 3 -m 2 -l 0.001 2> error_third.txt
-python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.csv" -b 64 -e 200 -l 0.0001 -n 20 -o 0 -m 8 -s 2> error_twelth.txt
-echo Twelth program finished.
+@REM echo Running the twelth Python program...
+@REM ::python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses3.csv" -b 64 -e 20 -n 3 -m 2 -l 0.001 2> error_third.txt
+@REM ::python ./ML_code/keras_twenty_obst_NN.py -f "./ML_code/Data/small_main_data_file_courses3.csv" -b 64 -e 20 -n 3 -m 2 -l 0.001 2> error_third.txt
+@REM python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.csv" -b 64 -e 200 -l 0.0001 -n 20 -o 0 -m 8 -s 2> error_twelth.txt
+@REM echo Twelth program finished.
 
-echo Running the thirteenth Python program...
-::python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses3.csv" -b 64 -e 20 -n 3 -m 2 -l 0.001 2> error_third.txt
-::python ./ML_code/keras_twenty_obst_NN.py -f "./ML_code/Data/small_main_data_file_courses3.csv" -b 64 -e 20 -n 3 -m 2 -l 0.001 2> error_third.txt
-python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.csv" -b 64 -e 200 -l 0.0001 -n 20 -o 0 -m 8 -s -sp 0.8 0.1 0.1 2> error_thirteenth.txt
-echo Thirteenth program finished.
+@REM echo Running the thirteenth Python program...
+@REM ::python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses3.csv" -b 64 -e 20 -n 3 -m 2 -l 0.001 2> error_third.txt
+@REM ::python ./ML_code/keras_twenty_obst_NN.py -f "./ML_code/Data/small_main_data_file_courses3.csv" -b 64 -e 20 -n 3 -m 2 -l 0.001 2> error_third.txt
+@REM python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.csv" -b 64 -e 200 -l 0.0001 -n 20 -o 0 -m 8 -s -sp 0.8 0.1 0.1 2> error_thirteenth.txt
+@REM echo Thirteenth program finished.
+
+python ./ML_code/evaluate_all_n_less_N_values.py -f "./main_train_results/main_data_file_courses20/model_17" -b 64 -n 20
+
+@REM python split_obs_by_num.py
+
+@REM python save_csv_to_numpy.py -f "E:/main_folder/to_be_added_by_course" -s "E:/main_folder/npy_to_be_added_by_course"
+
+python ./ML_code/evaluate_keras_model.py -n 20 -d "E:/main_folder/npy_to_be_added_by_course/main_data_file_courses20.npy" -f "./main_train_results/main_data_file_courses20/model_17" -b 64 -s
+
+python ./ML_code/evaluate_all_n_less_N_values.py -f "./main_train_results/main_data_file_courses20/model_17" -b 64 -n 20 -mr 1 3
+python ./ML_code/evaluate_all_n_less_N_values.py -f "./main_train_results/main_data_file_courses20/model_17" -b 64 -n 20 -mr 4 6
+python ./ML_code/evaluate_all_n_less_N_values.py -f "./main_train_results/main_data_file_courses20/model_17" -b 64 -n 20 -mr 7 9
+python ./ML_code/evaluate_all_n_less_N_values.py -f "./main_train_results/main_data_file_courses20/model_17" -b 64 -n 20 -mr 10 12
+python ./ML_code/evaluate_all_n_less_N_values.py -f "./main_train_results/main_data_file_courses20/model_17" -b 64 -n 20 -mr 13 15
+python ./ML_code/evaluate_all_n_less_N_values.py -f "./main_train_results/main_data_file_courses20/model_17" -b 64 -n 20 -mr 16 18
+python ./ML_code/evaluate_all_n_less_N_values.py -f "./main_train_results/main_data_file_courses20/model_17" -b 64 -n 20 -mr 19 20
 
 echo All programs have been executed.

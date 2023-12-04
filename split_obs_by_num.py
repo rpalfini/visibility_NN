@@ -68,10 +68,12 @@ if __name__ == "__main__":
     resize = False # makes outputted files not have the padded obstacles and labels to make the data fit the 20 size framework
     max_num_obs = 20
     first_obstacle_idx = 4
-    fpath = "D:/Vis_network_data/data_file_by_course_padded"
+    # fpath = "D:/Vis_network_data/data_file_by_course_padded"
+    fpath = "E:/main_folder/to_be_added_by_course"
     fname = "main_data_file.csv"
     # fname_no_extension = os.path.splitext(fname)[0] # want to append to our existing data file
     fname_no_extension = "main_data_file"
+    # extension = "csv"
     # create a dictionary of file handles for the 20 output files
     output_files = {}
     num_lines_file = {}
@@ -85,7 +87,8 @@ if __name__ == "__main__":
     # read lines from the input file
     # file_path = os.path.join("./results_merge",fname)
     # file_path = "D:/Vis_network_data/to_be_added_to_main_file/23_03_11_merge/23_03_11-03_14_merge.csv"
-    file_path = "D:/Vis_network_data/main_data_file/4_17_main_data_file.csv"
+    # file_path = "D:/Vis_network_data/main_data_file/4_17_main_data_file.csv"
+    file_path = "E:/main_folder/to_be_added_to_main_file/23_04_17-4_30_merge/23_04_17-4_30_merge.csv"
     data_gen = cfc.csv_reader(file_path)
     for row in tqdm(data_gen, desc="Processing", unit="row"):
         num_obs, null_obs_idx = determine_num_obs(row,max_num_obs,first_obstacle_idx-1)

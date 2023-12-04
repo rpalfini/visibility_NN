@@ -423,7 +423,7 @@
             "name": "Python: test_keras_small_data",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "${workspaceFolder}/ML_code/keras_twenty_obst_NN.py",
             "args": [
                 "-f",
                 "./ML_code/Data/small_main_data_file_courses3.csv",
@@ -443,8 +443,38 @@
                 "30",
                 "-sp",
                 "0.8",
-                "0.1",
-                "0.1"
+                "0.2",
+                "0"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: test_keras_small_separate_test_data",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/ML_code/keras_twenty_obst_NN.py",
+            "args": [
+                "-f",
+                "./ML_code/Data/small_main_data_file_courses3.csv",
+                "-b",
+                "64",
+                "-e",
+                "3",
+                "-n",
+                "3",
+                "-o",
+                "0",
+                "-m",
+                "8",
+                "-s",
+                "-sf",
+                "-sv",
+                "30",
+                "-sp",
+                "0.8",
+                "0.2",
+                "0"
             ],
             "console": "integratedTerminal",
             "justMyCode": true

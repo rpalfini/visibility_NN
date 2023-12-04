@@ -1,6 +1,6 @@
 :: This script is used to run Neural network models one after another
 echo Running the first Python program...
-python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.npy" -b 64 -e 10 -l 0.0001 -n 20 -o 0 -m 8 -tv -s -sf -sv 30 2> error_first.txt
+python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.npy" -b 64 -e 10 -l 0.0001 -n 20 -o 0 -m 17 -s -sf -sv 30 2> error_first.txt
 echo First program finished.
 
 @REM echo Running the second Python program...
@@ -28,15 +28,15 @@ echo First program finished.
 @REM echo Seventh program finished.
 
 echo Running the eighth Python program...
-python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.npy" -b 64 -e 10 -l 0.0001 -n 20 -o 0 -m 7 -tv -s -sf -sv 30 2> error_eighth.txt
+python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.npy" -b 64 -e 10 -l 0.0001 -n 20 -o 0 -m 9 -tv -s -sf -sv 30 2> error_eighth.txt
 echo Eighth program finished.
 
 echo Running the ninth Python program...
-python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.npy" -b 64 -e 10 -l 0.0001 -n 20 -o 0 -m 4 -tv -s -sf -sv 30 2> error_ninth.txt
+python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.npy" -b 64 -e 10 -l 0.0001 -n 20 -o 0 -m 3 -tv -s -sf -sv 30 2> error_ninth.txt
 echo Ninth program finished.
 
 echo Running the tenth Python program...
-python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.npy" -b 64 -e 10 -l 0.0001 -n 20 -o 0 -m 18 -tv -s -sf -sv 30 2> error_tenth.txt
+python ./ML_code/keras_twenty_obst_NN.py -f "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.npy" -b 64 -e 10 -l 0.0001 -n 20 -o 0 -m 1 -tv -s -sf -sv 30 2> error_tenth.txt
 echo Tenth program finished.
 
 echo Running the eleventh Python program...

@@ -20,3 +20,13 @@ log_out.txt
 error*.txt
 *_normal.txt
 output_*.txt
+*.npy
+# The ones below this were to make my source control window easier to use
+_error.txt
+20_obs_row_changed.txt
+change_indices_20_obs_file
+new_data_20_obs_row_changed.txt
+obstacle.txt
+subplot_test_pic.ipynb
+subplot_test_pic2.ipynb
+testing.txt

@@ -5,7 +5,7 @@ import util
 import util_keras
 
 
-def main(model_path,epoch,data_file,num_obs,batch,is_shift_data,scale_value=1,is_scale_data=False,num_to_test=None):
+def main(model_path,epoch,data_file,num_obs,batch,is_shift_data,is_test_whole_set=False,scale_value=1,is_scale_data=False,num_to_test=None):
     # This function lets us load a model with specific weights and evaluate on a new dataset
     if epoch is None:
         weight_loaded_model, _ = load_model(model_path)
@@ -23,7 +23,7 @@ def main(model_path,epoch,data_file,num_obs,batch,is_shift_data,scale_value=1,is
 
     
     is_split_data = False
-    is_test_whole_set = True # specifies if you want to test the whole data set in one go.  Note only is_split_data or is_test_whole_set can be activated
+    # is_test_whole_set = True # specifies if you want to test the whole data set in one go.  Note only is_split_data or is_test_whole_set can be activated
     if is_split_data:
         # results from this are not guaranteed to match results from actual training
         print('splitting data')
@@ -74,7 +74,7 @@ def main(model_path,epoch,data_file,num_obs,batch,is_shift_data,scale_value=1,is
         if num_to_test is not None:
             print(f'Sample 1-n Test Accuracy: {test_n_sample_acc*100:.4f}')
             output_val_dict = util.make_output_val_dict(test_loss=test_loss, test_bin_acc=test_bin_acc, test_sample_acc=test_sample_acc, test_n_sample_acc=test_n_sample_acc)
-        return output_val_dict #currently only this one uses the output_val_dict when called outside of this script, so I will only add to this until needed in the other cases
+            return output_val_dict #currently only this one uses the output_val_dict when called outside of this script, so I will only add to this until needed in the other cases
     else:
         print('splitting TV and test data, and testing both sets')
         split_percentages = {"train": 0.9, "val": 0.05, "test": 0.05}
@@ -141,6 +141,7 @@ def load_model(model_path):
         print(f'Loading model at {model_path}')
         loaded_model = K.models.load_model(model_path)
     except ValueError as e:
+        # this means the model compiled does not have the all outputs correct metric compiled to it most likely
         if "Unable to restore custom object of type" in str(e):
             # Handle the specific ValueError related to custom objects
             print("Trying to reload model with custom metric AllOutputsCorrect")
@@ -191,10 +192,12 @@ def arg_parse():
     parser.add_argument("-f","--model_path", type=str, default = "./old_main_train_results/small_main_data_file_courses3/model_15", help = 'Path to model results you wish to pull weights from.')
     parser.add_argument("-e","--epoch", type=int, default=None, help="Chooses the weights from a given epoch to be loaded into the model.  If no epoch given, loads model weights from last epoch.")
     parser.add_argument("-b","--batch_size", type=int, default=64, help="Specify the batch size used during training to make accuracy calculation match results found during training.")
-    parser.add_argument("-s","--shift", action='store_false', help="Turns off shifting dataset over by half of size of obstacle field.  Expected field size is 30mx30m so shift is -15 to each x,y coordinate")
+    parser.add_argument("-s","--shift", action='store_false', help="Turns off shifting dataset over by half of size of obstacle field.  Expected field size is 30mx30m so shift is -15 to each x,y coordinate.")
+    parser.add_argument("-w","--test_whole", action='store_true', help="This argument turns on testing the whole data set rather than just testing the test data (last 5 percent of data usually).")
     parser.add_argument("-sf","--scale_flag", action='store_true', help="Turns on scaling inputs based on the argument scale_value.  This scales all of the features by the scale_value.")
     parser.add_argument("-sv","--scale_value", type=float, default=1, help="Scale value used when scale_flag is activated.  it is what the data is divided by. So 30 results in 1/30 scale")
     parser.add_argument("-nt","--num_to_test", type=int, default=None, help="used when trying to test a model with N outputs on a dataset that has less than N outputs. This value specifies the number of outputs our metric should test.")
+    parser.add_argument("-mr","--model_range", type=int, default=[1,3],nargs=2,help="when testing n_less_N, specify range of obs numbers you want to test.  Testing more than 3 models at a time causes my computer to run out of memory but I dont know why so this is a band aid.")
 
     args = parser.parse_args()
     return args
@@ -212,8 +215,9 @@ if __name__ == "__main__":
     num_to_test = args.num_to_test
     scale_val = args.scale_value
     scale_flag = args.scale_flag
+    test_whole_data_set = args.test_whole
 
 
 
     # main(model_path,epoch,data_file,num_obs,batch,is_shift_data,num_to_test=num_to_test)
-    main(model_path,epoch,data_file,num_obs,batch,is_shift_data,num_to_test=num_to_test,scale_value=scale_val,is_scale_data=scale_flag)
+    main(model_path,epoch,data_file,num_obs,batch,is_shift_data,is_test_whole_set=test_whole_data_set,num_to_test=num_to_test,scale_value=scale_val,is_scale_data=scale_flag)

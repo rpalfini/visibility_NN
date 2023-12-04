@@ -9,9 +9,10 @@ import evaluate_keras_model as ekm
 '''This file is used to evaluate a given model on all the datasets with less obstacles than the model'''
 
 class result_record:
-    def __init__(self,model_tested_path):
+    def __init__(self,model_tested_path,data_tested_dir):
         self.record = {}
         self.model_tested_path = model_tested_path
+        self.data_tested_dir = data_tested_dir
         self.output_fname = self.make_output_fname()
 
     def make_output_fname(self):
@@ -27,6 +28,7 @@ class result_record:
         '''writes results to file'''
         with open(self.output_fname,'w') as f:
             f.write(f'model tested path = {self.model_tested_path}\n')
+            f.write(f'data tested directory = {self.data_tested_dir}\n')
             for model_num, test_vals in self.record.items():
                 f.write(f"{model_num}: {test_vals}\n")
             
@@ -47,16 +49,19 @@ def main(args):
     scale_flag = False
     is_shift_data = False
 
-    results_record = result_record(model_path)
-    
     # file_extension = "csv"
     file_extension = "npy"
     # base_data_path = "D:/Vis_network_data/data_file_by_course_padded/main_data_file_courses"
-    base_data_path = "D:/Vis_network_data/data_file_by_course_transformations/shift_padded_courses_x_to_15/main_data_file_courses"
-    base_data_path = util.fix_path_separator(base_data_path)
+    base_data_path = "D:/Vis_data/data_file_by_course_transformations/shift_padded_courses_x_to_15/main_data_f_networkile_courses"
+    results_record = result_record(model_path,base_data_path)
+    
+    # base_data_path = util.fix_path_separator(base_data_path)
     # model = 13
+    model_range = range(args.model_range[0],args.model_range[1]+1)
+
+    
     try:
-        for model in range(1,20): # we don't need to test on the data set that has the expected number of obstacles
+        for model in model_range: # we don't need to test on the data set that has the expected number of obstacles
             num_to_test = model
             data_file = f"{base_data_path}{model}.{file_extension}"
             results_dict = ekm.main(model_path,epoch, data_file,num_obs,batch,is_shift_data,num_to_test=num_to_test,scale_value=scale_val,is_scale_data=scale_flag)

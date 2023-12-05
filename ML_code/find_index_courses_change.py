@@ -14,8 +14,18 @@ def main():
     # Assuming you have your data as a NumPy array
     # Replace the following array with your actual data
     # data = util.load_data("D:/Vis_network_data/data_file_by_course/main_data_file_courses20.npy")
-    data = util.load_data("E:/main_folder/npy_to_be_added_by_course/main_data_file_courses20.npy")
+    # data = util.load_data("E:/main_folder/npy_to_be_added_by_course/main_data_file_courses20.npy")
     # data = util.load_data("ML_code/Data/small_main_data_file_courses20.csv")
+    
+    # file_path = "D:/Vis_network_data/Augmented Data Sets/double_data_and_shift_inputs/train/double_augmented_train_main_data_file_courses20.npy"
+    file_path = "D:/Vis_network_data/Augmented Data Sets/double_data_and_shift_inputs/train/triple_augmented_train_main_data_file_courses20.npy"
+    # file_path = "E:/main_folder/Augmented Data Sets/double_data_and_shift_inputs/main_data_file_courses20.npy"
+    # file_path = "E:/main_folder/Augmented Data Sets/double_data_and_shift_inputs/train/train_main_data_file_courses20.npy"
+    
+    
+    data = util.load_data(file_path)
+    
+
 
     # Define the columns you're interested in
     columns_of_interest = np.arange(4,64)
@@ -55,14 +65,8 @@ def main():
         for index in result_indices:
             file.write(f"{index}\n")
 
-    np.savetxt('new_data_20_obs_row_changed.txt',result,delimiter=',')
-
-
-    
-
-
-
-
+    np.savetxt(os.path.join(os.path.dirname(file_path),'20_obs_row_changed_triple.txt'),result,delimiter=',')
+    print(f"result.shape = {result.shape}")
 
 
 if __name__ == "__main__":

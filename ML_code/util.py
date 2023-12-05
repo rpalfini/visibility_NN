@@ -3,6 +3,7 @@ import os
 import pickle
 import datetime
 import re
+import time
 from tqdm import tqdm
 import numpy as np
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
@@ -19,11 +20,18 @@ def arg_parse():
     parser.add_argument("-l","--learning_rate",type=float, default = 0.001, help="sets the learning rate")
     parser.add_argument("-m", "--NN_model", type=int, default=0, help="Selects neural network to train.  Used for training automation.")
     parser.add_argument("-o","--optimizer", type=int, default=0, help="Selects the optimizer to use for the neural network.  0 is Adam, 1 is RMSprop, 2 is SGD")
-    parser.add_argument("-s","--shift", action='store_false', help="Turns off shifting dataset over by half of size of obstacle field.  Expected field size is 30mx30m so shift is -15 to each x,y coordinate")
-    parser.add_argument("-xs","--x_shift", action='store_true', help="Turns on shifting dataset over only on x axis by half of size of obstacle field.")
+    parser.add_argument("-s","--shift", action='store_false', help="Turns off shifting dataset over by half of size of obstacle field.  Expected field size is 30mx30m so shift is -15 to each x,y coordinate.  Shift is performed before scaling operation if specified.")
+    parser.add_argument("-xs","--x_shift", action='store_true', help="Turns on shifting dataset over only on x axis by half of size of obstacle field.  Currently not implemented.")
     parser.add_argument("-sf","--scale_flag", action='store_true', help="Turns on scaling inputs based on the argument scale_value.  This scales all of the features by the scale_value.")
     parser.add_argument("-sv","--scale_value", type=float, default=1, help="Scale value used when scale_flag is activated.  it is what the data is divided by. So 30 results in 1/30 scale")
     parser.add_argument("-sp","--split_percentages", type=float, default = [0.90,0.05,0.05], nargs=3, help="enter train/val/test split percentages")
+    parser.add_argument("-tv","--shuffle_tv", action='store_false', help="turns off shuffling train/validation data")
+    parser.add_argument("-i","--test_idx",type=int,default=None,help="sets the trainer to split data using an index for test data.  This is used to guarantee that the data has not been seen.")
+    parser.add_argument("-tf","--test_file",type=str,default=None,help="set a separate file to use for testing data.  This option will conver split percentage so that val split is the size of the specified val and test split.  If this option and option --test_idx are used, this mode will have priority.")
+    parser.add_argument("-es","--early_stop",action='store_false',help='Adding this option disables early stopping based on all_outputs_correct metric')
+    parser.add_argument("-vf","--val_file",type=str,default=None,help="Specific file to load validation data from.")
+    parser.add_argument("-xd","--x_data_path",type=str,default=None,help="adding this to specify path for feature data.  Band aid to make keras_generator work.")
+    parser.add_argument("-yd","--y_data_path",type=str,default=None,help="adding this to specify path for label data.  Band aid to make keras_generator work.")
 
     args = parser.parse_args()
     return args
@@ -189,11 +197,20 @@ def get_file_extension(file_path):
     # Get the lowercase file extension
     file_extension = file_path.lower().split('.')[-1]
     
-    # Check if the file extension is either "npy" or "csv"
+    # Check if the file extension is either "npy" or "csv" and return
     if file_extension in {'npy', 'csv'}:
         return file_extension
     else:
         raise Exception(f'File path: {file_path} does not end with .npy or .csv')  # Or handle the case when the file has a different extension
+
+def load_data_as_memmap(file_path,shape,dtype):
+    '''loads data as a memory map instead'''
+    file_extension = get_file_extension(file_path)
+    if file_extension == 'npy':
+        # return np.memmap(file_path,mode='r+',shape=shape,dtype=dtype)
+        return np.load(file_path,mmap_mode='r')
+    else:
+        raise Exception("File must be .npy to be able to create memory mapped file")
 
 def load_data(file_path):
     file_extension = get_file_extension(file_path)
@@ -212,11 +229,54 @@ def load_np_data(file_path):
     print(f'Loading np data from {file_path}')
     return np.load(file_path)
 
+def create_other_parts(num_obs):
+    '''this is just a band aid to get my code running faster'''
+    features = calc_num_features(num_obs)
+    labels = num_obs
+
+    split_data = {}
+    split_data["opt_costs"] = 0
+    split_data["num_features"] = features
+    split_data["num_labels"] = labels
+    return split_data
+
+def separate_train_data(dataset_processed,num_obs):
+    '''Running out of time but doing this method because train data is already loaded and processed. Eventually fix this? or not'''
+    X, Y = separate_features_labels(dataset_processed,num_obs)
+    split_data = {}
+    split_data["X"] = X
+    split_data["Y"] = Y
+    return split_data
+
+def load_and_sep_data(file_path,num_obs,is_shift_data,scale_value,is_scale_data):
+    '''This is a wrapper function to load test data when it is a separate file from the train/val data.  It performs the same processing done on the train/val data.
+        X refers to feature data and Y refers to associated labels.'''
+    # load data
+    tic = time.perf_counter()
+    dataset_in = load_data(file_path)
+    toc = time.perf_counter()
+    print(f"Loaded Test data in {toc - tic:0.4f} seconds")
+
+    # perform transformations
+    dataset_processed = transform_data(dataset_in,num_obs,is_shift_data,scale_value,is_scale_data)
+    X, Y = separate_features_labels(dataset_processed,num_obs)
+    split_data = {}
+    split_data["X"] = X
+    split_data["Y"] = Y
+    return split_data
+
+
+def transform_data(dataset_in,num_obs,is_shift_data,scale_value,is_scale_data):
+    '''Performs transfomrations of shift and scaling data if specified'''
+    dataset_shift = shift_data_set(dataset_in,num_obs,is_shift_data) # input assumes you shift data before scaling it.
+    dataset_shift_scale = scale_data_set(dataset_shift,num_obs,scale_value,is_scale_data)
+    return dataset_shift_scale
+
 def read_model_num_from_file_path(file_path):
     '''This function can check to see what number is used for a model data path for a single type of obstacle number, to infer the number of obstacles instead of having to specify it each time.
     file_path should be of the form some_path/main_data_file_courses#.csv
     '''
-    pattern = r'courses(\d+)[\.csv|\.npy]' #works if fiel is .csv or .npy extension
+    pattern = r'courses(\d+)[\.csv|\.npy]' #works if file is .csv or .npy extension
 
     # Use re.search to find the pattern in the file path
     match = re.search(pattern, file_path)
@@ -241,17 +301,33 @@ def find_null_x_idx(num_obs,max_num_obs):
 
     return y_idx
 
+def test_index_shuffle_and_split_data(dataset,num_obstacles,split_percentages,test_idx,shuffle_data=True):
+    '''This works just like shuffle and split data but instead of specifying a percentage for train/val/test you only
+    specify train/val split and an index for where you want to split off the test data.  This is if you wish to split the test
+    data so that none of the obstacle courses are shown to the model during training.'''
+    raise Exception('test_index_shuffle_and_split_data() is not implemented yet.  Do not use this option.')
+
+def change_split_percent_to_TV(tvt_split_percentage):
+    '''This function is used when we wish to split our split percentages to only include train and validation data because test data is provided with differnt routine.
+        The input tvt_split_percentage should be a list of three values indicating the train, validation, and test split percentages
+        The output is given as train percent is the same but val pertcent is converted to be val percent + test percent.'''
+    new_split_percentage = [tvt_split_percentage[0],tvt_split_percentage[1]+tvt_split_percentage[2],0]
+    check_split_percent(new_split_percentage)
+    return new_split_percentage
+
+
 def shuffle_and_split_data(dataset,num_obstacles,split_percentages,shuffle_data=True):
     '''Splits data into train/val and test. Shuffles train/val data, and then splits train and val data.
        INPUTS:
         dataset: file read from load_data
         num_obstacles: number of obstacles in the data file, use size of the padded dataset if using padded data
-        split_percentages: length three list indicating the percent for training, validation, and testing
+        split_percentages: length three list indisccating the percent for training, validation, and testing
        OUTPUTS:
         split_data: dictionary with train,val,test data as well as opt_costs,num_feat,num_labels'''
     
-    if shuffle_data:
-        np.random.shuffle(dataset)
+    # if shuffle_data:
+    #     print('data shuffled')
+    #     np.random.shuffle(dataset)
 
     split_data = {}
     total_rows = dataset.shape[0]
@@ -262,6 +338,7 @@ def shuffle_and_split_data(dataset,num_obstacles,split_percentages,shuffle_data=
     # First split into train/val and test without shuffling
     test_split_percent = [split_percentages["train"] + split_percentages["val"], split_percentages["test"]]
     data_splits = split_array(dataset, test_split_percent)
+    print('test data split from TV data')
 
     # Separate into train/val dataset and test dataset
     dataset_TV = data_splits[0]
@@ -274,7 +351,10 @@ def shuffle_and_split_data(dataset,num_obstacles,split_percentages,shuffle_data=
 
     # shuffle training/validation data
     if shuffle_data:
+        print('data shuffled')
         np.random.shuffle(dataset_TV)
+    else:
+        print('tv data not shuffled before splitting.')
 
     # Calculate split percentages based on remaining data
     percent_data_left = 100 - split_percentages["test"]*100
@@ -282,6 +362,7 @@ def shuffle_and_split_data(dataset,num_obstacles,split_percentages,shuffle_data=
     
     # Split data into training/validation, separate features from labels, and record
     TV_data_splits = split_array(dataset_TV,TV_split_percent)
+    
     dataset_train = TV_data_splits[0]
     X_train, Y_train = separate_features_labels(dataset_train,num_obstacles)
     split_data["X_train"] = X_train
@@ -301,9 +382,12 @@ def shuffle_and_split_data(dataset,num_obstacles,split_percentages,shuffle_data=
     split_data["num_labels"] = labels
     return split_data
 
-def split_array(original_array, split_percentages):
+def check_split_percent(split_percentages):
     if sum(split_percentages) != 1.0:
         raise ValueError("Split percentages must sum to 1.0")
+
+def split_array(original_array, split_percentages):
+    check_split_percent(split_percentages)
 
     # Calculate the split indices
     split_indices = [np.round(x * original_array.shape[0]) for x in split_percentages]
@@ -314,7 +398,7 @@ def split_array(original_array, split_percentages):
     # Perform the array splitting
     splits = np.split(original_array, split_indices)
     splits = splits[0:len(split_percentages)] #remove empty array at the end
-
+    print('split train and val data.')
     return splits
 
 def combine_test_val_data(split_data):

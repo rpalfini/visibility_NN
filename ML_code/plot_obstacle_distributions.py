@@ -5,7 +5,9 @@ import util
 
 # Load CSV file into a numpy array
 # filename = '20_obs_row_changed.txt'
-filename = 'new_data_20_obs_row_changed.txt'
+# filename = 'new_data_20_obs_row_changed.txt'
+# filename = "D:/Vis_network_data/Augmented Data Sets/double_data_and_shift_inputs/train/20_obs_row_changed_double.txt"
+filename = "D:/Vis_network_data/Augmented Data Sets/double_data_and_shift_inputs/train/20_obs_row_changed_triple.txt"
 data = np.genfromtxt(filename, delimiter=',')
 print(f'data.shape = {data.shape}')
 # Select columns 5 to 64

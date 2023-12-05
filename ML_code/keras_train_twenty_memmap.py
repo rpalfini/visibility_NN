@@ -8,6 +8,7 @@ from tqdm import tqdm
 import util
 import util_keras
 import graph_util as g_util
+import DataGenerator
 
 def main():
 
@@ -46,14 +47,25 @@ def main():
 
     file_path = args.file_path
     tic = time.perf_counter()
-    dataset_in = util.load_data(file_path)
+    # dataset_in = util.load_data(file_path)
+    # shape = (28521532, 85)
+    # dataset_in = util.load_data_as_memmap(file_path,shape,dtype=np.float64)
+    # file_pathX = "D:/Vis_network_data/Augmented Data Sets/generator_exp_double_data_and_shift_inputs/train/feat_double_augmented_train_main_data_file_courses20.npy"
+    # file_pathY = "D:/Vis_network_data/Augmented Data Sets/generator_exp_double_data_and_shift_inputs/train/label_double_augmented_train_main_data_file_courses20.npy"
+    file_pathX = args.x_data_path
+    file_pathY = args.y_data_path
+    shapeX = (28521532, 64)
+    X_train = util.load_data_as_memmap(file_pathX,shape=shapeX,dtype='float64')
+    shapeY = (28521532, 20)
+    Y_train = util.load_data_as_memmap(file_pathY,shape=shapeY,dtype='float64')
     toc = time.perf_counter()
     print(f"Loaded data in {toc - tic:0.4f} seconds")
 
     #perform data set transformations
     # dataset_processed = util.shift_data_set(dataset_in,args.num_obs,is_shift_d ata)
     # dataset_processed = util.scale_data_set(dataset_processed,args.num_obs,scale_value,is_scale_data)
-    dataset_processed = util.transform_data(dataset_in,args.num_obs,is_shift_data,scale_value,is_scale_data)
+    # dataset_processed = util.transform_data(dataset_in,args.num_obs,is_shift_data,scale_value,is_scale_data)
+    dataset_processed = 0
 
     # three options depending on how we wish to split the test data
     if args.test_file is not None:
@@ -82,9 +94,9 @@ def main():
             X_val = val_split_data["X"]   
             Y_val = val_split_data["Y"] 
 
-            train_split_data = util.separate_train_data(dataset_processed,args.num_obs)
-            X_train = train_split_data["X"] 
-            Y_train = train_split_data["Y"]
+            # train_split_data = util.separate_train_data(dataset_processed,args.num_obs)
+            # X_train = train_split_data["X"] 
+            # Y_train = train_split_data["Y"]
 
             split_data = util.create_other_parts(args.num_obs) # this is a bandai to get this section running
 

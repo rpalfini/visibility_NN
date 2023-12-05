@@ -1,6 +1,6 @@
 '''creates a smaller version of a test file by grabbing the first num_lines of the file'''
-large_file = "D:/Vis_network_data/data_file_by_course/main_data_file_courses20.csv"
-small_file = "./ML_code/Data/small_main_data_file_courses20.csv"
+large_file = "D:/Vis_network_data/data_file_by_course_padded/main_data_file_courses10.csv"
+small_file = "./ML_code/Data/small_padded_main_data_file_courses10.csv"
 # num_lines = 25000
 num_lines = 250
 with open(large_file, 'r') as source_file:
@@ -12,6 +12,6 @@ with open(large_file, 'r') as source_file:
                 # Write the line to the new file
                 new_file.write(line)
             else:
-                break  # Stop when 25,000 lines are copied
+                break  # Stop when num_lines lines are copied
 
 print("Copy operation complete.")
